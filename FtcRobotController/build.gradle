@@ -1,5 +1,3 @@
-import java.util.regex.Pattern
-
 //
 // build.gradle in FtcRobotController
 //
@@ -9,7 +7,7 @@ android {
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 19
+        targetSdkVersion 23
     }
 
     compileSdkVersion 23
