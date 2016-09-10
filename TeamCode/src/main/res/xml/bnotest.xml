@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="BNO Test">
+    <DeviceInterfaceModule name="DIM" serialNumber="AL00VDXN">
+        <I2cDevice name="bno" port="0" />
+    </DeviceInterfaceModule>
+</Robot>
