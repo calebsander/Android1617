@@ -3,16 +3,16 @@
 */
 package org.gearticks.dimsensors.i2c;
 
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
-
 import java.nio.ByteBuffer;
 
 public class BNO055 extends I2CSensor {
 	private static final int DEFAULT_ADDRESS = 0x28;
 	private static final int SECOND_ADDRESS = DEFAULT_ADDRESS + 1;
 	private final int address;
-	protected final int getAddress() {
-		return this.address;
+	protected final I2cAddr getAddress() {
+		return I2cAddr.create7bit(this.address);
 	}
 	//I2C Registers
 	private enum Register {
@@ -332,11 +332,11 @@ public class BNO055 extends I2CSensor {
 	//Can be used to determine whether the sensor as a whole is calibrated
 	public boolean gyroCalibrated() {
 		return this.calibrationRequest.hasReadData() &&
-						((this.calibrationRequest.getReadData()[Register.CALIB_STAT.getRegister() - this.calibrationRequest.getRegister()] >> 4) & 0x03) == 0x03;
+			((this.calibrationRequest.getReadData()[Register.CALIB_STAT.getRegister() - this.calibrationRequest.getRegister()] >> 4) & 0x03) == 0x03;
 	}
 	public boolean selfTestResult() {
 		return this.calibrationRequest.hasReadData() &&
-						(this.calibrationRequest.getReadData()[Register.SELF_TEST_RESULT.getRegister() - this.calibrationRequest.getRegister()] & 0x0F) == 0x0F;
+			(this.calibrationRequest.getReadData()[Register.SELF_TEST_RESULT.getRegister() - this.calibrationRequest.getRegister()] & 0x0F) == 0x0F;
 	}
 
 	//For the heading reported by the sensor - make sure heading data has been read, or you risk a NullPointerException

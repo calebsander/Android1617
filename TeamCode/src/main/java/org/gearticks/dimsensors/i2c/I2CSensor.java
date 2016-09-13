@@ -43,9 +43,13 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		}
 		//Send the request to the I2C controller
 		public abstract void sendRequest();
+		//Add the request to a different queue if it isn't yet there
+		protected void addToQueue(Queue<SensorRequest> queue) {
+			if (!queue.contains(this)) queue.add(this);
+		}
 		//Add the request to the end of the queue if it isn't yet there
 		protected void addToQueue() {
-			if (!I2CSensor.this.requests.contains(this)) I2CSensor.this.requests.add(this);
+			this.addToQueue(I2CSensor.this.requests);
 		}
 		//Reset the amount of time since the last action
 		protected void resetActionTimer() {
@@ -75,7 +79,7 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 			I2CSensor.this.requests.remove(this);
 		}
 		public void sendRequest() {
-			I2CSensor.this.device.enableI2cReadMode(I2CSensor.this.getWrappedAddress(), this.getRegister(), this.getLength());
+			I2CSensor.this.device.enableI2cReadMode(I2CSensor.this.getAddress(), this.getRegister(), this.getLength());
 			I2CSensor.this.lastRead = this;
 		}
 		//Record new data that has been received
@@ -118,7 +122,7 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		}
 		public void sendRequest() {
 			this.resetActionTimer();
-			I2CSensor.this.device.enableI2cWriteMode(I2CSensor.this.getWrappedAddress(), this.getRegister(), this.writeData.length);
+			I2CSensor.this.device.enableI2cWriteMode(I2CSensor.this.getAddress(), this.getRegister(), this.writeData.length);
 			I2CSensor.this.device.copyBufferIntoWriteBuffer(this.writeData);
 			this.sent = true;
 			I2CSensor.this.lastRead = null; //there is no read request being responded to
@@ -134,26 +138,30 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 	}
 
 	//The device being controlled (wrapped)
-	private I2cDevice device;
+	private final I2cDevice device;
 	//The queue of requests to be processed
 	//Read requests cycle to the back of the queue when processed, while write requests are taken out
-	private Queue<SensorRequest> requests;
+	protected final Queue<SensorRequest> requests;
 	//The read request processed in the last ready cycle
 	private SensorReadRequest lastRead;
-	//The I2C address (7-bit version)
-	protected abstract int getAddress(); //essentially static, but must be able to be overridden
+	//The I2C address
+	protected abstract I2cAddr getAddress();
 
-	public I2CSensor(I2cDevice device) {
+	//Initialize without setting the callback - for use with multiple devices on the same I2C bus
+	public I2CSensor(I2cDevice device, Queue<SensorRequest> requests) {
 		this.device = device;
-		this.requests = new ArrayDeque<>();
+		this.requests = requests;
 		this.lastRead = null;
+	}
+	public I2CSensor(I2cDevice device) {
+		this(device, new ArrayDeque<SensorRequest>());
 		this.device.registerForI2cPortReadyCallback(this);
 	}
-
-	//The I2C address as an I2cAddr
-	private I2cAddr getWrappedAddress() {
-		return I2cAddr.create7bit(this.getAddress());
+	public I2CSensor(I2cDevice device, I2CSwitcher switcher, int port) {
+		this(device, switcher.portRequests[port]);
+		switcher.addDevice(port);
 	}
+
 	public synchronized void portIsReady(int port) {
 		if (this.lastRead != null) this.lastRead.setReadData(); //record the read data
 		if (!this.requests.isEmpty()) { //if there are commands to process
