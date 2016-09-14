@@ -39,13 +39,20 @@ public class TCS34725 extends I2CSensor {
 	private static final double INTEGRATION_INTERVAL = 2.4; //milliseconds
 	private static final double DEFAULT_INTEGRATION_INTERVAL = INTEGRATION_INTERVAL * 10;
 
-	private final SensorWriteRequest enableRequest;
-	private final SensorReadRequest clearRequest;
-	private final SensorReadRequest colorRequest;
-	private final SensorWriteRequest integrationTime;
+	private SensorWriteRequest enableRequest;
+	private SensorReadRequest clearRequest;
+	private SensorReadRequest colorRequest;
+	private SensorWriteRequest integrationTime;
 
 	public TCS34725(I2cDevice device) {
 		super(device);
+		this.initialize();
+	}
+	public TCS34725(I2cDevice device, I2CSwitcher switcher, int port) {
+		super(device, switcher, port);
+		this.initialize();
+	}
+	private void initialize() {
 		this.enableRequest = new SensorWriteRequest(Register.ENABLE.register, 1);
 		this.enableRequest.setWriteData(new byte[]{POWER_ON});
 		this.state = StartupState.POWER;

@@ -159,7 +159,7 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 	}
 	public I2CSensor(I2cDevice device, I2CSwitcher switcher, int port) {
 		this(device, switcher.portRequests[port]);
-		switcher.addDevice(port);
+		switcher.addDevice(port, this);
 	}
 
 	public synchronized void portIsReady(int port) {
@@ -178,4 +178,8 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 	}
 	//Can be overridden in subclasses to provide a callback function when an I2C request is completed
 	protected void readyCallback() {}
+	//Stop communicating on the port
+	public void terminate() {
+		this.device.deregisterForPortReadyCallback();
+	}
 }

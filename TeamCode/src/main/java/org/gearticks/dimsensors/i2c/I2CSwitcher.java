@@ -3,6 +3,7 @@ package org.gearticks.dimsensors.i2c;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Queue;
 
 public class I2CSwitcher extends I2CSensor {
@@ -17,14 +18,17 @@ public class I2CSwitcher extends I2CSensor {
 
 	protected final Queue<SensorRequest>[] portRequests;
 	private final SensorWriteRequest[] switchRequests;
+	private I2CSensor[] sensors;
 	//Queue of ports to use; ports are cycled to the back once selected
-	private Queue<Integer> portsInUse;
+	private Deque<Integer> portsInUse;
+	private boolean hasSentSwitchRequest;
 
 	@SuppressWarnings("unchecked")
 	public I2CSwitcher(I2cDevice device) {
 		super(device);
 		this.portRequests = new Queue[PORTS];
 		this.switchRequests = new SensorWriteRequest[PORTS];
+		this.sensors = new I2CSensor[PORTS];
 		for (int i = 0; i < PORTS; i++) {
 			this.portRequests[i] = new ArrayDeque<>();
 			final SensorWriteRequest switchRequest = new SensorWriteRequest(i, 0); //might have to write a separate byte
@@ -35,18 +39,20 @@ public class I2CSwitcher extends I2CSensor {
 		this.portsInUse = new ArrayDeque<>();
 	}
 
-	private void switchPort() {
+	private synchronized void switchPort() {
 		final int port = this.portsInUse.poll();
 		this.portsInUse.add(port);
 		this.switchRequests[port].addToQueue();
 		for (SensorRequest request : this.portRequests[port]) request.addToQueue(this.requests);
 		this.requests.add(END_OF_PORT_REQUESTS); //marks the end of the commands for this port
+		this.hasSentSwitchRequest = false;
 	}
-	protected void addDevice(int port) {
+	protected synchronized void addDevice(int port, I2CSensor sensor) {
+		this.sensors[port] = sensor;
 		this.portsInUse.add(port);
 		if (this.portsInUse.size() == 1) this.switchPort(); //if no port had been used yet, switch to the new one
 	}
-	protected void readyCallback() {
+	protected synchronized void readyCallback() {
 		if (this.requests.size() != 0) {
 			final SensorRequest nextRequest = this.requests.peek();
 			if (nextRequest == END_OF_PORT_REQUESTS) { //if we are done with this port, try to switch to the next one
@@ -54,5 +60,7 @@ public class I2CSwitcher extends I2CSensor {
 				this.switchPort();
 			}
 		}
+		if (this.hasSentSwitchRequest) this.sensors[this.portsInUse.peekLast()].readyCallback(); //just communicated with the sub-device, so alert it
+		else this.hasSentSwitchRequest = true; //finished sending switch request; onto sub-device requests
 	}
 }
