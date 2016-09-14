@@ -8,7 +8,7 @@ import java.util.Queue;
 public class I2CSwitcher extends I2CSensor {
 	//The number of ports that a device can be attached to
 	private final static int PORTS = 8;
-	//An object put in the requests queue to represent the end of 
+	//An object put in the requests queue to represent the end of requests for the current port
 	private static SensorRequest END_OF_PORT_REQUESTS = null;
 
 	protected I2cAddr getAddress() {
@@ -29,6 +29,7 @@ public class I2CSwitcher extends I2CSensor {
 			this.portRequests[i] = new ArrayDeque<>();
 			final SensorWriteRequest switchRequest = new SensorWriteRequest(i, 0); //might have to write a separate byte
 			switchRequest.setWriteData(new byte[0]);
+			this.requests.poll(); //undo adding switch request to the request queue
 			this.switchRequests[i] = switchRequest;
 		}
 		this.portsInUse = new ArrayDeque<>();
@@ -46,10 +47,12 @@ public class I2CSwitcher extends I2CSensor {
 		if (this.portsInUse.size() == 1) this.switchPort(); //if no port had been used yet, switch to the new one
 	}
 	protected void readyCallback() {
-		final SensorRequest nextRequest = this.requests.peek();
-		if (nextRequest == END_OF_PORT_REQUESTS) { //if we are done with this port, try to switch to the next one
-			this.requests.poll(); //remove dummy request
-			this.switchPort();
+		if (this.requests.size() != 0) {
+			final SensorRequest nextRequest = this.requests.peek();
+			if (nextRequest == END_OF_PORT_REQUESTS) { //if we are done with this port, try to switch to the next one
+				this.requests.poll(); //remove dummy request
+				this.switchPort();
+			}
 		}
 	}
 }
