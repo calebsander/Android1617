@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="Switcher Test">
+    <DeviceInterfaceModule name="Device Interface Module 1" serialNumber="AI02RKCO">
+        <I2cDevice name="switcher" port="0" />
+        <Led name="led0" port="0" />
+        <Led name="led1" port="1" />
+    </DeviceInterfaceModule>
+</Robot>

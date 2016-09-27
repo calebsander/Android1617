@@ -59,6 +59,10 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		public long nanosSinceAction() {
 			return System.nanoTime() - this.actionTimestamp;
 		}
+		//Get request in string form (for debugging)
+		public String toString() {
+			return "0x" + Integer.toHexString(this.register) + ", 0x" + Integer.toHexString(this.length);
+		}
 	}
 	//A request for a read
 	public class SensorReadRequest extends SensorRequest {
