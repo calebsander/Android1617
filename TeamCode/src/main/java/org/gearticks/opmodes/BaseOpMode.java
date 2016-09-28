@@ -3,14 +3,12 @@ package org.gearticks.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.GamepadWrapper;
-import org.gearticks.hardware.configurations.RenameThisHardwareConfiguration;
 import org.gearticks.joystickoptions.JoystickOption;
 import org.gearticks.joystickoptions.JoystickOptionController;
 
 public abstract class BaseOpMode extends OpMode {
 	protected final ElapsedTime matchTime;
 	protected final JoystickOptionController optionController;
-	protected RenameThisHardwareConfiguration configuration;
 	protected GamepadWrapper[] gamepads;
 
 	public BaseOpMode() {
@@ -19,7 +17,6 @@ public abstract class BaseOpMode extends OpMode {
 	}
 
 	public void init() {
-		this.configuration = new RenameThisHardwareConfiguration(this.hardwareMap);
 		this.initialize();
 	}
 	public void init_loop() {
