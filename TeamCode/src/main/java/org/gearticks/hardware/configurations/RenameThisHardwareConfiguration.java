@@ -9,4 +9,11 @@ public class RenameThisHardwareConfiguration implements HardwareConfiguration {
 
 	public void stopMotion() {}
 	public void teardown() {}
+
+	public static abstract class MotorConstants {
+		//e.g. public static final double SQUID_IN = 1.0;
+	}
+	public static abstract class ServoConstants {
+		//e.g. public static final double CLIMBERS_OUT = 0.38;
+	}
 }
