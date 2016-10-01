@@ -90,6 +90,10 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		public void setReadData() {
 			this.resetActionTimer();
 			this.readData = I2CSensor.this.device.getCopyOfReadBuffer();
+			System.out.print("Reading into ");
+			System.out.print(this);
+			System.out.print(": ");
+			System.out.print(Arrays.toString(this.readData));
 		}
 		//Whether we have gotten read data at least once
 		public boolean hasReadData() {
@@ -169,12 +173,13 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 	public synchronized void portIsReady(int port) {
 		if (this.lastRead != null) this.lastRead.setReadData(); //record the read data
 		if (!this.requests.isEmpty()) { //if there are commands to process
-			SensorRequest nextRequest = this.requests.poll(); //get the request from the top of the queue
+			final SensorRequest nextRequest = this.requests.poll(); //get the request from the top of the queue
+			System.out.println(nextRequest);
 			nextRequest.sendRequest(); //run the code necessary to process the request
 			this.device.setI2cPortActionFlag(); //we always want to do the action
 			this.device.writeI2cCacheToController(); //set new desired register
 			if (nextRequest instanceof SensorReadRequest) {
-				this.requests.add(nextRequest); //reads need to be issued repeatedly
+				nextRequest.addToQueue(); //reads need to be issued repeatedly
 				this.device.readI2cCacheFromController(); //don't waste time performing a read if it isn't necessary
 			}
 		}

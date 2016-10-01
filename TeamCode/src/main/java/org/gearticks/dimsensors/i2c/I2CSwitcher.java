@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.Queue;
 
 public class I2CSwitcher extends I2CSensor {
@@ -18,10 +19,10 @@ public class I2CSwitcher extends I2CSensor {
 	private final SensorWriteRequest[] switchRequests;
 	private I2CSensor[] sensors;
 	//Queue of ports to use; ports are cycled to the back once selected
-	private Deque<Integer> portsInUse;
+	private final Deque<Integer> portsInUse;
 	private boolean hasSentSwitchRequest;
 	//An object put in the requests queue to represent the end of requests for the current port
-	private SensorRequest END_OF_PORT_REQUESTS;
+	private final SensorRequest END_OF_PORT_REQUESTS;
 
 	@SuppressWarnings("unchecked")
 	public I2CSwitcher(I2cDevice device) {
@@ -32,8 +33,8 @@ public class I2CSwitcher extends I2CSensor {
 		for (int i = 0; i < PORTS; i++) {
 			this.portRequests[i] = new ArrayDeque<>();
 			final int selectByte = 1 << i;
-			final SensorWriteRequest switchRequest = new SensorWriteRequest(selectByte, 1); //might have to write a separate byte
-			switchRequest.setWriteData(new byte[]{(byte)selectByte});
+			final SensorWriteRequest switchRequest = new SensorWriteRequest(selectByte, 0); //might have to write a separate byte
+			switchRequest.setWriteData(new byte[]{/*(byte)selectByte*/});
 			this.requests.poll(); //undo adding switch request to the request queue
 			this.switchRequests[i] = switchRequest;
 		}
@@ -45,7 +46,11 @@ public class I2CSwitcher extends I2CSensor {
 		final int port = this.portsInUse.poll();
 		this.portsInUse.add(port);
 		this.switchRequests[port].addToQueue();
-		for (SensorRequest request : this.portRequests[port]) request.addToQueue(this.requests);
+		final Iterator<SensorRequest> portRequestsIterator = this.portRequests[port].iterator();
+		while (portRequestsIterator.hasNext()) {
+			portRequestsIterator.next().addToQueue(this.requests);
+			portRequestsIterator.remove();
+		}
 		this.requests.add(END_OF_PORT_REQUESTS); //marks the end of the commands for this port
 		this.hasSentSwitchRequest = false;
 	}
@@ -55,9 +60,6 @@ public class I2CSwitcher extends I2CSensor {
 		if (this.portsInUse.size() == 1) this.switchPort(); //if no port had been used yet, switch to the new one
 	}
 	protected synchronized void readyCallback() {
-		System.out.print(this.requests.peek());
-		System.out.print(" ");
-		System.out.println(this.requests.size());
 		final SensorRequest nextRequest = this.requests.peek();
 		if (nextRequest == END_OF_PORT_REQUESTS) { //if we are done with this port, try to switch to the next one
 			this.requests.poll(); //remove dummy request
