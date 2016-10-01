@@ -36,7 +36,7 @@
             <Servo name="climbers" port="1" />
             <Servo name="plow" port="2" />
             <Servo name="zipRight" port="3" />
-            <Servo name="bucketLift" port="4" />
+            <ContinuousRotationServo name="bucketLift" port="4" />
             <Servo name="churroHooks" port="5" />
             <Servo name="bumper" port="6" />
         </ServoController>
