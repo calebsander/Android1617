@@ -1,24 +1,22 @@
 package org.gearticks.hardware.configurations;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsDigitalTouchSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
 
-public class ResqConfiguration implements HardwareConfiguration {
-    public final MotorWrapper screw;
-    public final MotorWrapper lift;
+public class ResQConfiguration implements HardwareConfiguration {
+    public final MotorWrapper screw, lift;
     public final MotorWrapper door;
     public final CRServo bucketLift;
     public final MotorWrapper fl, fr, bl, br;
     public final TankDrive drive;
-    public ResqConfiguration(HardwareMap hardwareMap) {
-        this.lift = new MotorWrapper((DcMotor)hardwareMap.get("lift"), MotorWrapper.MotorType.NEVEREST_40);
+
+    public ResQConfiguration(HardwareMap hardwareMap) {
+        this.lift = new MotorWrapper((DcMotor)hardwareMap.get("lift"), MotorWrapper.MotorType.NEVEREST_60);
         this.screw = new MotorWrapper((DcMotor)hardwareMap.get("screw"), MotorWrapper.MotorType.NEVEREST_20);
-        this.door = new MotorWrapper((DcMotor)hardwareMap.get("door"), MotorWrapper.MotorType.NEVEREST_40);
+        this.door = new MotorWrapper((DcMotor)hardwareMap.get("door"), MotorWrapper.MotorType.NEVEREST_60);
         this.bucketLift = (CRServo)hardwareMap.get("bucketLift");
         this.fl = new MotorWrapper((DcMotor)hardwareMap.get("fl"), MotorWrapper.MotorType.NEVEREST_40);
         this.fr = new MotorWrapper((DcMotor)hardwareMap.get("fr"), MotorWrapper.MotorType.NEVEREST_40);
@@ -34,7 +32,14 @@ public class ResqConfiguration implements HardwareConfiguration {
 
     }
     public void stopMotion() {
-
+        this.screw.setPower(MotorWrapper.STOPPED);
+        this.lift.setPower(MotorWrapper.STOPPED);
+        this.door.setPower(MotorWrapper.STOPPED);
+        this.bucketLift.setPower(MotorWrapper.STOPPED);
+        this.fl.setPower(MotorWrapper.STOPPED);
+        this.fr.setPower(MotorWrapper.STOPPED);
+        this.bl.setPower(MotorWrapper.STOPPED);
+        this.br.setPower(MotorWrapper.STOPPED);
     }
 
     public static abstract class MotorConstants {
