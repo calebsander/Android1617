@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 public class MotorWrapper {
 	//What sort of motor it is - so we can figure out what direction to turn it
 	public enum MotorType {
+		NEVEREST_60(false, 2.0 / 3.0),
 		NEVEREST_40(false, 1.0),
 		NEVEREST_20(true, 2.0);
 
