@@ -84,7 +84,6 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		}
 		public void sendRequest() {
 			I2CSensor.this.device.enableI2cReadMode(I2CSensor.this.getAddress(), this.getRegister(), this.getLength());
-			I2CSensor.this.lastRead = this;
 		}
 		//Record new data that has been received
 		public void setReadData() {
@@ -133,7 +132,6 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 			I2CSensor.this.device.enableI2cWriteMode(I2CSensor.this.getAddress(), this.getRegister(), this.writeData.length);
 			I2CSensor.this.device.copyBufferIntoWriteBuffer(this.writeData);
 			this.sent = true;
-			I2CSensor.this.lastRead = null; //there is no read request being responded to
 		}
 		//Whether the most recent changed value has been sent
 		public boolean wasSent() {
@@ -181,7 +179,9 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 			if (nextRequest instanceof SensorReadRequest) {
 				nextRequest.addToQueue(); //reads need to be issued repeatedly
 				this.device.readI2cCacheFromController(); //don't waste time performing a read if it isn't necessary
+				this.lastRead = (SensorReadRequest)nextRequest; //a read was issued, so keep track of it in order to store the response data
 			}
+			else this.lastRead = null; //a write was issued, so no response has to be stored
 		}
 		this.readyCallback();
 	}

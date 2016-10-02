@@ -4,9 +4,19 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.Queue;
 
+/*
+General implementation:
+Attached (child) sensors use mostly the normal I2CSensor interface.
+The switcher and all child sensors use the same I2cDevice, however
+only the switcher listens to the I2C port-ready callbacks.
+When switching to a different port, the switch request is added to the switcher's queue
+and the target child's requests are copied into the switcher's queue.
+A dummy request is added to the queue to mark the end of the child's communication.
+When the children's requests are sent or read into, they automatically work
+as though they were issued straight to the child without the switcher as intermediary.
+*/
 public class I2CSwitcher extends I2CSensor {
 	//The number of ports that a device can be attached to
 	private final static int PORTS = 8;
@@ -46,11 +56,9 @@ public class I2CSwitcher extends I2CSensor {
 		final int port = this.portsInUse.poll();
 		this.portsInUse.add(port);
 		this.switchRequests[port].addToQueue();
-		final Iterator<SensorRequest> portRequestsIterator = this.portRequests[port].iterator();
-		while (portRequestsIterator.hasNext()) {
-			portRequestsIterator.next().addToQueue(this.requests);
-			portRequestsIterator.remove();
-		}
+		final Queue<SensorRequest> portRequests = this.portRequests[port];
+		for (final SensorRequest portRequest : portRequests) portRequest.addToQueue(this.requests);
+		portRequests.clear();
 		this.requests.add(END_OF_PORT_REQUESTS); //marks the end of the commands for this port
 		this.hasSentSwitchRequest = false;
 	}
