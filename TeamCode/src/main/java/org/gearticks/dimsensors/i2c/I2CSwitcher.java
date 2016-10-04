@@ -43,8 +43,8 @@ public class I2CSwitcher extends I2CSensor {
 		for (int i = 0; i < PORTS; i++) {
 			this.portRequests[i] = new ArrayDeque<>();
 			final int selectByte = 1 << i;
-			final SensorWriteRequest switchRequest = new SensorWriteRequest(selectByte, 0); //might have to write a separate byte
-			switchRequest.setWriteData(new byte[]{/*(byte)selectByte*/});
+			final SensorWriteRequest switchRequest = new SensorWriteRequest(selectByte, 1); //might have to write a separate byte
+			switchRequest.setWriteData(new byte[]{(byte)selectByte});
 			this.requests.poll(); //undo adding switch request to the request queue
 			this.switchRequests[i] = switchRequest;
 		}

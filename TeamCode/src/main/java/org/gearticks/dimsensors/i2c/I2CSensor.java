@@ -26,9 +26,10 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		//For example, controlling registers 5 to 15 would require register = 5, length = 11
 
 		//The value of System.nanoTime() when the action was performed
-		protected long actionTimestamp;
+		private long actionTimestamp;
 
 		public SensorRequest(int register, int length) {
+			if (length < 1) throw new IllegalArgumentException("Cannot have a 0 length request");
 			if (length > MAX_LENGTH) throw new IllegalArgumentException("Length must be no more than " + Integer.toString(MAX_LENGTH));
 			this.register = register;
 			this.length = length;
@@ -89,10 +90,6 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		public void setReadData() {
 			this.resetActionTimer();
 			this.readData = I2CSensor.this.device.getCopyOfReadBuffer();
-			System.out.print("Reading into ");
-			System.out.print(this);
-			System.out.print(": ");
-			System.out.print(Arrays.toString(this.readData));
 		}
 		//Whether we have gotten read data at least once
 		public boolean hasReadData() {
@@ -172,7 +169,6 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		if (this.lastRead != null) this.lastRead.setReadData(); //record the read data
 		if (!this.requests.isEmpty()) { //if there are commands to process
 			final SensorRequest nextRequest = this.requests.poll(); //get the request from the top of the queue
-			System.out.println(nextRequest);
 			nextRequest.sendRequest(); //run the code necessary to process the request
 			this.device.setI2cPortActionFlag(); //we always want to do the action
 			this.device.writeI2cCacheToController(); //set new desired register
