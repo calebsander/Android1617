@@ -1,6 +1,7 @@
 package org.gearticks.opmodes.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LED;
@@ -8,6 +9,7 @@ import org.gearticks.dimsensors.i2c.I2CSwitcher;
 import org.gearticks.dimsensors.i2c.TCS34725;
 
 @Autonomous(name = "Switcher Test", group = "test")
+@Disabled
 public class I2CSwitcherTest extends OpMode {
 	private static final int COLOR_SENSOR_COUNT = 2;
 
