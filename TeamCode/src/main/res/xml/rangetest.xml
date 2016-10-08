@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="Range Test">
+    <DeviceInterfaceModule name="Device Interface Module 1" serialNumber="AI02RKCO">
+        <ModernRoboticsI2cRangeSensor name="range" port="0" />
+    </DeviceInterfaceModule>
+</Robot>
