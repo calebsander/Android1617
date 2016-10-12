@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="Tank">
+    <MotorController name="Right" serialNumber="AL00VD65">
+        <Motor name="RightTop" port="1" />
+        <Motor name="RightBottom" port="2" />
+    </MotorController>
+    <MotorController name="Left" serialNumber="AL00VWWM">
+        <Motor name="LeftTop" port="1" />
+        <Motor name="LeftBottom" port="2" />
+    </MotorController>
+</Robot>
