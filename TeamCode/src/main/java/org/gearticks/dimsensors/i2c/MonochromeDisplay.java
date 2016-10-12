@@ -115,6 +115,7 @@ public class MonochromeDisplay extends I2CSensor {
 		request.setWriteData(new byte[]{(byte)command});
 	}
 	public synchronized void display() {
+		if (!this.isReady()) throw new RuntimeException("Not ready yet to display");
 		this.sendCommand(Command.COLUMN_ADDRESS.data);
 		this.sendCommand(0); //start with 0th column
 		this.sendCommand(WIDTH - 1); //end on last column
@@ -128,5 +129,8 @@ public class MonochromeDisplay extends I2CSensor {
 			pixelRunRequest.setWriteData(bytes);
 			pixelRunRequest.addToQueue(); //send even if data hasn't changed
 		}
+	}
+	public boolean isReady() {
+		return this.requests.isEmpty();
 	}
 }

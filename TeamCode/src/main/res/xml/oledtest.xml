@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="Color Test">
+    <DeviceInterfaceModule name="Device Interface Module 1" serialNumber="AI02RKCO">
+        <I2cDevice name="oled" port="0" />
+    </DeviceInterfaceModule>
+</Robot>
