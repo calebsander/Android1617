@@ -75,7 +75,7 @@ public class OLEDTick extends BaseOpMode {
 		{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false},
 		{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}
 	};
-	private static final int X_START = (128 - 70) / 2;
+	private static final int X_START = (MonochromeDisplay.WIDTH - TICK_PIXELS[0].length) / 2;
 	private MonochromeDisplay display;
 
 	protected void initialize() {
