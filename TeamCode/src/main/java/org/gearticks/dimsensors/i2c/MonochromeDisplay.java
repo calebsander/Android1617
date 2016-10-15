@@ -100,7 +100,7 @@ public class MonochromeDisplay extends I2CSensor {
 		this.sendCommand(Command.DISPLAY_ON.data);
 	}
 
-	public synchronized void drawPixel(int x, int y, boolean on) {
+	public synchronized void setPixel(int x, int y, boolean on) {
 		if (x < 0 || x >= WIDTH) throw new IllegalArgumentException(Integer.toString(x) + " is an invalid x");
 		if (y < 0 || y >= HEIGHT) throw new IllegalArgumentException(Integer.toString(y) + " is an invalid y");
 		final int selectedBit = 1 << (y & 7);
