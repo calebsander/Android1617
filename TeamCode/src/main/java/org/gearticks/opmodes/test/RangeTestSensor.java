@@ -2,11 +2,11 @@ package org.gearticks.opmodes.test;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.opmodes.BaseOpMode;
 
 @Autonomous(name = "RangeTestSensor", group = "test")
-
+@Disabled
 public class RangeTestSensor extends BaseOpMode {
     private ModernRoboticsI2cRangeSensor sensor;
     protected void initialize() {

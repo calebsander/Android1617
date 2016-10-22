@@ -14,17 +14,20 @@ public class TankTest extends BaseOpMode {
 
 	protected void initialize() {
 		this.drive = new TankDrive();
-		this.drive.addLeftMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("LeftTop"), MotorType.NEVEREST_20));
-		this.drive.addLeftMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("LeftBottom"), MotorType.NEVEREST_20));
-		this.drive.addRightMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("RightTop"), MotorType.NEVEREST_20));
-		this.drive.addRightMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("RightBottom"), MotorType.NEVEREST_20));
+		this.drive.addLeftMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("LeftTop"), MotorType.NEVEREST_20, true));
+		this.drive.addLeftMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("LeftBottom"), MotorType.NEVEREST_20, true));
+		this.drive.addRightMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("RightTop"), MotorType.NEVEREST_20, true));
+		this.drive.addRightMotor(new MotorWrapper(this.hardwareMap.dcMotor.get("RightBottom"), MotorType.NEVEREST_20, true));
 		this.direction = new DriveDirection();
 	}
 	protected void loopAfterStart() {
-		this.direction.drive(0.0, this.gamepads[0].getLeftY());
-		this.direction.turn(this.gamepads[0].getRightX());
+		this.direction.drive(0.0, scaleStick(this.gamepads[0].getLeftY()));
+		this.direction.turn(scaleStick(this.gamepads[0].getRightX()));
 		this.drive.calculatePowers(this.direction);
 		this.drive.scaleMotorsDown();
 		this.drive.commitPowers();
+	}
+	private static float scaleStick(float stick) {
+		return stick * stick * stick;
 	}
 }

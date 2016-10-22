@@ -40,6 +40,8 @@ public class MotorWrapper {
 	private int lastTarget;
 	//The motor type being used
 	private MotorType type;
+	//Whether the wheels turn the opposite direction as they would if a NeveRest 40 were directly attached to them
+	private boolean reversed;
 
 	//What lastTarget will default to (check against this to see if it hasn't been set yet)
 	private static final int UNSET_TARGET = Integer.MIN_VALUE;
@@ -47,7 +49,7 @@ public class MotorWrapper {
 	public static final double STOPPED = 0.0;
 
 	//Pass the motor to be wrapped
-	public MotorWrapper(DcMotor motor, MotorType type) {
+	public MotorWrapper(DcMotor motor, MotorType type, boolean reversed) {
 		this.motor = motor;
 		this.lastPower = STOPPED;
 		this.encoderResetPoint = 0;
@@ -55,12 +57,19 @@ public class MotorWrapper {
 		this.lastRunMode = RunMode.RUN_WITHOUT_ENCODER;
 		this.lastTarget = UNSET_TARGET;
 		this.type = type;
+		this.reversed = type.reversed ^ reversed;
+	}
+	public MotorWrapper(DcMotor motor, MotorType type) {
+		this(motor, type, false);
+	}
+	public MotorWrapper(DcMotor motor) {
+		this(motor, MotorType.NEVEREST_40);
 	}
 
 	//Sets the power
 	public void setPower(double power) {
 		if (Math.abs(power) > 1.0) power = Math.signum(power);
-		if (this.type.reversed) power = -power;
+		if (this.reversed) power = -power;
 		if (power != this.lastPower) { //don't do anything if the power hasn't changed
 			this.motor.setPower(power);
 			this.lastPower = power;
@@ -72,7 +81,7 @@ public class MotorWrapper {
 	}
 	//Returns the last set power
 	public double getPower() {
-		if (this.type.reversed) return -this.lastPower;
+		if (this.reversed) return -this.lastPower;
 		else return this.lastPower;
 	}
 	//Sets the desired action when stopping the motor
@@ -93,7 +102,7 @@ public class MotorWrapper {
 	//Sets the encoder target for running to position
 	//Make sure you also tell the motor to move at some power or it will never start moving to the target
 	public void setTarget(int target) {
-		if (this.type.reversed) target = -target;
+		if (this.reversed) target = -target;
 		target = (int)(target / this.type.scaling);
 		target += this.encoderResetPoint; //since the input target is relative to the reset point
 		if (this.lastTarget == UNSET_TARGET || target != this.lastTarget) {
@@ -127,7 +136,7 @@ public class MotorWrapper {
 	public int encoderValue() {
 		final int value = this.motor.getCurrentPosition() - this.encoderResetPoint;
 		final int scaled = (int)(value * this.type.scaling);
-		if (this.type.reversed) return -scaled;
+		if (this.reversed) return -scaled;
 		else return scaled;
 	}
 	public boolean equals(Object o) {
