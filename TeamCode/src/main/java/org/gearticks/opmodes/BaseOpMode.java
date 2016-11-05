@@ -31,6 +31,7 @@ public abstract class BaseOpMode extends OpMode {
 	}
 	public void loop() {
 		this.loopAfterStart();
+		this.telemetry.update();
 		for (final GamepadWrapper gamepad : this.gamepads) gamepad.updateLast();
 	}
 	public void stop() {

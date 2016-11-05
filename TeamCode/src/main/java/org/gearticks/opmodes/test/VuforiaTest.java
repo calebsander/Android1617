@@ -40,6 +40,5 @@ public class VuforiaTest extends BaseOpMode {
 			else telemetryText = pose.getTranslation().toString();
 			this.telemetry.addData(beaconImage.getName(), telemetryText);
 		}
-		this.telemetry.update();
 	}
 }

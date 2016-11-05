@@ -36,7 +36,6 @@ public class TextToSpeechTest extends BaseOpMode {
 	protected void loopAfterStart() {
 		final boolean ready = this.tts.isReady();
 		this.telemetry.addData("Ready", ready);
-		this.telemetry.update();
 		if (ready && this.wordTimer.seconds() > DELAY_SECONDS) {
 			this.tts.speak(WORDS[wordIndex]);
 			this.wordIndex = (this.wordIndex + 1) % WORDS.length;

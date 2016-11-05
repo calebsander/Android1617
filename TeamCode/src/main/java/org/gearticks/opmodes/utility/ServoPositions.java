@@ -33,6 +33,5 @@ public class ServoPositions extends BaseOpMode {
 		if (this.gamepads[0].getY() && !this.gamepads[0].getLast().getY()) this.locking = !this.locking;
 		if (!this.locking) this.selectedServo.setPosition((this.gamepads[0].getLeftY() + 1.0) * 0.5);
 		this.telemetry.addData("Position", this.selectedServo.getPosition());
-		this.telemetry.update();
 	}
 }

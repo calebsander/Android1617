@@ -6,7 +6,7 @@
         <Servo name="liftBrake" port="3" />
         <Servo name="bladeLeft" port="4" />
         <Servo name="bladeRight" port="5" />
-        <Servo name="allClear" port="6" />
+        <ContinuousRotationServo name="allClear" port="6" />
     </ServoController>
     <MotorController name="Drive Back" serialNumber="AL00VV1S">
         <Motor name="bl" port="1" />

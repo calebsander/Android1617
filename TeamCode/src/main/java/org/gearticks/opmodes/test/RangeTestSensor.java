@@ -15,6 +15,5 @@ public class RangeTestSensor extends BaseOpMode {
     protected void loopAfterStart() {
         this.telemetry.addData("Ultrasonic", this.sensor.cmUltrasonic());
         this.telemetry.addData("Optical", this.sensor.cmOptical());
-        this.telemetry.update();
     }
 }
