@@ -7,11 +7,16 @@ import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.opmodes.BaseOpMode;
 
-//Findings: takes about 140ms to stop and reset the encoders
-//Not sure whether it changes if you don't ask for the new value
+/*
+Findings:
+	-Takes about 125ms to stop and reset the encoders at full power
+	-145ms if you ask for the new value too
+	-Power doesn't seem to affect timing much
+*/
 @Autonomous
 @Disabled
 public class EncoderResetTiming extends BaseOpMode {
+	private static final double POWER = 1.0;
 	private DcMotor motor;
 	private double averageResetTime;
 	private int resetTimes;
@@ -21,7 +26,7 @@ public class EncoderResetTiming extends BaseOpMode {
 		this.resetTimes = 0;
 	}
 	protected void loopAfterStart() {
-		if (this.getRuntime() < 1.0) this.motor.setPower(1.0);
+		if (this.getRuntime() < 1.0) this.motor.setPower(POWER);
 		else {
 			this.telemetry.clear();
 			this.telemetry.addData("Encoder", this.motor.getCurrentPosition());
@@ -30,8 +35,7 @@ public class EncoderResetTiming extends BaseOpMode {
 			this.motor.setMode(RunMode.RUN_WITHOUT_ENCODER);
 			this.motor.getCurrentPosition();
 			final double resetTime = resetTimer.seconds();
-			if (this.resetTimes == 0) this.averageResetTime = resetTime;
-			else this.averageResetTime = (this.averageResetTime * this.resetTimes + resetTime) / (this.resetTimes + 1);
+			this.averageResetTime = (this.averageResetTime * this.resetTimes + resetTime) / (this.resetTimes + 1);
 			this.resetTimes++;
 			this.telemetry.addData("Time", resetTime);
 			this.telemetry.addData("Average", this.averageResetTime);
