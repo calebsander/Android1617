@@ -27,8 +27,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
         this.drive.addLeftMotor(this.driveLeft);
         this.drive.addRightMotor(this.driveRight);
 
-        this.driveLeft.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.driveRight.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.driveLeft.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.driveRight.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void teardown() {}
     public void stopMotion() {
@@ -45,6 +45,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
     public static abstract class MotorConstants {
         public static final double INTAKE_IN = 1.0;
         public static final double INTAKE_OUT = -INTAKE_IN;
+
+        public static final double SHOOTER_IN = 0.5;
+        public static final double SHOOTER_OUT = -SHOOTER_IN;
 
         //Flips a servo to the other range
         private static double invert(double pos) {
