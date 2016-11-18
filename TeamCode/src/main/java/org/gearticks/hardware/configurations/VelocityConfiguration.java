@@ -1,25 +1,18 @@
 package org.gearticks.hardware.configurations;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
-import org.gearticks.hardware.drive.ServoWrapper;
 import org.gearticks.hardware.drive.TankDrive;
 
-/**
- * Created by Calvin on 11/13/2016.
- */
 public class VelocityConfiguration implements HardwareConfiguration {
     public final MotorWrapper intake, shooter;
-    public MotorWrapper driveLeft, driveRight;
+    public final MotorWrapper driveLeft, driveRight;
     public final TankDrive drive;
 
     public VelocityConfiguration(HardwareMap hardwareMap) {
-        this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40, true);
+        this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40);
         this.shooter = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
         this.driveLeft = new MotorWrapper((DcMotor)hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
         this.driveRight = new MotorWrapper((DcMotor)hardwareMap.get("right"), MotorWrapper.MotorType.NEVEREST_20, true);
@@ -32,9 +25,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
     }
     public void teardown() {}
     public void stopMotion() {
-        this.intake.setPower(MotorWrapper.STOPPED);
-        this.driveLeft.setPower(MotorWrapper.STOPPED);
-        this.driveRight.setPower(MotorWrapper.STOPPED);
+        this.intake.stop();
+        this.driveLeft.stop();
+        this.driveRight.stop();
     }
     public void move(DriveDirection direction) {
         this.drive.calculatePowers(direction);
@@ -46,8 +39,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
         public static final double INTAKE_IN = 1.0;
         public static final double INTAKE_OUT = -INTAKE_IN;
 
-        public static final double SHOOTER_IN = 0.5;
-        public static final double SHOOTER_OUT = -SHOOTER_IN;
+        public static final double SHOOTER_FORWARD = 0.5;
+        public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 
         //Flips a servo to the other range
         private static double invert(double pos) {

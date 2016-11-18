@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="VelocityVortex">
+    <MotorController name="drive" serialNumber="AL00VD65">
+        <Motor name="right" port="1" />
+        <Motor name="left" port="2" />
+    </MotorController>
+    <MotorController name="intakeshoot" serialNumber="AL00VWWM">
+        <Motor name="intake" port="1" />
+        <Motor name="shooter" port="2" />
+    </MotorController>
+</Robot>

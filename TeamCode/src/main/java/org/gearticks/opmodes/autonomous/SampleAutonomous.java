@@ -3,14 +3,14 @@ package org.gearticks.opmodes.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.AutonomousDatalogger;
-import org.gearticks.hardware.configurations.RenameThisHardwareConfiguration;
+import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.IncrementOption;
 import org.gearticks.opmodes.BaseOpMode;
 
 @Autonomous(name = "Sample Autonomous")
 @Disabled
 public class SampleAutonomous extends BaseOpMode {
-	protected RenameThisHardwareConfiguration configuration;
+	protected VelocityConfiguration configuration;
 	private enum Stage {
 		DELAY,
 		STOPPED
@@ -25,7 +25,7 @@ public class SampleAutonomous extends BaseOpMode {
 		this.stage = Stage.values()[this.stage.ordinal() + 1];
 	}
 	protected void initialize() {
-		this.configuration = new RenameThisHardwareConfiguration(this.hardwareMap);
+		this.configuration = new VelocityConfiguration(this.hardwareMap);
 		this.delayOption = new IncrementOption("Delay", 20.0);
 		this.addOption(this.delayOption);
 		this.datalogger = new AutonomousDatalogger();

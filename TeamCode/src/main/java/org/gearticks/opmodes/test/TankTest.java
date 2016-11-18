@@ -1,5 +1,6 @@
 package org.gearticks.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
@@ -8,6 +9,7 @@ import org.gearticks.hardware.drive.TankDrive;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
+@Disabled
 public class TankTest extends BaseOpMode {
 	private TankDrive drive;
 	private DriveDirection direction;
