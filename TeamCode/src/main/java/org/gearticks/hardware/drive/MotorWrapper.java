@@ -53,8 +53,8 @@ public class MotorWrapper {
 		this.motor = motor;
 		this.lastPower = STOPPED;
 		this.encoderResetPoint = 0;
-		this.lastStopMode = ZeroPowerBehavior.BRAKE;
-		this.lastRunMode = RunMode.RUN_WITHOUT_ENCODER;
+		this.lastStopMode = null;
+		this.lastRunMode = null;
 		this.lastTarget = UNSET_TARGET;
 		this.type = type;
 		this.reversed = type.reversed ^ reversed;
@@ -98,6 +98,10 @@ public class MotorWrapper {
 			this.motor.setMode(runMode);
 			this.lastRunMode = runMode;
 		}
+	}
+	//Gets the last set run mode
+	public RunMode getRunMode() {
+		return this.lastRunMode;
 	}
 	//Sets the encoder target for running to position
 	//Make sure you also tell the motor to move at some power or it will never start moving to the target

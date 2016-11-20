@@ -2,6 +2,8 @@ package org.gearticks.hardware.configurations;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -19,6 +21,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final Servo clutch, particleBlocker;
 	public final CRServo shooterStopper;
 	public final BNO055 imu;
+	public final DigitalChannel shooterDown;
 	public final DigitalChannel shooterNear, shooterFar;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
@@ -31,6 +34,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.drive.addRightMotor(this.driveRight);
 		this.driveLeft.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		this.driveRight.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		this.driveLeft.setStopMode(ZeroPowerBehavior.BRAKE);
+		this.driveRight.setStopMode(ZeroPowerBehavior.BRAKE);
 
 		this.clutch = (Servo)hardwareMap.get("clutch");
 		this.clutch.setPosition(MotorConstants.CLUTCH_CLUTCHED);
@@ -40,6 +45,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterStopper.setPower(0.0);
 
 		this.imu = new BNO055((I2cDevice)hardwareMap.get("bno"));
+		this.shooterDown = (DigitalChannel)hardwareMap.get("shooterDown");
+		this.shooterDown.setMode(Mode.INPUT);
 		this.shooterNear = (DigitalChannel)hardwareMap.get("shooterNear");
 		this.shooterNear.setMode(Mode.INPUT);
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
@@ -72,6 +79,25 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		}
 		this.shooterStopper.setPower(power);
 	}
+	public void resetEncoder() {
+		final MotorWrapper driveMotor = this.driveLeft;
+		final RunMode lastMode = driveMotor.getRunMode();
+		driveMotor.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		driveMotor.setRunMode(lastMode);
+	}
+	public int encoderPositive() {
+		return Math.abs(this.driveLeft.encoderValue());
+	}
+	public boolean isShooterDown() {
+		return this.shooterDown.getState();
+	}
+	public void advanceToShooterDown() {
+		if (this.isShooterDown()) this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		else {
+			this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+			this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+		}
+	}
 
 	public static abstract class MotorConstants {
 		public static final double INTAKE_IN = 1.0;
@@ -79,8 +105,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 0.5;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
+		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 
-		public static final double PARTICLE_BLOCKER_BLOCKING = 0.80;
+		public static final double PARTICLE_BLOCKER_BLOCKING = 0.82;
 		public static final double PARTICLE_BLOCKER_AWAY = 1.0;
 
 		public static final double CLUTCH_CLUTCHED = 0.7;

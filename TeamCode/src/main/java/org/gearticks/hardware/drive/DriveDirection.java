@@ -49,9 +49,9 @@ public class DriveDirection {
 		this.s = 0.0;
 	}
 	//Rotates x and y values based on desired movement direction and current heading
-	public void correctView(double curdir) {
-		this.x = this.x * MathSupplement.cosDegrees(curdir) - this.y * MathSupplement.sinDegrees(curdir);
-		this.y = this.x * MathSupplement.sinDegrees(curdir) + this.y * MathSupplement.cosDegrees(curdir);
+	public void correctView(double curDir) {
+		this.x = this.x * MathSupplement.cosDegrees(curDir) - this.y * MathSupplement.sinDegrees(curDir);
+		this.y = this.x * MathSupplement.sinDegrees(curDir) + this.y * MathSupplement.cosDegrees(curDir);
 	}
 	//Increments the spin variable to try to correct to a certain heading, returns how many times in a row the robot has been sufficiently close to it
 	public int gyroCorrect(double gyroTarget, double gyroRange, double gyroActual, double minSpeed, double addSpeed) {
@@ -65,7 +65,7 @@ public class DriveDirection {
 			this.numOffGyro += 0.25; //increase this correction the longer we are out of range
 			if (this.numOffGyro > 25.0) this.numOffGyro = 25.0; //don't let this correction get too big
 			this.correctCount = 0;
-			this.turn(minSpeed * Math.signum(gyroMod) + addSpeed * gyroMod + this.numOffGyro * Math.signum(gyroMod) / 100.0);
+			this.turn(minSpeed * Math.signum(gyroMod) + addSpeed * gyroMod/* + this.numOffGyro * Math.signum(gyroMod) / 200.0*/);
 		}
 		else {
 			this.numOffGyro = 0.0; //reset the time-based correction
@@ -88,7 +88,7 @@ public class DriveDirection {
 	}
 	//Returns whether no movement has been requested
 	public boolean isStopped() {
-		return this.x == 0 && this.y == 0 && this.s == 0;
+		return this.x == 0.0 && this.y == 0.0 && this.s == 0.0;
 	}
 	public String toString() {
 		return String.format("%.2f, %.2f, %.2f", this.x, this.y, this.s);
