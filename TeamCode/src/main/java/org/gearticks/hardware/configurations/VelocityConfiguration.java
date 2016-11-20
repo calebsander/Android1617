@@ -57,10 +57,16 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.drive.scaleMotorsDown();
 		this.drive.commitPowers();
 	}
-	public void safeShooterStopped(double power) {
+	private boolean shooterFarTriggered() {
+		return !this.shooterFar.getState();
+	}
+	private boolean shooterNearTriggered() {
+		return !this.shooterNear.getState();
+	}
+	public void safeShooterStopper(double power) {
 		if (
-			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFar.getState()) ||
-			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNear.getState())
+			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
+			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNearTriggered())
 		) {
 			power = 0.0;
 		}
