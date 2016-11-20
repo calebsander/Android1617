@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import org.gearticks.dimsensors.i2c.BNO055;
 
-@Autonomous(name = "BNO055 Test", group = "test")
+@Autonomous
 @Disabled
 public class BNO055Test extends OpMode {
 	private BNO055 imu;
