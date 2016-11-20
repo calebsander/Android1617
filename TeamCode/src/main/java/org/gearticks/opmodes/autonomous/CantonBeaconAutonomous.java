@@ -1,17 +1,24 @@
 package org.gearticks.opmodes.autonomous;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.HINT;
+import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.gearticks.VuforiaKey;
@@ -33,6 +40,8 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	}
 	private VuforiaTrackables beaconImages;
 	private VuforiaTrackableDefaultListener wheelsListener, legosListener;
+	private BlockingQueue<CloseableFrame> frameQueue;
+	private CloseableFrame beaconFrame;
 	private ElapsedTime stageTimer;
 
 	private enum Stage {
@@ -45,6 +54,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		DRIVE_IN_FRONT_OF_NEAR_TARGET,
 		FACE_NEAR_TARGET,
 		VUFORIA_TO_BEACON,
+		SELECT_SIDE,
 		STOPPED
 	}
 	private Stage stage;
@@ -58,10 +68,14 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		parameters.cameraDirection = CameraDirection.FRONT;
 		final VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 		Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 2);
+		Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
 		this.beaconImages = vuforia.loadTrackablesFromAsset("FTC_2016-17");
 		for (Map.Entry<String, Integer> imageId : IMAGE_IDS.entrySet()) this.beaconImages.get(imageId.getValue()).setName(imageId.getKey());
 		this.wheelsListener = (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get("Wheels")).getListener();
 		this.legosListener = (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get("Legos")).getListener();
+		vuforia.setFrameQueueCapacity(1);
+		this.frameQueue = vuforia.getFrameQueue();
+		this.beaconFrame = null;
 		this.stage = Stage.DRIVE_OFF_WALL; //Stage.values()[0];
 	}
 	protected void loopBeforeStart() {
@@ -146,9 +160,28 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 						double turnPower = lateralDistance / 500.0;
 						if (Math.abs(turnPower) > 0.05) turnPower = Math.signum(turnPower) * 0.05;
 						this.direction.turn(turnPower);
+						if (normalDistance < 400F && this.beaconFrame == null) {
+							try { this.beaconFrame = this.frameQueue.take(); }
+							catch (InterruptedException e) {}
+						}
 					}
 					this.telemetry.addData("Target", translation);
 				}
+				break;
+			case SELECT_SIDE:
+				final CloseableFrame frame = this.beaconFrame;
+				final long images = frame.getNumImages();
+				Bitmap bitmap;
+				for (int i = 0; i < images; i++) {
+					final Image image = frame.getImage(i);
+					if (image.getFormat() == PIXEL_FORMAT.RGB565) {
+						bitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Config.RGB_565);
+						bitmap.copyPixelsFromBuffer(image.getPixels());
+						break;
+					}
+				}
+				frame.close();
+				this.nextStage();
 				break;
 			case STOPPED:
 				this.configuration.stopMotion();
