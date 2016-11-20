@@ -91,20 +91,22 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public boolean isShooterDown() {
 		return !this.shooterDown.getState();
 	}
-	public void advanceToShooterDown() {
-		if (this.isShooterDown()) this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-		else {
-			this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
-			this.shooter.setPower(MotorConstants.SHOOTER_BACK);
-		}
-	}
+//	public void advanceToShooterDown() {
+//		if (this.isShooterDown()) {
+//			this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+//		}
+//		else {
+//			this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+//			this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+//		}
+//	}
 
 	public static abstract class MotorConstants {
 		public static final double INTAKE_IN = 1.0;
 		public static final double INTAKE_OUT = -INTAKE_IN;
 
 		public static final double SHOOTER_FORWARD = 0.5;
-		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
+		public static final double SHOOTER_BACK = -1.0;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 
 		public static final double PARTICLE_BLOCKER_BLOCKING = 0.82;
