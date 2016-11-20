@@ -1,11 +1,21 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="VelocityVortex">
-    <MotorController name="drive" serialNumber="AL00VD65">
-        <Motor name="right" port="1" />
-        <Motor name="left" port="2" />
-    </MotorController>
-    <MotorController name="intakeshoot" serialNumber="AL00VWWM">
+<Robot type="FirstInspires-FTC" name = "Velocity Drive">
+    <DeviceInterfaceModule name="DIM" serialNumber="AL00VG8T">
+        <I2cDevice name="bno" port="0" />
+        <DigitalDevice name="shooterNear" port="0" />
+        <DigitalDevice name="shooterFar" port="1" />
+    </DeviceInterfaceModule>
+    <ServoController name="Servos" serialNumber="AL00XM5W">
+        <ContinuousRotationServo name="shooterStopper" port="1" />
+        <Servo name="particleBlocker" port="2" />
+        <Servo name="clutch" port="3" />
+    </ServoController>
+    <MotorController name="Intake and Shoot" serialNumber="AL00VV2G">
         <Motor name="intake" port="1" />
         <Motor name="shooter" port="2" />
+    </MotorController>
+    <MotorController name="Drive" serialNumber="AL00VGKA">
+        <Motor name="right" port="1" />
+        <Motor name="left" port="2" />
     </MotorController>
 </Robot>
