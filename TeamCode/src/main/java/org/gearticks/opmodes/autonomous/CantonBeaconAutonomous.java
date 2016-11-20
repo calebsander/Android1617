@@ -37,6 +37,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 
 	private enum Stage {
 		SHOOT_FIRST_BALL,
+		MOVE_SHOOTER_TO_SENSOR,
 		MOVE_SHOOTER_DOWN,
 		RELEASE_SECOND_BALL,
 		SHOOT_SECOND_BALL,
@@ -62,7 +63,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		for (Map.Entry<String, Integer> imageId : IMAGE_IDS.entrySet()) this.beaconImages.get(imageId.getValue()).setName(imageId.getKey());
 		this.wheelsListener = (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get("Wheels")).getListener();
 		this.legosListener = (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get("Legos")).getListener();
-		this.stage = Stage.DRIVE_OFF_WALL; //Stage.values()[0];
+		this.stage = Stage.values()[0]; //Stage.DRIVE_OFF_WALL; //Stage.values()[0];
 	}
 	protected void loopBeforeStart() {
 		this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
@@ -83,9 +84,15 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
 				if (!this.configuration.shooter.isBusy()) this.nextStage();
 				break;
-			case MOVE_SHOOTER_DOWN:
+			case MOVE_SHOOTER_TO_SENSOR:
 				this.configuration.advanceToShooterDown();
 				if (this.configuration.isShooterDown()) this.nextStage();
+				break;
+			case MOVE_SHOOTER_DOWN:
+				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/6);
+				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				if (!this.configuration.shooter.isBusy()) this.nextStage();
 				break;
 			case RELEASE_SECOND_BALL:
 				this.configuration.particleBlocker.setPosition(MotorConstants.PARTICLE_BLOCKER_AWAY);
@@ -93,10 +100,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				break;
 			case SHOOT_SECOND_BALL:
 				this.configuration.advanceToShooterDown();
-				if (this.configuration.isShooterDown()) {
-					this.configuration.imu.resetHeading();
-					this.nextStage();
-				}
+				if (this.configuration.isShooterDown()) this.nextStage();
 				break;
 			case DRIVE_OFF_WALL:
 				this.direction.drive(0.0, 0.7);
@@ -155,6 +159,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		}
 		if (this.stage != Stage.STOPPED) this.configuration.move(this.direction);
 		this.telemetry.addData("Stage", this.stage);
+		this.telemetry.addData("Sensor", this.configuration.isShooterDown());
 	}
 	protected void matchEnd() {
 		this.configuration.imu.eulerRequest.stopReading();

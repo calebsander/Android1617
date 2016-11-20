@@ -89,7 +89,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return Math.abs(this.driveLeft.encoderValue());
 	}
 	public boolean isShooterDown() {
-		return this.shooterDown.getState();
+		return !this.shooterDown.getState();
 	}
 	public void advanceToShooterDown() {
 		if (this.isShooterDown()) this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
