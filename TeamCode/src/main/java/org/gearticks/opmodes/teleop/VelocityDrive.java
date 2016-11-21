@@ -11,6 +11,8 @@ public class VelocityDrive extends BaseOpMode {
 	private static final int CALVIN = 0, JACK = 1;
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
+	private boolean particleBlockerToggle = false;
+	private boolean clutchToggle = false;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
@@ -41,9 +43,36 @@ public class VelocityDrive extends BaseOpMode {
 
 		final double shooterPower;
 		if (this.gamepads[JACK].getRightBumper()) shooterPower = VelocityConfiguration.MotorConstants.SHOOTER_BACK;
-		else if (this.gamepads[JACK].getRightTrigger()) shooterPower = VelocityConfiguration.MotorConstants.SHOOTER_FORWARD;
+		//else if (this.gamepads[JACK].getRightTrigger()) shooterPower = VelocityConfiguration.MotorConstants.SHOOTER_FORWARD;
 		else shooterPower = MotorWrapper.STOPPED;
 		this.configuration.shooter.setPower(shooterPower);
+
+//		if (this.gamepads[JACK].getRightBumper()) {
+////			this.configuration.shooterStopper.setPower(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
+//			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
+//		}
+//		else if (this.gamepads[JACK].getRightTrigger()) {
+////			this.configuration.shooterStopper.setPower(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_DOWN);
+//			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_DOWN);
+//		}
+//		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);
+//
+//		if (this.gamepads[CALVIN].getA()) clutchToggle = !clutchToggle;
+//		if(clutchToggle){
+//			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_CLUTCHED);
+//		}
+//		else {
+//			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_ENGAGED);
+//		}
+//
+//		if (this.gamepads[JACK].getA()) particleBlockerToggle = !particleBlockerToggle;
+//		if(particleBlockerToggle){
+//			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_BLOCKING);
+//		}
+//		else {
+//
+//			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_AWAY);
+//		}
 	}
 
 	private static float scaleStick(float stick) {
