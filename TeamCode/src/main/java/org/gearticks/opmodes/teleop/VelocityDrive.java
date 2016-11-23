@@ -31,7 +31,7 @@ public class VelocityDrive extends BaseOpMode {
 			yScaleFactor = 0.8;
 			sScaleFactor = 0.5;
 		}
-		this.direction.drive(0.0, this.gamepads[gamepad].getLeftY() * yScaleFactor);
+		this.direction.drive(0.0, scaleStick(this.gamepads[gamepad].getLeftY()) * yScaleFactor);
 		this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleFactor);
 		this.configuration.move(this.direction);
 
@@ -56,7 +56,7 @@ public class VelocityDrive extends BaseOpMode {
 		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);
 
 		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) clutchToggle = !clutchToggle;
-		if(clutchToggle){
+		if (clutchToggle){
 			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_CLUTCHED);
 		}
 		else {
@@ -64,16 +64,15 @@ public class VelocityDrive extends BaseOpMode {
 		}
 
 		if (this.gamepads[JACK].getA() && !this.gamepads[JACK].getLast().getA()) particleBlockerToggle = !particleBlockerToggle;
-		if(particleBlockerToggle){
+		if (particleBlockerToggle){
 			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_BLOCKING);
 		}
 		else {
-
 			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_AWAY);
 		}
 	}
 
-	private static float scaleStick(float stick) {
+	private static double scaleStick(double stick) {
 		return stick * stick * stick;
 	}
 }

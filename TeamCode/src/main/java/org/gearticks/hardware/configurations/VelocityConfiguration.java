@@ -23,6 +23,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final BNO055 imu;
 	public final DigitalChannel shooterDown;
 	public final DigitalChannel shooterNear, shooterFar;
+	private boolean shooterWasDown;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40);
@@ -51,6 +52,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterNear.setMode(Mode.INPUT);
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
+
+		this.shooterWasDown = false;
 	}
 	public void teardown() {}
 	public void stopMotion() {
@@ -91,22 +94,30 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public boolean isShooterDown() {
 		return !this.shooterDown.getState();
 	}
-//	public void advanceToShooterDown() {
-//		if (this.isShooterDown()) {
-//			this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-//		}
-//		else {
-//			this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
-//			this.shooter.setPower(MotorConstants.SHOOTER_BACK);
-//		}
-//	}
+	public void advanceToShooterDown() {
+		final boolean shooterIsDown = isShooterDown();
+		if (shooterIsDown) {
+			if (!this.shooterWasDown) {
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				this.shooter.setTarget((int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2));
+			}
+		}
+		else {
+			this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+			this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+		}
+		this.shooterWasDown = shooterIsDown;
+	}
 
 	public static abstract class MotorConstants {
 		public static final double INTAKE_IN = 1.0;
 		public static final double INTAKE_OUT = -INTAKE_IN;
 
 		public static final double SHOOTER_FORWARD = 0.5;
-		public static final double SHOOTER_BACK = -1.0;
+		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 
 		public static final double PARTICLE_BLOCKER_BLOCKING = 0.82;
