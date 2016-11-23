@@ -1,7 +1,6 @@
 package org.gearticks.opmodes.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.HINT;
@@ -37,17 +36,16 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	private ElapsedTime stageTimer;
 
 	private enum Stage {
-		//SHOOT_FIRST_BALL,
+		SHOOT_FIRST_BALL,
 		MOVE_SHOOTER_TO_SENSOR,
 		MOVE_SHOOTER_DOWN,
-		WAIT,
-//		RELEASE_SECOND_BALL,
-//		SHOOT_SECOND_BALL,
-//		DRIVE_OFF_WALL,
-//		TURN_TO_FAR_TARGET,
-//		DRIVE_IN_FRONT_OF_NEAR_TARGET,
-//		FACE_NEAR_TARGET,
-//		VUFORIA_TO_BEACON,
+		RELEASE_SECOND_BALL,
+		SHOOT_SECOND_BALL,
+		DRIVE_OFF_WALL,
+		TURN_TO_FAR_TARGET,
+		DRIVE_IN_FRONT_OF_NEAR_TARGET,
+		FACE_NEAR_TARGET,
+		VUFORIA_TO_BEACON,
 		STOPPED
 	}
 	private Stage stage;
@@ -79,68 +77,23 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	}
 	protected void loopAfterStart() {
 		switch (this.stage) {
-//			case SHOOT_FIRST_BALL:
-//				this.direction.stopDrive();
-//				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-//				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION);
-//				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-////				this.telemetry.addData("move on:", !this.configuration.shooter.isBusy());
-//				if (!this.configuration.shooter.isBusy()) {
-//					this.configuration.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-//					this.nextStage();
-//				}
-//				break;
-
+			case SHOOT_FIRST_BALL:
+				this.direction.stopDrive();
+				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION);
+				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				if (!this.configuration.shooter.isBusy()) this.nextStage();
+				break;
 			case MOVE_SHOOTER_TO_SENSOR:
-//				this.telemetry.addData("shooter down", this.configuration.isShooterDown());
-				if (this.configuration.isShooterDown()) {
-					this.configuration.shooter.setStopMode(DcMotor.ZeroPowerBehavior.BRAKE);
-					this.configuration.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-					this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.configuration.shooter.setTarget(0);
-
-					this.configuration.particleBlocker.setPosition(MotorConstants.PARTICLE_BLOCKER_AWAY);
-					this.nextStage();
-				}
-				else {
-					this.configuration.shooter.setStopMode(DcMotor.ZeroPowerBehavior.BRAKE);
-					this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION);
-					this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				}
+				this.configuration.advanceToShooterDown();
+				if (this.configuration.isShooterDown()) this.nextStage();
 				break;
 			case MOVE_SHOOTER_DOWN:
-				if(this.stageTimer.seconds() < 0.5){
-					this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/20);
-					this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				}
-				else if (this.stageTimer.seconds() < 1){
-					this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/15);
-					this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				}
-				else if(this.stageTimer.seconds() < 1.5){
-					this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/10);
-					this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				}
-				else if (this.stageTimer.seconds() < 2){
-					this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/5);
-					this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				}
-				else {
-					this.configuration.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-					this.nextStage();
-				}
+				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/6);
+				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				if (!this.configuration.shooter.isBusy()) this.nextStage();
 				break;
-			case WAIT:
-				if(this.stageTimer.seconds() > 5){
-					this.nextStage();
-				}
-				break;
-			/*
 			case RELEASE_SECOND_BALL:
 				this.configuration.particleBlocker.setPosition(MotorConstants.PARTICLE_BLOCKER_AWAY);
 				if (this.stageTimer.seconds() > 1.0) this.nextStage();
@@ -201,7 +154,6 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 					this.telemetry.addData("Target", translation);
 				}
 				break;
-				*/
 			case STOPPED:
 				this.configuration.stopMotion();
 		}
