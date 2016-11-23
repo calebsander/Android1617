@@ -47,32 +47,30 @@ public class VelocityDrive extends BaseOpMode {
 		else shooterPower = MotorWrapper.STOPPED;
 		this.configuration.shooter.setPower(shooterPower);
 
-//		if (this.gamepads[JACK].getRightBumper()) {
-////			this.configuration.shooterStopper.setPower(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-//			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-//		}
-//		else if (this.gamepads[JACK].getRightTrigger()) {
-////			this.configuration.shooterStopper.setPower(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_DOWN);
-//			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_DOWN);
-//		}
-//		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);
-//
-//		if (this.gamepads[CALVIN].getA()) clutchToggle = !clutchToggle;
-//		if(clutchToggle){
-//			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_CLUTCHED);
-//		}
-//		else {
-//			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_ENGAGED);
-//		}
-//
-//		if (this.gamepads[JACK].getA()) particleBlockerToggle = !particleBlockerToggle;
-//		if(particleBlockerToggle){
-//			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_BLOCKING);
-//		}
-//		else {
-//
-//			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_AWAY);
-//		}
+		if (this.gamepads[JACK].getLeftBumper()) {
+			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
+		}
+		else if (this.gamepads[JACK].getLeftTrigger()) {
+			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_DOWN);
+		}
+		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);
+
+		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) clutchToggle = !clutchToggle;
+		if(clutchToggle){
+			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_CLUTCHED);
+		}
+		else {
+			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_ENGAGED);
+		}
+
+		if (this.gamepads[JACK].getA() && !this.gamepads[JACK].getLast().getA()) particleBlockerToggle = !particleBlockerToggle;
+		if(particleBlockerToggle){
+			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_BLOCKING);
+		}
+		else {
+
+			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.PARTICLE_BLOCKER_AWAY);
+		}
 	}
 
 	private static float scaleStick(float stick) {
