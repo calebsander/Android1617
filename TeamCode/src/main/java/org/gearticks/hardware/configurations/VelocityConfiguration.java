@@ -94,21 +94,23 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public boolean isShooterDown() {
 		return !this.shooterDown.getState();
 	}
-	public void advanceToShooterDown() {
-		final boolean shooterIsDown = isShooterDown();
-		if (shooterIsDown) {
+	public void advanceShooterToSensor() {
+		if (this.isShooterDown()) {
 			if (!this.shooterWasDown) {
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
 				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
-				this.shooter.setTarget((int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2));
+				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+				this.shooterWasDown = true;
 			}
 		}
 		else {
 			this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 			this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 		}
-		this.shooterWasDown = shooterIsDown;
+	}
+	public void resetAutoShooter() {
+		this.shooterWasDown = false;
 	}
 
 	public static abstract class MotorConstants {
@@ -119,6 +121,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
+		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 
 		public static final double PARTICLE_BLOCKER_BLOCKING = 0.82;
 		public static final double PARTICLE_BLOCKER_AWAY = 1.0;
