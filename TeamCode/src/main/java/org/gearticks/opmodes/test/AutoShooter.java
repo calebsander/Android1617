@@ -14,10 +14,12 @@ public class AutoShooter extends BaseOpMode {
 		this.configuration.shooter.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 	}
 	protected void loopAfterStart() {
-		if (this.gamepads[0].getA()) this.configuration.advanceToShooterDown();
+		if (this.gamepads[0].getA()) {
+			this.configuration.holdToShooterDown();
+		}
 		else {
-			this.configuration.shooter.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-			this.configuration.shooter.setPower(this.gamepads[0].getLeftY() * VelocityConfiguration.MotorConstants.SHOOTER_BACK);
+//			this.configuration.shooter.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//			this.configuration.shooter.setPower(this.gamepads[0].getLeftY() * VelocityConfiguration.MotorConstants.SHOOTER_BACK);
 		}
 		this.telemetry.addData("Encoder", this.configuration.shooter.encoderValue());
 		this.telemetry.addData("Sensor", this.configuration.isShooterDown());

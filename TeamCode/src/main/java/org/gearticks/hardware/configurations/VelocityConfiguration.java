@@ -110,14 +110,49 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		}
 		this.shooterWasDown = shooterIsDown;
 	}
+	public void holdToShooterDown() {
+		final boolean shooterIsDown = isShooterDown();
+		if (shooterIsDown) {
+			//set shooter was down to true if sensor triggers, but never again to false
+			this.shooterWasDown = shooterIsDown;
+		}
+		if (this.shooterWasDown) {
+			if (shooterIsDown) {
+				//move shooter slowly below the sensor
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+			}
+			else {
+				//hold shooter at position lower than sensor
+				if(this.shooter.encoderValue() > -30){
+					this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+					this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				}
+				else {
+//					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+//					this.shooter.setTarget(-30);
+				}
+			}
+		}
+		else {
+			//move the shooter to the sensor
+			this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+			this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW * 2);
+		}
+	}
+	public void shootSlow() {
+		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+	}
 
 	public static abstract class MotorConstants {
 		public static final double INTAKE_IN = 1.0;
 		public static final double INTAKE_OUT = -INTAKE_IN;
 
-		public static final double SHOOTER_FORWARD = 0.5;
+		public static final double SHOOTER_FORWARD = 0.8;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.2;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 
 		public static final double PARTICLE_BLOCKER_BLOCKING = 0.82;
