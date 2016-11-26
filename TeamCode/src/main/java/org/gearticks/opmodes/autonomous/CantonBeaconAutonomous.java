@@ -71,8 +71,8 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	}
 	protected void matchStart() {
 		this.telemetry.clear();
-		this.configuration.setLEDs(false);
-		this.configuration.startReadingColor();
+		//this.configuration.setLEDs(false);
+		//this.configuration.startReadingColor();
 		this.beaconImages.activate();
 		this.direction.stopDrive();
 		this.configuration.resetEncoder();
@@ -106,7 +106,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 			case DRIVE_OFF_WALL:
 				this.direction.drive(0.0, 0.7);
 				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 2000) {
+				if (this.configuration.encoderPositive() > 1700) {
 					this.direction.stopDrive();
 					this.nextStage();
 				}
@@ -121,7 +121,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 			case DRIVE_IN_FRONT_OF_NEAR_TARGET:
 				this.direction.drive(0.0, 0.7);
 				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 2300) {
+				if (this.configuration.encoderPositive() > 2500) {
 					this.direction.stopDrive();
 					this.nextStage();
 				}
@@ -141,7 +141,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				else {
 					this.direction.drive(0.0, 0.10);
 					final VectorF translation = pose.getTranslation();
-					final float lateralDistance = -(translation.get(1) - 200);
+					final float lateralDistance = -(translation.get(1) - 50);
 					final float normalDistance = -translation.get(2);
 					if (normalDistance < 100F) {
 						this.direction.stopDrive();

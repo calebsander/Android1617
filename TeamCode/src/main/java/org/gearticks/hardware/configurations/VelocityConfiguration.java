@@ -26,8 +26,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final BNO055 imu;
 	public final DigitalChannel shooterDown;
 	public final DigitalChannel shooterNear, shooterFar;
-	private final I2CSwitcher switcher;
-	public final TCS34725 colorRight, colorLeft;
+	public final TCS34725 color;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40);
@@ -58,17 +57,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
 
-		final I2cDevice colorDevice = (I2cDevice)hardwareMap.get("switcher");
-		this.switcher = new I2CSwitcher(colorDevice);
-		this.colorRight = new TCS34725(colorDevice, this.switcher, 0);
-		this.colorLeft = new TCS34725(colorDevice, this.switcher, 1);
+		this.color = new TCS34725((I2cDevice)hardwareMap.get("color"));
 	}
 	public void teardown() {
 		this.imu.eulerRequest.stopReading();
 		this.imu.terminate();
-		this.colorRight.stopReading();
-		this.colorLeft.stopReading();
-		this.switcher.terminate();
+		this.color.stopReading();
+		this.color.terminate();
 	}
 	public void stopMotion() {
 		this.intake.stop();
@@ -131,12 +126,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return this.shooterWasDown && !this.shooter.isBusy();
 	}
 	public void startReadingColor() {
-		this.colorRight.startReadingColor();
-		this.colorLeft.startReadingColor();
+		this.color.startReadingColor();
 	}
 	public void setLEDs(boolean enabled) {
-		this.colorRight.setFloraLED(enabled);
-		this.colorLeft.setFloraLED(enabled);
+		this.color.setFloraLED(enabled);
 	}
 
 	public static abstract class MotorConstants {
