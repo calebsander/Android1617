@@ -36,9 +36,8 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	private ElapsedTime stageTimer;
 
 	private enum Stage {
+		MOVE_SHOOTER_DOWN_FIRST,
 		SHOOT_FIRST_BALL,
-		MOVE_SHOOTER_TO_SENSOR,
-		MOVE_SHOOTER_DOWN,
 		RELEASE_SECOND_BALL,
 		SHOOT_SECOND_BALL,
 		DRIVE_OFF_WALL,
@@ -63,7 +62,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		for (Map.Entry<String, Integer> imageId : IMAGE_IDS.entrySet()) this.beaconImages.get(imageId.getValue()).setName(imageId.getKey());
 		this.wheelsListener = (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get("Wheels")).getListener();
 		this.legosListener = (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get("Legos")).getListener();
-		this.stage = Stage.values()[0]; //Stage.DRIVE_OFF_WALL; //Stage.values()[0];
+		this.stage = Stage.values()[0];
 	}
 	protected void loopBeforeStart() {
 		this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
@@ -74,33 +73,26 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		this.telemetry.clear();
 		this.beaconImages.activate();
 		this.stageTimer = new ElapsedTime();
+		this.direction.stopDrive();
+		this.configuration.resetAutoShooter();
 	}
 	protected void loopAfterStart() {
 		switch (this.stage) {
-			case SHOOT_FIRST_BALL:
-				this.direction.stopDrive();
-				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION);
-				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				if (!this.configuration.shooter.isBusy()) this.nextStage();
-				break;
-			case MOVE_SHOOTER_TO_SENSOR:
-				this.configuration.advanceShooterToSensor();
+			case MOVE_SHOOTER_DOWN_FIRST:
+				this.configuration.advanceShooterToDown();
 				if (this.configuration.isShooterDown()) this.nextStage();
 				break;
-			case MOVE_SHOOTER_DOWN:
-				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_PER_ROTATION/6);
-				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				if (!this.configuration.shooter.isBusy()) this.nextStage();
+			case SHOOT_FIRST_BALL:
+				this.configuration.advanceShooterToDown();
+				if (this.configuration.isShooterAtSensor()) this.nextStage();
 				break;
 			case RELEASE_SECOND_BALL:
 				this.configuration.particleBlocker.setPosition(MotorConstants.PARTICLE_BLOCKER_AWAY);
 				if (this.stageTimer.seconds() > 1.0) this.nextStage();
 				break;
 			case SHOOT_SECOND_BALL:
-				this.configuration.advanceShooterToSensor();
-				if (this.configuration.isShooterDown()) this.nextStage();
+				this.configuration.advanceShooterToDown();
+				if (this.configuration.isShooterAtSensor()) this.stage = Stage.STOPPED; //this.nextStage();
 				break;
 			case DRIVE_OFF_WALL:
 				this.direction.drive(0.0, 0.7);
@@ -159,10 +151,10 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		}
 		if (this.stage != Stage.STOPPED) this.configuration.move(this.direction);
 		this.telemetry.addData("Stage", this.stage);
-		this.telemetry.addData("Sensor", this.configuration.isShooterDown());
+		this.telemetry.addData("Sensor", this.configuration.isShooterAtSensor());
 	}
 	protected void matchEnd() {
-		this.configuration.imu.eulerRequest.stopReading();
+		this.configuration.teardown();
 	}
 
 	private void nextStage() {

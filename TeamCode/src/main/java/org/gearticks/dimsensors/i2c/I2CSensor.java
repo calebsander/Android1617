@@ -113,7 +113,7 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 			this.sent = true;
 		}
 
-		//Set the data to be written (returns whether or not it was different (and set)
+		//Set the data to be written (returns whether or not it was different (and set))
 		public boolean setWriteData(byte[] newData) {
 			if (this.getLength() != newData.length) throw new IllegalArgumentException("Expected length " + Integer.toString(this.getLength()) + ", got " + Integer.toString(newData.length));
 			if (Arrays.equals(this.writeData, newData)) return false;

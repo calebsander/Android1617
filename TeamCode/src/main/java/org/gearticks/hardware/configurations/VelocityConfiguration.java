@@ -10,12 +10,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.gearticks.dimsensors.i2c.BNO055;
+import org.gearticks.dimsensors.i2c.I2CSwitcher;
+import org.gearticks.dimsensors.i2c.TCS34725;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
 
 public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper intake, shooter;
+	private boolean shooterWasDown;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
 	public final Servo clutch, particleBlocker;
@@ -23,11 +26,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final BNO055 imu;
 	public final DigitalChannel shooterDown;
 	public final DigitalChannel shooterNear, shooterFar;
-	private boolean shooterWasDown;
+	private final I2CSwitcher switcher;
+	public final TCS34725 colorRight, colorLeft;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40);
 		this.shooter = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
+		this.shooterWasDown = false;
 		this.driveLeft = new MotorWrapper((DcMotor)hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
 		this.driveRight = new MotorWrapper((DcMotor)hardwareMap.get("right"), MotorWrapper.MotorType.NEVEREST_20, true);
 		this.drive = new TankDrive();
@@ -53,9 +58,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
 
-		this.shooterWasDown = false;
+		final I2cDevice colorDevice = (I2cDevice)hardwareMap.get("switcher");
+		this.switcher = new I2CSwitcher(colorDevice);
+		this.colorRight = new TCS34725(colorDevice, this.switcher, 0);
+		this.colorLeft = new TCS34725(colorDevice, this.switcher, 1);
 	}
-	public void teardown() {}
+	public void teardown() {
+		this.imu.terminate();
+		this.switcher.terminate();
+	}
 	public void stopMotion() {
 		this.intake.stop();
 		this.driveLeft.stop();
@@ -91,12 +102,16 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public int encoderPositive() {
 		return Math.abs(this.driveLeft.encoderValue());
 	}
-	public boolean isShooterDown() {
+	public boolean isShooterAtSensor() {
 		return !this.shooterDown.getState();
 	}
-	public void advanceShooterToSensor() {
+	public void shootSlow() {
+		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+	}
+	public void advanceShooterToDown() {
 		if (!this.shooterWasDown) {
-			if (this.isShooterDown()) {
+			if (this.isShooterAtSensor()) {
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
 				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
@@ -109,9 +124,16 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
 	}
-	public void shootSlow() {
-		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
-		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+	public boolean isShooterDown() {
+		return this.shooterWasDown && !this.shooter.isBusy();
+	}
+	public void startReadingColor() {
+		this.colorRight.startReadingColor();
+		this.colorLeft.startReadingColor();
+	}
+	public void setLEDs(boolean enabled) {
+		this.colorRight.setFloraLED(enabled);
+		this.colorLeft.setFloraLED(enabled);
 	}
 
 	public static abstract class MotorConstants {

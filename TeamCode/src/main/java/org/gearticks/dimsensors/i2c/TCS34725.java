@@ -29,6 +29,8 @@ public class TCS34725 extends I2CSensor {
 	}
 	private static final byte POWER_ON = 0x01;
 	private static final byte ADC_ON = 0x02;
+	private static final byte FULL_ON = POWER_ON | ADC_ON;
+	private static final byte INTERRUPT_ON = 0x10;
 	private enum StartupState {
 		POWER,
 		ADC_ENABLE,
@@ -66,7 +68,7 @@ public class TCS34725 extends I2CSensor {
 		switch (this.state) {
 			case POWER:
 				this.state = StartupState.ADC_ENABLE;
-				this.enableRequest.setWriteData(new byte[]{POWER_ON | ADC_ON});
+				this.enableRequest.setWriteData(new byte[]{FULL_ON});
 				break;
 			case ADC_ENABLE:
 				this.state = StartupState.DONE;
@@ -133,5 +135,11 @@ public class TCS34725 extends I2CSensor {
 	//Sets the integration time
 	public void setIntegrationTime(double time) {
 		this.integrationTime.setWriteData(new byte[]{TCS34725.getIntegrationRequestValue(time)});
+	}
+	//Enables/disabled LED on Flora models
+	public void setFloraLED(boolean enabled) {
+		byte writeByte = FULL_ON;
+		if (!enabled) writeByte |= INTERRUPT_ON;
+		this.enableRequest.setWriteData(new byte[]{writeByte});
 	}
 }
