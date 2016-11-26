@@ -64,7 +64,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.colorLeft = new TCS34725(colorDevice, this.switcher, 1);
 	}
 	public void teardown() {
+		this.imu.eulerRequest.stopReading();
 		this.imu.terminate();
+		this.colorRight.stopReading();
+		this.colorLeft.stopReading();
 		this.switcher.terminate();
 	}
 	public void stopMotion() {

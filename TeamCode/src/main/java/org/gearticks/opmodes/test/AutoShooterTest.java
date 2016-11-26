@@ -1,11 +1,13 @@
 package org.gearticks.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
+@Disabled
 public class AutoShooterTest extends BaseOpMode {
 	private VelocityConfiguration configuration;
 
