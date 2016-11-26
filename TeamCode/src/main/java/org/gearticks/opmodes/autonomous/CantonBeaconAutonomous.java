@@ -85,7 +85,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				if (!this.configuration.shooter.isBusy()) this.nextStage();
 				break;
 			case MOVE_SHOOTER_TO_SENSOR:
-				this.configuration.advanceToShooterDown();
+				this.configuration.advanceShooterToSensor();
 				if (this.configuration.isShooterDown()) this.nextStage();
 				break;
 			case MOVE_SHOOTER_DOWN:
@@ -99,7 +99,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				if (this.stageTimer.seconds() > 1.0) this.nextStage();
 				break;
 			case SHOOT_SECOND_BALL:
-				this.configuration.advanceToShooterDown();
+				this.configuration.advanceShooterToSensor();
 				if (this.configuration.isShooterDown()) this.nextStage();
 				break;
 			case DRIVE_OFF_WALL:
