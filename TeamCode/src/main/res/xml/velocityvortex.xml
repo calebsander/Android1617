@@ -11,11 +11,11 @@
         <Servo name="particleBlocker" port="2" />
         <Servo name="clutch" port="3" />
     </ServoController>
-    <MotorController name="Intake and Shoot" serialNumber="AL00VV2G">
+    <MotorController name="Intake and Shoot" serialNumber="AL00VD65">
         <Motor name="intake" port="1" />
         <Motor name="shooter" port="2" />
     </MotorController>
-    <MotorController name="Drive" serialNumber="AL00VGKA">
+    <MotorController name="Drive" serialNumber="AL00VXL9">
         <Motor name="right" port="1" />
         <Motor name="left" port="2" />
     </MotorController>
