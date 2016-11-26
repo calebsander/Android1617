@@ -120,7 +120,7 @@ public class MotorWrapper {
 	}
 	//Limits the change in power from the previous setting (returns limited power)
 	public static double accelLimit(double lastPower, double desiredPower, double maxDiff) {
-		if (Math.abs(desiredPower - lastPower) > maxDiff) return lastPower + maxDiff * Math.signum(desiredPower - lastPower);
+		if (desiredPower != 0.0 && Math.abs(desiredPower - lastPower) > maxDiff) return lastPower + maxDiff * Math.signum(desiredPower - lastPower);
 		else return desiredPower;
 	}
 	//Actually sets the motor's power to an acceleration-limited value of desiredPower

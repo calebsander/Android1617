@@ -2,8 +2,6 @@
 <Robot type="FirstInspires-FTC" name = "Velocity Drive">
     <DeviceInterfaceModule name="DIM" serialNumber="AL00VG8T">
         <I2cDevice name="bno" port="0" />
-        <!--<I2cDevice name="switcher" port="1" />-->
-        <I2cDevice name="color" port="1" />
         <DigitalDevice name="shooterNear" port="0" />
         <DigitalDevice name="shooterFar" port="1" />
         <DigitalDevice name="shooterDown" port="2" />

@@ -1,7 +1,10 @@
 package org.gearticks.opmodes.autonomous;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
+import android.graphics.Color;
+import android.os.Environment;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -9,7 +12,9 @@ import com.vuforia.HINT;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-import java.nio.ByteBuffer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -43,6 +48,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	private BlockingQueue<CloseableFrame> frameQueue;
 	private CloseableFrame beaconFrame;
 	private ElapsedTime stageTimer;
+	private static final int WIDTH = 600, HALF_WIDTH = WIDTH / 2, HEIGHT = 350;
 
 	private enum Stage {
 		MOVE_SHOOTER_DOWN_FIRST,
@@ -50,9 +56,13 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		RELEASE_SECOND_BALL,
 		SHOOT_SECOND_BALL,
 		DRIVE_OFF_WALL,
+		WAIT_BEFORE_FIRST_TURN,
 		TURN_TO_FAR_TARGET,
 		DRIVE_IN_FRONT_OF_NEAR_TARGET,
+		WAIT_BEFORE_SECOND_TURN,
 		FACE_NEAR_TARGET,
+		VUFORIA_TO_PICTURE,
+		WAIT_BEFORE_PICTURE,
 		VUFORIA_TO_BEACON,
 		SELECT_SIDE,
 		STOPPED
@@ -85,8 +95,6 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	}
 	protected void matchStart() {
 		this.telemetry.clear();
-		//this.configuration.setLEDs(false);
-		//this.configuration.startReadingColor();
 		this.beaconImages.activate();
 		this.direction.stopDrive();
 		this.configuration.resetEncoder();
@@ -125,6 +133,10 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 					this.nextStage();
 				}
 				break;
+			case WAIT_BEFORE_FIRST_TURN:
+				this.direction.stopDrive();
+				if (this.stageTimer.seconds() > 0.3) this.nextStage();
+				break;
 			case TURN_TO_FAR_TARGET:
 				if (this.direction.gyroCorrect(40.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
 					this.direction.stopDrive();
@@ -135,10 +147,14 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 			case DRIVE_IN_FRONT_OF_NEAR_TARGET:
 				this.direction.drive(0.0, 0.7);
 				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 2500) {
+				if (this.configuration.encoderPositive() > 2200) {
 					this.direction.stopDrive();
 					this.nextStage();
 				}
+				break;
+			case WAIT_BEFORE_SECOND_TURN:
+				this.direction.stopDrive();
+				if (this.stageTimer.seconds() > 0.3) this.nextStage();
 				break;
 			case FACE_NEAR_TARGET:
 				if (this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
@@ -146,37 +162,26 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 					this.nextStage();
 				}
 				break;
-			case VUFORIA_TO_BEACON:
+			case VUFORIA_TO_PICTURE:
 				final OpenGLMatrix pose = this.wheelsListener.getPose();
-				if (pose == null) {
-					this.direction.drive(0.0, 0.05);
-					this.direction.turn(0.0);
+				vuforiaIn(pose, 500F);
+				break;
+			case WAIT_BEFORE_PICTURE:
+				if (this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) < 10) this.stageTimer.reset();
+				if (this.stageTimer.seconds() > 0.3) {
+					try { this.beaconFrame = this.frameQueue.take(); }
+					catch (InterruptedException e) {}
+					if (this.beaconFrame != null) this.nextStage(); //wait until getting a frame
 				}
-				else {
-					this.direction.drive(0.0, 0.10);
-					final VectorF translation = pose.getTranslation();
-					final float lateralDistance = -(translation.get(1) - 50);
-					final float normalDistance = -translation.get(2);
-					if (normalDistance < 100F) {
-						this.direction.stopDrive();
-						this.nextStage();
-					}
-					else {
-						double turnPower = lateralDistance * 0.001;
-						if (Math.abs(turnPower) > 0.05) turnPower = Math.signum(turnPower) * 0.05;
-						this.direction.turn(turnPower);
-						if (normalDistance < 400F && this.beaconFrame == null) {
-							try { this.beaconFrame = this.frameQueue.take(); }
-							catch (InterruptedException e) {}
-						}
-					}
-					this.telemetry.addData("Target", translation);
-				}
+				break;
+			case VUFORIA_TO_BEACON:
+				final OpenGLMatrix wheelsPose = this.wheelsListener.getPose();
+				vuforiaIn(wheelsPose, 175F);
 				break;
 			case SELECT_SIDE:
 				final CloseableFrame frame = this.beaconFrame;
 				final long images = frame.getNumImages();
-				Bitmap bitmap;
+				Bitmap bitmap = null;
 				for (int i = 0; i < images; i++) {
 					final Image image = frame.getImage(i);
 					if (image.getFormat() == PIXEL_FORMAT.RGB565) {
@@ -186,6 +191,39 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 					}
 				}
 				frame.close();
+				bitmap = Bitmap.createBitmap(bitmap, 150, 0, WIDTH, HEIGHT);
+				final File outputDir = new File(Environment.getExternalStorageDirectory() + "/Pictures");
+				outputDir.mkdirs();
+				try {
+					final File outputFile = new File(outputDir.getPath() + "/abc.png");
+					final FileOutputStream outputStream = new FileOutputStream(outputFile);
+					bitmap.compress(CompressFormat.PNG, 90, outputStream);
+					outputStream.close();
+				}
+				catch (IOException e) {
+					throw new RuntimeException(e.getMessage());
+				}
+				int leftRed = 0, leftBlue = 0;
+				for (int x = 0; x < HALF_WIDTH; x++) {
+					for (int y = 0; y < HEIGHT; y++) {
+						final int pixel = bitmap.getPixel(x, y);
+						leftRed += Color.red(pixel);
+						leftBlue += Color.blue(pixel);
+					}
+				}
+				int rightRed = 0, rightBlue = 0;
+				for (int x = HALF_WIDTH; x < WIDTH; x++) {
+					for (int y = 0; y < HEIGHT; y++) {
+						final int pixel = bitmap.getPixel(x, y);
+						rightRed += Color.red(pixel);
+						rightBlue += Color.blue(pixel);
+					}
+				}
+				System.out.println(leftRed);
+				System.out.println(rightRed);
+				System.out.println();
+				System.out.println(leftBlue);
+				System.out.println(rightBlue);
 				this.nextStage();
 				break;
 			case STOPPED:
@@ -199,6 +237,27 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		this.configuration.teardown();
 	}
 
+	private void vuforiaIn(OpenGLMatrix pose, float finalDistance) {
+		if (pose == null) {
+			this.direction.drive(0.0, 0.05);
+			this.direction.turn(0.0);
+		}
+		else {
+			this.direction.drive(0.0, 0.15);
+			final VectorF translation = pose.getTranslation();
+			final float lateralDistance = -(translation.get(1) - 50);
+			final float normalDistance = -translation.get(2);
+			if (normalDistance < finalDistance) {
+				this.direction.stopDrive();
+				this.nextStage();
+			}
+			else {
+				double turnPower = lateralDistance * 0.0007;
+				if (Math.abs(turnPower) > 0.05) turnPower = Math.signum(turnPower) * 0.05;
+				this.direction.turn(turnPower);
+			}
+		}
+	}
 	private void nextStage() {
 		this.stage = Stage.values()[this.stage.ordinal() + 1];
 		this.stageTimer.reset();

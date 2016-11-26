@@ -26,7 +26,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final BNO055 imu;
 	public final DigitalChannel shooterDown;
 	public final DigitalChannel shooterNear, shooterFar;
-	public final TCS34725 color;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40);
@@ -56,14 +55,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterNear.setMode(Mode.INPUT);
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
-
-		this.color = new TCS34725((I2cDevice)hardwareMap.get("color"));
 	}
 	public void teardown() {
 		this.imu.eulerRequest.stopReading();
 		this.imu.terminate();
-		this.color.stopReading();
-		this.color.terminate();
 	}
 	public void stopMotion() {
 		this.intake.stop();
@@ -74,6 +69,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void move(DriveDirection direction) {
 		this.drive.calculatePowers(direction);
 		this.drive.scaleMotorsDown();
+		this.drive.accelLimit(0.06);
 		this.drive.commitPowers();
 	}
 	private boolean shooterFarTriggered() {
@@ -124,12 +120,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 	public boolean isShooterDown() {
 		return this.shooterWasDown && !this.shooter.isBusy();
-	}
-	public void startReadingColor() {
-		this.color.startReadingColor();
-	}
-	public void setLEDs(boolean enabled) {
-		this.color.setFloraLED(enabled);
 	}
 
 	public static abstract class MotorConstants {
