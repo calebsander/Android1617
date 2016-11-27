@@ -118,7 +118,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				}
 				break;
 			case RELEASE_SECOND_BALL:
-				this.configuration.particleBlocker.setPosition(MotorConstants.PARTICLE_BLOCKER_AWAY);
+				this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_DUMPING);
 				if (this.stageTimer.seconds() > 1.0) this.nextStage();
 				break;
 			case SHOOT_SECOND_BALL:

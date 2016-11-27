@@ -10,8 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.gearticks.dimsensors.i2c.BNO055;
-import org.gearticks.dimsensors.i2c.I2CSwitcher;
-import org.gearticks.dimsensors.i2c.TCS34725;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
@@ -44,7 +42,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.clutch = (Servo)hardwareMap.get("clutch");
 		this.clutch.setPosition(MotorConstants.CLUTCH_CLUTCHED);
 		this.particleBlocker = (Servo)hardwareMap.get("particleBlocker");
-		this.particleBlocker.setPosition(MotorConstants.PARTICLE_BLOCKER_BLOCKING);
+		this.particleBlocker.setPosition(MotorConstants.SNAKE_HOLDING);
 		this.shooterStopper = (CRServo)hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 
@@ -69,7 +67,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void move(DriveDirection direction) {
 		this.drive.calculatePowers(direction);
 		this.drive.scaleMotorsDown();
-		this.drive.accelLimit(0.06);
+		this.drive.accelLimit(0.15);
 		this.drive.commitPowers();
 	}
 	private boolean shooterFarTriggered() {
@@ -103,6 +101,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
+	public void shootFast() {
+		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+	}
 	public void advanceShooterToDown() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
@@ -113,6 +115,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				this.shooterWasDown = true;
 			}
 			else this.shootSlow();
+		}
+	}
+	public void teleopAdvanceShooterToDown() {
+		if (!this.shooterWasDown) {
+			if (this.isShooterAtSensor()) {
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				this.shooterWasDown = true;
+			}
+			else this.shootFast();
 		}
 	}
 	public void resetAutoShooter() {
@@ -126,14 +140,14 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double INTAKE_IN = 1.0;
 		public static final double INTAKE_OUT = -INTAKE_IN;
 
-		public static final double SHOOTER_FORWARD = 0.8;
+		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.2;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 
-		public static final double PARTICLE_BLOCKER_BLOCKING = 0.82;
-		public static final double PARTICLE_BLOCKER_AWAY = 1.0;
+		public static final double SNAKE_HOLDING = 0.9;
+		public static final double SNAKE_DUMPING = 0.7;
 
 		public static final double CLUTCH_CLUTCHED = 0.7;
 		public static final double CLUTCH_ENGAGED = 0.3;
