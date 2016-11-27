@@ -1,9 +1,8 @@
 package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
@@ -21,93 +20,77 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	protected void loopAfterStart() {
 		final int gamepad;
-		final double yScaleFactor, sScaleFactor;
+		final double yScaleFactor, sScaleAtRest, sScaleWhenMoving;
 		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) { //if Calvin not driving, Jack can drive
 			gamepad = JACK;
 			yScaleFactor = 0.3;
-			sScaleFactor = 0.2;
+			sScaleAtRest = 0.2;
+			sScaleWhenMoving = 0.3;
 		}
 		else { //Calvin driving
 			gamepad = CALVIN;
 			yScaleFactor = 1.0;
-			sScaleFactor = 0.4;
+			sScaleAtRest = 0.4;
+			sScaleWhenMoving = 1.0;
 		}
-		if (this.gamepads[gamepad].getLeftY() > 0){
+		if (this.gamepads[gamepad].getLeftY() == 0.0) { //if just turning, turn slower for greater accuracy
+			this.direction.drive(0.0, 0.0);
+			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleAtRest);
+		}
+		else { //if banana-turning, turn faster
 			this.direction.drive(0.0, scaleStick(this.gamepads[gamepad].getLeftY()) * yScaleFactor);
-			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * yScaleFactor);
+			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleWhenMoving);
 		}
-		else {
-			this.direction.drive(0.0, scaleStick(this.gamepads[gamepad].getLeftY()) * yScaleFactor);
-			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleFactor);
-		}
-		this.configuration.move(this.direction);
+		this.configuration.move(this.direction, 0.15);
 
 		final double intakePower;
-		if (!this.gamepads[CALVIN].getRightBumper() && !this.gamepads[CALVIN].getRightTrigger()) { //if Calvin not picking up, Jack can elevate
-			if (this.gamepads[JACK].getRightY() != 0){
-				intakePower = scaleStick(this.gamepads[JACK].getRightY());
-			}
-			else {
-				intakePower = MotorWrapper.STOPPED;
-			}
-			this.configuration.intake.setPower(intakePower);
-		}
-		else { //Calvin picking up
+		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[CALVIN].getRightTrigger()) { //Calvin picking up
 			if (this.gamepads[CALVIN].getRightBumper()) {
-				intakePower = VelocityConfiguration.MotorConstants.INTAKE_IN;
+				intakePower = MotorConstants.INTAKE_IN;
 			}
 			else if (this.gamepads[CALVIN].getRightTrigger()) {
-				intakePower = VelocityConfiguration.MotorConstants.INTAKE_OUT;
+				intakePower = MotorConstants.INTAKE_OUT;
 			}
 			else {
 				intakePower = MotorWrapper.STOPPED;
 			}
-			this.configuration.intake.setPower(intakePower);
 		}
+		else { //if Calvin not picking up, Jack can elevate
+			intakePower = scaleStick(this.gamepads[JACK].getRightY()) * MotorConstants.INTAKE_IN;
+		}
+		this.configuration.intake.setPower(intakePower);
 
-//		if (this.gamepads[CALVIN].getRightBumper()) intakePower = VelocityConfiguration.MotorConstants.INTAKE_IN;
-//		else if (this.gamepads[CALVIN].getRightTrigger()) intakePower = VelocityConfiguration.MotorConstants.INTAKE_OUT;
-//		else intakePower = MotorWrapper.STOPPED;
-//		this.configuration.intake.setPower(intakePower);
-
-		final double shooterPower;
 		if (this.gamepads[JACK].getRightBumper()) {
 			this.configuration.resetAutoShooter();
-			this.configuration.shooter.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-			shooterPower = VelocityConfiguration.MotorConstants.SHOOTER_BACK;
-			this.configuration.shooter.setPower(shooterPower);
-		}else {
+			this.configuration.shootFast();
+		}
+		else {
 			this.configuration.teleopAdvanceShooterToDown();
 		}
-//		else if (this.gamepads[JACK].getRightTrigger()) {
-//			this.configuration.teleopAdvanceShooterToDown();
-//		}
-//		else {
-//			shooterPower = MotorWrapper.STOPPED;
-//			this.configuration.shooter.setPower(shooterPower);
-//		}
 
 		if (this.gamepads[JACK].getLeftBumper()) {
-			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
+			this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
 		}
 		else if (this.gamepads[JACK].getLeftTrigger()) {
-			this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_DOWN);
+			this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_DOWN);
 		}
 		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);
 
-		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) clutchToggle = !clutchToggle;
-		if (clutchToggle){
-			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_CLUTCHED);
-		}
-		else {
-			this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_ENGAGED);
+		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) {
+			this.clutchToggle = !this.clutchToggle;
+			if (this.clutchToggle) {
+				this.configuration.clutch.setPosition(MotorConstants.CLUTCH_CLUTCHED);
+			}
+			else {
+				this.configuration.clutch.setPosition(MotorConstants.CLUTCH_ENGAGED);
+			}
 		}
 
 		if (this.gamepads[JACK].getA()) {
-			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.SNAKE_DUMPING);
+			this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_DUMPING);
 		}
 		else {
-			this.configuration.particleBlocker.setPosition(VelocityConfiguration.MotorConstants.SNAKE_HOLDING);
+			this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_HOLDING);
 		}
 	}
 

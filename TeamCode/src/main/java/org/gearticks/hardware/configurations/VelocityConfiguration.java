@@ -64,10 +64,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.driveRight.stop();
 	}
 
-	public void move(DriveDirection direction) {
+	public void move(DriveDirection direction, double accelLimit) {
 		this.drive.calculatePowers(direction);
 		this.drive.scaleMotorsDown();
-		this.drive.accelLimit(0.15);
+		this.drive.accelLimit(accelLimit);
 		this.drive.commitPowers();
 	}
 	private boolean shooterFarTriggered() {

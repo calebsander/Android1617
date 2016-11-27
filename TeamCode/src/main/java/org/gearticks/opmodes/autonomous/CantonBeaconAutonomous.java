@@ -229,7 +229,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 			case STOPPED:
 				this.configuration.stopMotion();
 		}
-		if (this.stage != Stage.STOPPED) this.configuration.move(this.direction);
+		if (this.stage != Stage.STOPPED) this.configuration.move(this.direction, 0.06);
 		this.telemetry.addData("Stage", this.stage);
 		this.telemetry.addData("Heading", this.configuration.imu.getHeading());
 	}
@@ -245,7 +245,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		else {
 			this.direction.drive(0.0, 0.15);
 			final VectorF translation = pose.getTranslation();
-			final float lateralDistance = -(translation.get(1) - 50);
+			final float lateralDistance = -(translation.get(1) - 50); //aim slightly to the right
 			final float normalDistance = -translation.get(2);
 			if (normalDistance < finalDistance) {
 				this.direction.stopDrive();
