@@ -21,18 +21,18 @@ public class VelocityDrive extends BaseOpMode {
 	protected void loopAfterStart() {
 		final int gamepad;
 		final double yScaleFactor, sScaleAtRest, sScaleWhenMoving;
-		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) { //if Calvin not driving, Jack can drive
-			gamepad = JACK;
-			yScaleFactor = 0.3;
-			sScaleAtRest = 0.2;
-			sScaleWhenMoving = 0.3;
-		}
-		else { //Calvin driving
+//		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) { //if Calvin not driving, Jack can drive
+//			gamepad = JACK;
+//			yScaleFactor = 0.3;
+//			sScaleAtRest = 0.2;
+//			sScaleWhenMoving = 0.3;
+//		}
+//		else { //Calvin driving
 			gamepad = CALVIN;
 			yScaleFactor = 1.0;
 			sScaleAtRest = 0.4;
 			sScaleWhenMoving = 1.0;
-		}
+//		}
 		if (this.gamepads[gamepad].getLeftY() == 0.0) { //if just turning, turn slower for greater accuracy
 			this.direction.drive(0.0, 0.0);
 			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleAtRest);
@@ -56,7 +56,15 @@ public class VelocityDrive extends BaseOpMode {
 			}
 		}
 		else { //if Calvin not picking up, Jack can elevate
-			intakePower = scaleStick(this.gamepads[JACK].getRightY()) * MotorConstants.INTAKE_IN;
+			 if (this.gamepads[JACK].getLeftBumper()) {
+				 intakePower = MotorConstants.INTAKE_IN;
+			}
+			else if (this.gamepads[JACK].getLeftTrigger()) {
+				intakePower = MotorConstants.INTAKE_OUT;
+			}
+			else {
+				 intakePower = MotorWrapper.STOPPED;
+			 }
 		}
 		this.configuration.intake.setPower(intakePower);
 
@@ -68,10 +76,10 @@ public class VelocityDrive extends BaseOpMode {
 			this.configuration.teleopAdvanceShooterToDown();
 		}
 
-		if (this.gamepads[JACK].getLeftBumper()) {
+		if (this.gamepads[JACK].dpadUp()) {
 			this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
 		}
-		else if (this.gamepads[JACK].getLeftTrigger()) {
+		else if (this.gamepads[JACK].dpadDown()) {
 			this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_DOWN);
 		}
 		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);

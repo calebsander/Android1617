@@ -53,7 +53,8 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	private enum Stage {
 		MOVE_SHOOTER_DOWN_FIRST,
 		SHOOT_FIRST_BALL,
-		RELEASE_SECOND_BALL,
+		MOVE_SHOOTER_DOWN_SECOND,
+		LOAD_SECOND_BALL,
 		SHOOT_SECOND_BALL,
 		DRIVE_OFF_WALL,
 		WAIT_BEFORE_FIRST_TURN,
@@ -86,7 +87,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		vuforia.setFrameQueueCapacity(1);
 		this.frameQueue = vuforia.getFrameQueue();
 		this.beaconFrame = null;
-		this.stage = Stage.DRIVE_OFF_WALL; //Stage.values()[0];
+		this.stage = Stage.MOVE_SHOOTER_DOWN_FIRST; //Stage.values()[0];
 	}
 	protected void loopBeforeStart() {
 		this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
@@ -100,6 +101,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		this.configuration.resetEncoder();
 		this.configuration.resetAutoShooter();
 		this.stageTimer = new ElapsedTime();
+		this.configuration.imu.resetHeading();
 	}
 	protected void loopAfterStart() {
 		switch (this.stage) {
@@ -107,23 +109,44 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				this.configuration.advanceShooterToDown();
 				if (this.configuration.isShooterDown()) {
 					this.configuration.resetAutoShooter();
+					this.configuration.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 					this.nextStage();
 				}
 				break;
 			case SHOOT_FIRST_BALL:
-				this.configuration.advanceShooterToDown();
-				if (this.configuration.isShooterDown()) {
-					this.configuration.resetAutoShooter();
+				this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				if (!this.configuration.shooter.isBusy()){
 					this.nextStage();
 				}
 				break;
-			case RELEASE_SECOND_BALL:
-				this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_DUMPING);
-				if (this.stageTimer.seconds() > 1.0) this.nextStage();
+			case MOVE_SHOOTER_DOWN_SECOND:
+				this.configuration.advanceShooterToDown();
+				if (this.configuration.isShooterDown()) {
+					this.configuration.resetAutoShooter();
+					this.configuration.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+					this.nextStage();
+				}
+				break;
+			case LOAD_SECOND_BALL:
+				if (this.stageTimer.seconds() > 1.0) {
+					this.nextStage();
+				}
+				else if (this.stageTimer.seconds() > 0.5) {
+					this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_HOLDING);
+				}
+				else {
+					this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_DUMPING);
+				}
 				break;
 			case SHOOT_SECOND_BALL:
-				this.configuration.advanceShooterToDown();
-				if (this.configuration.isShooterDown()) this.nextStage();
+                this.configuration.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				if (!this.configuration.shooter.isBusy()){
+					this.nextStage();
+				}
 				break;
 			case DRIVE_OFF_WALL:
 				this.direction.drive(0.0, 0.7);
@@ -147,7 +170,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 			case DRIVE_IN_FRONT_OF_NEAR_TARGET:
 				this.direction.drive(0.0, 0.7);
 				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 2200) {
+				if (this.configuration.encoderPositive() > 2300) {
 					this.direction.stopDrive();
 					this.nextStage();
 				}

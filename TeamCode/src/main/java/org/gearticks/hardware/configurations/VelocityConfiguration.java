@@ -142,7 +142,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.2;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 
