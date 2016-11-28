@@ -37,6 +37,9 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
 	private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
+	private boolean allianceColorIsBlue;
+	private boolean beacon1BlueRight;
+	private boolean beacon2BlueRight;
 	static {
 		IMAGE_IDS.put("Wheels", 0);
 		IMAGE_IDS.put("Tools", 1);
@@ -66,6 +69,10 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		WAIT_BEFORE_PICTURE,
 		VUFORIA_TO_BEACON,
 		SELECT_SIDE,
+		TURN_TO_PRESS_BUTTON,
+		PUSH_BUTTON,
+		BACK_UP,
+		TURN_FROM_PRESS_BUTTON,
 		STOPPED
 	}
 	private Stage stage;
@@ -198,7 +205,9 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				}
 				break;
 			case VUFORIA_TO_BEACON:
+				System.out.println("getting pose");
 				final OpenGLMatrix wheelsPose = this.wheelsListener.getPose();
+				System.out.println("done getting pose");
 				vuforiaIn(wheelsPose, 175F);
 				break;
 			case SELECT_SIDE:
@@ -242,12 +251,80 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 						rightBlue += Color.blue(pixel);
 					}
 				}
-				System.out.println(leftRed);
-				System.out.println(rightRed);
-				System.out.println();
-				System.out.println(leftBlue);
-				System.out.println(rightBlue);
+				System.out.println("???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
+				System.out.println("leftRed: " + leftRed);
+				System.out.println("rightRed: " + rightRed);
+				System.out.println(" ");
+				System.out.println("leftBlue: " + leftBlue);
+				System.out.println("rightBlue: " + rightBlue);
+				if (leftRed + rightBlue > rightRed + leftBlue){
+					System.out.println("RED is on the LEFT, BLUE is on the RIGHT");
+					this.beacon1BlueRight = true;
+				}
+				else {
+					System.out.println("BLUE is on the LEFT, RED is on the RIGHT");
+					this.beacon1BlueRight = false;
+				}
+				System.out.println("???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
+
 				this.nextStage();
+				break;
+			case TURN_TO_PRESS_BUTTON:
+				if (this.beacon1BlueRight) {
+					System.out.println("going to BLUE on the RIGHT");
+					if (this.direction.gyroCorrect(80.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+						this.direction.stopDrive();
+						this.configuration.resetEncoder();
+						this.nextStage();
+					}
+				}
+				else {
+					System.out.println("going to BLUE on the LEFT");
+					if (this.direction.gyroCorrect(100.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+						this.direction.stopDrive();
+						this.configuration.resetEncoder();
+						this.nextStage();
+					}
+				}
+				break;
+			case PUSH_BUTTON:
+				this.direction.drive(0.0, 0.3);
+				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+				if (this.configuration.encoderPositive() > 200) {
+					this.direction.stopDrive();
+					this.configuration.resetEncoder();
+					this.nextStage();
+				}
+				break;
+			case BACK_UP:
+				this.direction.drive(0.0, -0.3);
+				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+				if (this.configuration.encoderPositive() > 500) {
+					this.direction.stopDrive();
+					this.configuration.resetEncoder();
+					this.nextStage();
+				}
+				break;
+			case TURN_FROM_PRESS_BUTTON:
+//				if (this.beacon1BlueRight) {
+//					if (this.direction.gyroCorrect(-10.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+//						this.direction.stopDrive();
+//						this.configuration.resetEncoder();
+//						this.nextStage();
+//					}
+//				}
+//				else {
+//					if (this.direction.gyroCorrect(10.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+//						this.direction.stopDrive();
+//						this.configuration.resetEncoder();
+//						this.nextStage();
+//					}
+//				}
+				if (this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+					this.direction.stopDrive();
+					this.configuration.resetEncoder();
+					this.nextStage();
+				}
 				break;
 			case STOPPED:
 				this.configuration.stopMotion();
