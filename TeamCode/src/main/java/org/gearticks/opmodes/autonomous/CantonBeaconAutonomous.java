@@ -30,12 +30,15 @@ import org.gearticks.VuforiaKey;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
+import org.gearticks.joystickoptions.IncrementOption;
+import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
 @Autonomous
 public class CantonBeaconAutonomous extends BaseOpMode {
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
+	private IncrementOption delayOption;
 	private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
 	private boolean allianceColorIsBlue;
 	private boolean beacon1BlueRight;
@@ -54,6 +57,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	private static final int WIDTH = 600, HALF_WIDTH = WIDTH / 2, HEIGHT = 350;
 
 	private enum Stage {
+		DELAY,
 		MOVE_SHOOTER_DOWN_FIRST,
 		SHOOT_FIRST_BALL,
 		MOVE_SHOOTER_DOWN_SECOND,
@@ -76,6 +80,19 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		STOPPED
 	}
 	private Stage stage;
+	private enum Routine {
+		SHOOTER_ONLY(true, false),
+		DRIVE_ONLY(false, true),
+		BOTH(true, true);
+
+		public final boolean runShooter, runDrive;
+
+		Routine(boolean runShooter, boolean runDrive) {
+			this.runShooter = runShooter;
+			this.runDrive = runDrive;
+		}
+	}
+	private ValuesJoystickOption<Routine> routineOption;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
@@ -94,7 +111,12 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		vuforia.setFrameQueueCapacity(1);
 		this.frameQueue = vuforia.getFrameQueue();
 		this.beaconFrame = null;
-		this.stage = Stage.MOVE_SHOOTER_DOWN_FIRST; //Stage.values()[0];
+		this.delayOption = new IncrementOption("Delay", 10.0);
+		this.addOption(this.delayOption);
+		this.routineOption = new ValuesJoystickOption<>("Routine", Routine.values());
+		this.routineOption.selectOption(Routine.BOTH);
+		this.addOption(this.routineOption);
+		this.stage = Stage.values()[0];
 	}
 	protected void loopBeforeStart() {
 		this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
@@ -112,6 +134,15 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	}
 	protected void loopAfterStart() {
 		switch (this.stage) {
+			case DELAY:
+				if (this.stageTimer.seconds() > delayOption.getValue()) {
+					if (this.routineOption.getRawSelectedOption().runShooter) this.nextStage();
+					else {
+						this.stageTimer.reset();
+						this.stage = Stage.DRIVE_OFF_WALL;
+					}
+				}
+				break;
 			case MOVE_SHOOTER_DOWN_FIRST:
 				this.configuration.advanceShooterToDown();
 				if (this.configuration.isShooterDown()) {
@@ -152,7 +183,8 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				this.configuration.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
 				this.configuration.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 				if (!this.configuration.shooter.isBusy()){
-					this.nextStage();
+					if (this.routineOption.getRawSelectedOption().runDrive) this.nextStage();
+					else this.stage = Stage.STOPPED;
 				}
 				break;
 			case DRIVE_OFF_WALL:
@@ -205,9 +237,9 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				}
 				break;
 			case VUFORIA_TO_BEACON:
-				System.out.println("getting pose");
+				final ElapsedTime poseGettingTime = new ElapsedTime();
 				final OpenGLMatrix wheelsPose = this.wheelsListener.getPose();
-				System.out.println("done getting pose");
+				System.out.println("Getting pose took " + poseGettingTime.seconds() + " seconds");
 				vuforiaIn(wheelsPose, 175F);
 				break;
 			case SELECT_SIDE:
@@ -224,7 +256,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				}
 				frame.close();
 				bitmap = Bitmap.createBitmap(bitmap, 150, 0, WIDTH, HEIGHT);
-				final File outputDir = new File(Environment.getExternalStorageDirectory() + "/Pictures");
+				/*final File outputDir = new File(Environment.getExternalStorageDirectory() + "/Pictures");
 				outputDir.mkdirs();
 				try {
 					final File outputFile = new File(outputDir.getPath() + "/abc.png");
@@ -234,7 +266,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				}
 				catch (IOException e) {
 					throw new RuntimeException(e.getMessage());
-				}
+				}*/
 				int leftRed = 0, leftBlue = 0;
 				for (int x = 0; x < HALF_WIDTH; x++) {
 					for (int y = 0; y < HEIGHT; y++) {
@@ -266,30 +298,29 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 					this.beacon1BlueRight = false;
 				}
 				System.out.println("???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
-
 				this.nextStage();
 				break;
 			case TURN_TO_PRESS_BUTTON:
+				final double targetDir;
+				final String blueSide;
 				if (this.beacon1BlueRight) {
-					System.out.println("going to BLUE on the RIGHT");
-					if (this.direction.gyroCorrect(80.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
-						this.direction.stopDrive();
-						this.configuration.resetEncoder();
-						this.nextStage();
-					}
+					targetDir = 80.0;
+					blueSide = "RIGHT";
 				}
 				else {
-					System.out.println("going to BLUE on the LEFT");
-					if (this.direction.gyroCorrect(100.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
-						this.direction.stopDrive();
-						this.configuration.resetEncoder();
-						this.nextStage();
-					}
+					targetDir = 100.0;
+					blueSide = "LEFT";
+				}
+				System.out.println("going to BLUE on the " + blueSide);
+				if (this.direction.gyroCorrect(targetDir, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+					this.direction.stopDrive();
+					this.configuration.resetEncoder();
+					this.nextStage();
 				}
 				break;
 			case PUSH_BUTTON:
 				this.direction.drive(0.0, 0.3);
-				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+				this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 				if (this.configuration.encoderPositive() > 200) {
 					this.direction.stopDrive();
 					this.configuration.resetEncoder();
@@ -298,7 +329,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				break;
 			case BACK_UP:
 				this.direction.drive(0.0, -0.3);
-				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+				this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 				if (this.configuration.encoderPositive() > 500) {
 					this.direction.stopDrive();
 					this.configuration.resetEncoder();
@@ -320,7 +351,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 //						this.nextStage();
 //					}
 //				}
-				if (this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
+				if (this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
 					this.direction.stopDrive();
 					this.configuration.resetEncoder();
 					this.nextStage();
