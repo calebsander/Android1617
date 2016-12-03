@@ -72,10 +72,8 @@ public class MotorWrapper {
 	public void setPower(double power) {
 		if (Math.abs(power) > 1.0) power = Math.signum(power);
 		if (this.reversed) power = -power;
-		if (power != this.lastPower) { //don't do anything if the power hasn't changed
-			this.motor.setPower(power);
-			this.lastPower = power;
-		}
+		this.motor.setPower(power);
+		this.lastPower = power;
 	}
 	//Stops the motor (using set stop mode)
 	public void stop() {
@@ -89,17 +87,13 @@ public class MotorWrapper {
 	//Sets the desired action when stopping the motor
 	//If motor was stopped, will either brake or coast it immediately
 	public void setStopMode(ZeroPowerBehavior newMode) {
-		if (newMode != this.lastStopMode) {
-			this.motor.setZeroPowerBehavior(newMode);
-			this.lastStopMode = newMode;
-		}
+		this.motor.setZeroPowerBehavior(newMode);
+		this.lastStopMode = newMode;
 	}
 	//Sets the desired run mode
 	public void setRunMode(RunMode runMode) {
-		if (runMode != this.lastRunMode) {
-			this.motor.setMode(runMode);
-			this.lastRunMode = runMode;
-		}
+		this.motor.setMode(runMode);
+		this.lastRunMode = runMode;
 	}
 	//Gets the last set run mode
 	public RunMode getRunMode() {
@@ -117,7 +111,7 @@ public class MotorWrapper {
 		}
 	}
 	//Returns whether or not the motor is still trying to reach the target position (wrapper for DcMotor)
-	public boolean isBusy() {
+	public boolean notAtTarget() {
 		return this.motor.isBusy();
 	}
 	//Limits the change in power from the previous setting (returns limited power)

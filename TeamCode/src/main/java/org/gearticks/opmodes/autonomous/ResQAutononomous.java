@@ -1,6 +1,7 @@
 package org.gearticks.opmodes.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
@@ -23,6 +24,7 @@ import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.opmodes.BaseOpMode;
 
 @Autonomous
+@Disabled
 public class ResQAutononomous extends BaseOpMode {
 	private ResQConfiguration configuration;
 	private DriveDirection direction;

@@ -1,8 +1,8 @@
 package org.gearticks.opmodes.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -16,7 +16,7 @@ import org.gearticks.VuforiaKey;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
-@Autonomous
+@TeleOp
 @Disabled
 public class VuforiaTest extends BaseOpMode {
 	private static final String[] IMAGE_NAMES = new String[]{"Wheels", "Tools", "Legos", "Gears"};

@@ -28,14 +28,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
 		this.shooter = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
-		this.shooterWasDown = false;
+		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+		this.resetAutoShooter();
 		this.driveLeft = new MotorWrapper((DcMotor)hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
 		this.driveRight = new MotorWrapper((DcMotor)hardwareMap.get("right"), MotorWrapper.MotorType.NEVEREST_20, true);
 		this.drive = new TankDrive();
 		this.drive.addLeftMotor(this.driveLeft);
 		this.drive.addRightMotor(this.driveRight);
-		this.driveLeft.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		this.driveRight.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		this.driveLeft.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		this.driveRight.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		this.driveLeft.setRunMode(RunMode.RUN_USING_ENCODER);
+		this.driveRight.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.driveLeft.setStopMode(ZeroPowerBehavior.BRAKE);
 		this.driveRight.setStopMode(ZeroPowerBehavior.BRAKE);
 
@@ -133,7 +137,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterWasDown = false;
 	}
 	public boolean isShooterDown() {
-		return this.shooterWasDown && !this.shooter.isBusy();
+		return this.shooterWasDown && !this.shooter.notAtTarget();
 	}
 
 	public static abstract class MotorConstants {

@@ -3,6 +3,7 @@ package org.gearticks.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.GamepadWrapper;
+import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.joystickoptions.JoystickOption;
 import org.gearticks.joystickoptions.JoystickOptionController;
 
@@ -17,6 +18,7 @@ public abstract class BaseOpMode extends OpMode {
 	}
 
 	public void init() {
+		this.addOption(AllianceOption.allianceOption);
 		this.initialize();
 	}
 	public void init_loop() {
