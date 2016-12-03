@@ -26,7 +26,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final DigitalChannel shooterNear, shooterFar;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
-		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_40);
+		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
 		this.shooter = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
 		this.shooterWasDown = false;
 		this.driveLeft = new MotorWrapper((DcMotor)hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
@@ -137,14 +137,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public static abstract class MotorConstants {
-		public static final double INTAKE_IN = 1.0;
-		public static final double INTAKE_OUT = -INTAKE_IN;
+		public static final double INTAKE_OUT = 1.0;
+		public static final double INTAKE_IN = -INTAKE_OUT;
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
+		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 
 		public static final double SNAKE_HOLDING = 0.9;
 		public static final double SNAKE_DUMPING = 0.7;
