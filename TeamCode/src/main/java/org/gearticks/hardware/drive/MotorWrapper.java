@@ -47,6 +47,8 @@ public class MotorWrapper {
 	private static final int UNSET_TARGET = Integer.MIN_VALUE;
 	//The motor power that stops a motor
 	public static final double STOPPED = 0.0;
+	//The value to pass to accelLimit() to indicate no acceleration limiting
+	public static final double NO_ACCEL_LIMIT = Double.POSITIVE_INFINITY;
 
 	//Pass the motor to be wrapped
 	public MotorWrapper(DcMotor motor, MotorType type, boolean reversed) {
@@ -120,7 +122,9 @@ public class MotorWrapper {
 	}
 	//Limits the change in power from the previous setting (returns limited power)
 	public static double accelLimit(double lastPower, double desiredPower, double maxDiff) {
-		if (desiredPower != 0.0 && Math.abs(desiredPower - lastPower) > maxDiff) return lastPower + maxDiff * Math.signum(desiredPower - lastPower);
+		if (desiredPower != 0.0 && maxDiff != NO_ACCEL_LIMIT && Math.abs(desiredPower - lastPower) > maxDiff) {
+			return lastPower + maxDiff * Math.signum(desiredPower - lastPower);
+		}
 		else return desiredPower;
 	}
 	//Actually sets the motor's power to an acceleration-limited value of desiredPower

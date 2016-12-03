@@ -12,59 +12,37 @@ public class VelocityDrive extends BaseOpMode {
 	private static final int CALVIN = 0, JACK = 1;
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
-	private boolean clutchToggle = false;
+	private boolean clutchClutched;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
 		this.direction = new DriveDirection();
+		this.clutchClutched = false;
 	}
 	protected void loopAfterStart() {
-		final int gamepad;
-		final double yScaleFactor, sScaleAtRest, sScaleWhenMoving;
-//		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) { //if Calvin not driving, Jack can drive
-//			gamepad = JACK;
-//			yScaleFactor = 0.3;
-//			sScaleAtRest = 0.2;
-//			sScaleWhenMoving = 0.3;
-//		}
-//		else { //Calvin driving
-			gamepad = CALVIN;
-			yScaleFactor = 1.0;
-			sScaleAtRest = 0.4;
+		final int driveGamepad = CALVIN;
+		final double yScaleFactor = 1.0,
+			sScaleAtRest = 0.4,
 			sScaleWhenMoving = 1.0;
-//		}
-		if (this.gamepads[gamepad].getLeftY() == 0.0) { //if just turning, turn slower for greater accuracy
+		if (this.gamepads[driveGamepad].leftStickAtRest()) { //if just turning, turn slower for greater accuracy
 			this.direction.drive(0.0, 0.0);
-			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleAtRest);
+			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleAtRest);
 		}
 		else { //if banana-turning, turn faster
-			this.direction.drive(0.0, scaleStick(this.gamepads[gamepad].getLeftY()) * yScaleFactor);
-			this.direction.turn(scaleStick(this.gamepads[gamepad].getRightX()) * sScaleWhenMoving);
+			this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
+			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleWhenMoving);
 		}
-		this.configuration.move(this.direction, 0.15);
+		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 
 		final double intakePower;
-		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[CALVIN].getRightTrigger()) { //Calvin picking up
-			if (this.gamepads[CALVIN].getRightBumper()) {
-				intakePower = MotorConstants.INTAKE_IN;
-			}
-			else if (this.gamepads[CALVIN].getRightTrigger()) {
-				intakePower = MotorConstants.INTAKE_OUT;
-			}
-			else {
-				intakePower = MotorWrapper.STOPPED;
-			}
+		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getLeftBumper()) {
+			intakePower = MotorConstants.INTAKE_IN;
 		}
-		else { //if Calvin not picking up, Jack can elevate
-			 if (this.gamepads[JACK].getLeftBumper()) {
-				 intakePower = MotorConstants.INTAKE_IN;
-			}
-			else if (this.gamepads[JACK].getLeftTrigger()) {
-				intakePower = MotorConstants.INTAKE_OUT;
-			}
-			else {
-				 intakePower = MotorWrapper.STOPPED;
-			 }
+		else if (this.gamepads[CALVIN].getRightTrigger() || this.gamepads[JACK].getLeftTrigger()) {
+			intakePower = MotorConstants.INTAKE_OUT;
+		}
+		else {
+			intakePower = MotorWrapper.STOPPED;
 		}
 		this.configuration.intake.setPower(intakePower);
 
@@ -76,30 +54,38 @@ public class VelocityDrive extends BaseOpMode {
 			this.configuration.teleopAdvanceShooterToDown();
 		}
 
+		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
-			this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP);
+			shooterStopperPower = MotorConstants.SHOOTER_STOPPER_UP;
 		}
 		else if (this.gamepads[JACK].dpadDown()) {
-			this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_DOWN);
-		}
-		else this.configuration.shooterStopper.setPower(MotorWrapper.STOPPED);
-
-		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) {
-			this.clutchToggle = !this.clutchToggle;
-			if (this.clutchToggle) {
-				this.configuration.clutch.setPosition(MotorConstants.CLUTCH_CLUTCHED);
-			}
-			else {
-				this.configuration.clutch.setPosition(MotorConstants.CLUTCH_ENGAGED);
-			}
-		}
-
-		if (this.gamepads[JACK].getA()) {
-			this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_DUMPING);
+			shooterStopperPower = MotorConstants.SHOOTER_STOPPER_DOWN;
 		}
 		else {
-			this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_HOLDING);
+			shooterStopperPower = MotorWrapper.STOPPED;
 		}
+		this.configuration.safeShooterStopper(shooterStopperPower);
+
+		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) {
+			this.clutchClutched = !this.clutchClutched;
+			final double clutchPosition;
+			if (this.clutchClutched) {
+				clutchPosition = MotorConstants.CLUTCH_CLUTCHED;
+			}
+			else {
+				clutchPosition = MotorConstants.CLUTCH_ENGAGED;
+			}
+			this.configuration.clutch.setPosition(clutchPosition);
+		}
+
+		final double snakePosition;
+		if (this.gamepads[JACK].getA()) {
+			snakePosition = MotorConstants.SNAKE_DUMPING;
+		}
+		else {
+			snakePosition = MotorConstants.SNAKE_HOLDING;
+		}
+		this.configuration.snake.setPosition(snakePosition);
 	}
 
 	private static double scaleStick(double stick) {

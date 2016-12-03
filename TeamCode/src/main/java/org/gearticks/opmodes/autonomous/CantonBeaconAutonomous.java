@@ -1,10 +1,8 @@
 package org.gearticks.opmodes.autonomous;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
-import android.os.Environment;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,9 +10,6 @@ import com.vuforia.HINT;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -172,10 +167,10 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 					this.nextStage();
 				}
 				else if (this.stageTimer.seconds() > 0.5) {
-					this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_HOLDING);
+					this.configuration.snake.setPosition(MotorConstants.SNAKE_HOLDING);
 				}
 				else {
-					this.configuration.particleBlocker.setPosition(MotorConstants.SNAKE_DUMPING);
+					this.configuration.snake.setPosition(MotorConstants.SNAKE_DUMPING);
 				}
 				break;
 			case SHOOT_SECOND_BALL:

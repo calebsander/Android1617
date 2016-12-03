@@ -19,7 +19,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private boolean shooterWasDown;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
-	public final Servo clutch, particleBlocker;
+	public final Servo clutch, snake;
 	public final CRServo shooterStopper;
 	public final BNO055 imu;
 	public final DigitalChannel shooterDown;
@@ -40,9 +40,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.driveRight.setStopMode(ZeroPowerBehavior.BRAKE);
 
 		this.clutch = (Servo)hardwareMap.get("clutch");
-		this.clutch.setPosition(MotorConstants.CLUTCH_CLUTCHED);
-		this.particleBlocker = (Servo)hardwareMap.get("particleBlocker");
-		this.particleBlocker.setPosition(MotorConstants.SNAKE_HOLDING);
+		this.clutch.setPosition(MotorConstants.CLUTCH_ENGAGED);
+		this.snake = (Servo)hardwareMap.get("snake");
+		this.snake.setPosition(MotorConstants.SNAKE_HOLDING);
 		this.shooterStopper = (CRServo)hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 

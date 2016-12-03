@@ -8,7 +8,7 @@
     </DeviceInterfaceModule>
     <ServoController name="Servos" serialNumber="AL00XM5W">
         <ContinuousRotationServo name="shooterStopper" port="1" />
-        <Servo name="particleBlocker" port="2" />
+        <Servo name="snake" port="2" />
         <Servo name="clutch" port="3" />
     </ServoController>
     <MotorController name="Intake and Shoot" serialNumber="AL00VD65">
