@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Random;
+import java.util.List;
 
 public class AutonomousDatalogger {
 	private static final char COMMA = ',';
@@ -19,9 +19,12 @@ public class AutonomousDatalogger {
 	static {
 		DATALOG_DIR.mkdir(); //ensure that the datalog directory exists
 	}
-	private static File lastFile() {
+	public static File[] listDatalogFiles() {
+		return DATALOG_DIR.listFiles();
+	}
+	public static File lastFile() {
 		File newest = null;
-		for (final File file : DATALOG_DIR.listFiles()) {
+		for (final File file : listDatalogFiles()) {
 			if (
 				newest == null ||
 				new Date(file.lastModified()).after(new Date(newest.lastModified()))
@@ -30,13 +33,9 @@ public class AutonomousDatalogger {
 		if (newest == null) throw new RuntimeException("No datalogs saved");
 		return newest;
 	}
-	public static String lastDatalogName() {
-		return lastFile().getName();
-	}
-	public static ArrayList<String> lastDatalog() {
-		final File newest = AutonomousDatalogger.lastFile();
+	public static List<String> openDatalog(File datalogFile) {
 		try {
-			final BufferedReader lines = new BufferedReader(new FileReader(newest));
+			final BufferedReader lines = new BufferedReader(new FileReader(datalogFile));
 			final ArrayList<String> result = new ArrayList<>();
 			for (String line; (line = lines.readLine()) != null;) result.add(line);
 			lines.close();
@@ -56,14 +55,15 @@ public class AutonomousDatalogger {
 		final int year = calendar.get(Calendar.YEAR);
 		final int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		final int minute = calendar.get(Calendar.MINUTE);
-		final int randomInt = new Random().nextInt(100000);
-		//e.g. 8-24-2016+13-01+ffbe.log
-		final String fileName = Integer.toString(month) + "-" +
-			Integer.toString(day) + "-" +
-			Integer.toString(year) + "+" +
-			Integer.toString(hour) + "-" +
-			Integer.toString(minute) + "+" +
-			Integer.toString(randomInt, 16) +
+		final int second = calendar.get(Calendar.SECOND);
+		//e.g. 2016-08-24+13-01-20.log
+		final String fileName =
+			padWithZeros(Integer.toString(year), 4) + "-" +
+			padWithZeros(Integer.toString(month), 2) + "-" +
+			padWithZeros(Integer.toString(day), 2) + "+" +
+			padWithZeros(Integer.toString(hour), 2) + "-" +
+			padWithZeros(Integer.toString(minute), 2) + "-" +
+			padWithZeros(Integer.toString(second), 2) +
 			".log";
 		try {
 			this.outStream = new PrintStream(new File(DATALOG_DIR, fileName));
@@ -73,6 +73,14 @@ public class AutonomousDatalogger {
 		}
 	}
 
+	private static String padWithZeros(String input, int characters) {
+		final int charactersToAdd = characters - input.length();
+		if (charactersToAdd <= 0) return input;
+		final StringBuilder builder = new StringBuilder(characters);
+		for (int i = 0; i < charactersToAdd; i++) builder.append('0');
+		builder.append(input);
+		return builder.toString();
+	}
 	public void writeLine(Object... objects) {
 		for (int i = 0; i < objects.length; i++) {
 			this.outStream.print(objects[i]);

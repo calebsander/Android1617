@@ -1,39 +1,65 @@
 package org.gearticks.opmodes.utility;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import java.util.ArrayList;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import org.gearticks.AutonomousDatalogger;
+import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
-@Autonomous(name = "Display Datalog")
+@TeleOp
 public class DisplayDatalogs extends BaseOpMode {
 	private static final int LINES = 20;
-	private String logName;
-	private ArrayList<String> dataLines;
+	private ValuesJoystickOption<Filename> datalogOption;
+	private List<String> dataLines;
 	private int lineNumber;
+
+	private static class Filename {
+		public final File file;
+
+		public Filename(File file) {
+			this.file = file;
+		}
+
+		public String toString() {
+			return this.file.getName();
+		}
+	}
 
 	private void scrollUpPage() {
 		final int newLineNumber = this.lineNumber - LINES;
-		if (newLineNumber > -1) this.lineNumber = newLineNumber;
+		this.lineNumber = Math.max(newLineNumber, 0);
 	}
 	private void scrollDownPage() {
 		final int newLineNumber = this.lineNumber + LINES;
-		if (newLineNumber < this.dataLines.size()) this.lineNumber = newLineNumber;
+		this.lineNumber = Math.min(newLineNumber, this.getEndIndex());
 	}
 	private void goToStart() {
 		this.lineNumber = 0;
 	}
+	private int getEndIndex() {
+		return Math.max(this.dataLines.size() - LINES, 0);
+	}
 	private void goToEnd() {
-		this.lineNumber = Math.max(0, this.dataLines.size() - LINES);
+		this.lineNumber = this.getEndIndex();
 	}
 	protected void initialize() {
-		this.logName = AutonomousDatalogger.lastDatalogName();
-		this.dataLines = AutonomousDatalogger.lastDatalog();
+		final File[] datalogFiles = AutonomousDatalogger.listDatalogFiles();
+		final Filename[] datalogFilenames = new Filename[datalogFiles.length];
+		for (int i = 0; i < datalogFiles.length; i++) datalogFilenames[i] = new Filename(datalogFiles[i]);
+		Arrays.sort(datalogFilenames, new Comparator<Filename>() { //sort by filename (creation date) in inverse order
+			public int compare(Filename lhs, Filename rhs) {
+				return -lhs.toString().compareTo(rhs.toString());
+			}
+		});
+		this.datalogOption = new ValuesJoystickOption<>("Datalog", datalogFilenames);
+		this.addOption(this.datalogOption);
 		this.goToStart();
 	}
-	protected void loopBeforeStart() {
-		this.telemetry.clear();
-		this.telemetry.addLine(this.logName);
+	protected void matchStart() {
+		this.dataLines = AutonomousDatalogger.openDatalog(this.datalogOption.getRawSelectedOption().file);
 	}
 	protected void loopAfterStart() {
 		this.telemetry.clear();
