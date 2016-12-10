@@ -12,6 +12,7 @@ public abstract class VelocityMovementComponent {
 		this.direction = new DriveDirection();
 	}
 
+	public void init() {}
 	public void loop() {
 		this.setMovementDirection(this.direction);
 		this.configuration.move(this.direction, 0.06);
