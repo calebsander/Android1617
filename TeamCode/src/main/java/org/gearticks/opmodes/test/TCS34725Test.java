@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.LED;
 import org.gearticks.dimsensors.i2c.TCS34725;
 
 @Autonomous(name = "Adafruit Color Test", group = "test")
-@Disabled
+//@Disabled
 public class TCS34725Test extends OpMode {
 	private TCS34725 colorSensor;
 	private LED led;
