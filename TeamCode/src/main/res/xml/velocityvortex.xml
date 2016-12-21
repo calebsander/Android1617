@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name = "Velocity Drive">
+<Robot type="FirstInspires-FTC" name="Velocity Drive">
     <DeviceInterfaceModule name="DIM" serialNumber="AL00VG8T">
         <I2cDevice name="bno" port="0" />
         <DigitalDevice name="shooterNear" port="0" />
