@@ -14,21 +14,25 @@ public class VelocityDrive extends BaseOpMode {
 	private static final double TIME_TO_MOVE_SNAKE = 0.4; //seconds for snake to switch positions
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
-	private boolean clutchClutched;
 
 	private enum BallState {
+		//No ball in snake, so trying to put one into it
 		INTAKING,
+		//Ball in snake; prevent another from entering snake
 		HOLDING,
+		//Ball is ready to be loaded into shooter
 		LOADING
 	}
+	//The current state of the ball loader
 	private BallState ballState;
+	//Keeps track of the amount of time elapsed since the switch to the current BallState
 	private ElapsedTime ballStateTimer;
+	//Whether ball has been shot since it was last loaded
 	private boolean shotBall;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
 		this.direction = new DriveDirection();
-		this.clutchClutched = false;
 		this.ballState = BallState.values()[0];
 		this.ballStateTimer = new ElapsedTime();
 		this.shotBall = true;
@@ -48,40 +52,41 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 
-		final double manualIntakePower;
+		final double intakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
-			manualIntakePower = MotorConstants.INTAKE_IN;
+			intakePower = MotorWrapper.STOPPED;
 		}
 		else if (this.gamepads[CALVIN].getRightTrigger() || this.gamepads[JACK].getRightTrigger()) {
-			manualIntakePower = MotorConstants.INTAKE_OUT;
+			intakePower = MotorConstants.INTAKE_OUT;
 		}
 		else {
-			manualIntakePower = MotorWrapper.STOPPED;
+			intakePower = MotorConstants.INTAKE_IN; //leave intake on all the time by default
 		}
+		this.configuration.intake.setPower(intakePower);
 
-		double autoIntakePower = MotorWrapper.STOPPED;
+		double snakePosition  = MotorConstants.SNAKE_HOLDING,
+		       clutchPosition = MotorConstants.CLUTCH_CLUTCHED;
 		switch (this.ballState) {
 			case INTAKING:
-				autoIntakePower = MotorConstants.INTAKE_IN;
+				clutchPosition = MotorConstants.CLUTCH_ENGAGED; //this is the only state when it is safe to load a ball into the snake
 				this.autoShooterUnlessBumper();
-				this.configuration.snake.setPosition(MotorConstants.SNAKE_HOLDING);
-				if (this.configuration.ballInSnake() && this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) this.nextBallState();
+				//Wait for snake to return to holding because it triggers the sensors on the way down
+				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE && this.configuration.ballInSnake()) this.nextBallState();
 				break;
 			case HOLDING:
 				this.autoShooterUnlessBumper();
-				this.configuration.snake.setPosition(MotorConstants.SNAKE_HOLDING);
 				if (this.configuration.isShooterDown() && this.shotBall) this.nextBallState();
 				break;
 			case LOADING:
-				this.configuration.teleopAdvanceShooterToDown();
-				this.configuration.snake.setPosition(MotorConstants.SNAKE_DUMPING);
+				this.configuration.teleopAdvanceShooterToDown(); //hold shooter down
+				snakePosition = MotorConstants.SNAKE_DUMPING; //this is the only state when the snake should be up
 				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) {
 					this.shotBall = false;
 					this.nextBallState();
 				}
 		}
-		if (manualIntakePower == MotorWrapper.STOPPED) this.configuration.intake.setPower(autoIntakePower); //not controlling it manually
-		else this.configuration.intake.setPower(manualIntakePower);
+		this.configuration.snake.setPosition(snakePosition);
+		this.configuration.clutch.setPosition(clutchPosition);
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
@@ -94,20 +99,9 @@ public class VelocityDrive extends BaseOpMode {
 			shooterStopperPower = MotorWrapper.STOPPED;
 		}
 		this.configuration.safeShooterStopper(shooterStopperPower);
-
-		if (this.gamepads[CALVIN].getA() && !this.gamepads[CALVIN].getLast().getA()) {
-			this.clutchClutched = !this.clutchClutched;
-			final double clutchPosition;
-			if (this.clutchClutched) {
-				clutchPosition = MotorConstants.CLUTCH_CLUTCHED;
-			}
-			else {
-				clutchPosition = MotorConstants.CLUTCH_ENGAGED;
-			}
-			this.configuration.clutch.setPosition(clutchPosition);
-		}
 	}
 
+	//Move shooter to down unless bumper is pressed, in which case, fire ball
 	private void autoShooterUnlessBumper() {
 		if (this.gamepads[JACK].getLeftBumper()) {
 			this.configuration.resetAutoShooter();
@@ -118,6 +112,7 @@ public class VelocityDrive extends BaseOpMode {
 			this.configuration.teleopAdvanceShooterToDown();
 		}
 	}
+	//Advance to next BallState (wrapping around) and reset state timer
 	private void nextBallState() {
 		this.ballStateTimer.reset();
 		final BallState[] ballStates = BallState.values();
