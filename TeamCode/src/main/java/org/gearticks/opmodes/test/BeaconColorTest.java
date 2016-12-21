@@ -3,6 +3,8 @@ package org.gearticks.opmodes.test;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
+import com.qualcomm.ftcrobotcontroller.R;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -16,6 +18,7 @@ import org.gearticks.VuforiaKey;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
+@Disabled
 public class BeaconColorTest extends BaseOpMode {
 	private static final int CROP_WIDTH = 600, CROP_HEIGHT = 350;
 	private static final int CROP_LEFT_X = 275;
@@ -25,7 +28,7 @@ public class BeaconColorTest extends BaseOpMode {
 	private BlockingQueue<CloseableFrame> frameQueue;
 
 	protected void initialize() {
-		final VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(/*R.id.cameraMonitorViewId*/);
+		final VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
 		parameters.vuforiaLicenseKey = VuforiaKey.KEY;
 		parameters.cameraDirection = CameraDirection.FRONT;
 		final VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(parameters);

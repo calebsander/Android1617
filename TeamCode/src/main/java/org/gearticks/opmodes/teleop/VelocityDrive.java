@@ -1,6 +1,7 @@
 package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -10,14 +11,27 @@ import org.gearticks.opmodes.BaseOpMode;
 @TeleOp
 public class VelocityDrive extends BaseOpMode {
 	private static final int CALVIN = 0, JACK = 1;
+	private static final double TIME_TO_MOVE_SNAKE = 0.4; //seconds for snake to switch positions
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
 	private boolean clutchClutched;
+
+	private enum BallState {
+		INTAKING,
+		HOLDING,
+		LOADING
+	}
+	private BallState ballState;
+	private ElapsedTime ballStateTimer;
+	private boolean shotBall;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
 		this.direction = new DriveDirection();
 		this.clutchClutched = false;
+		this.ballState = BallState.values()[0];
+		this.ballStateTimer = new ElapsedTime();
+		this.shotBall = true;
 	}
 	protected void loopAfterStart() {
 		final int driveGamepad = CALVIN;
@@ -34,25 +48,40 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 
-		final double intakePower;
+		final double manualIntakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
-			intakePower = MotorConstants.INTAKE_IN;
+			manualIntakePower = MotorConstants.INTAKE_IN;
 		}
 		else if (this.gamepads[CALVIN].getRightTrigger() || this.gamepads[JACK].getRightTrigger()) {
-			intakePower = MotorConstants.INTAKE_OUT;
+			manualIntakePower = MotorConstants.INTAKE_OUT;
 		}
 		else {
-			intakePower = MotorWrapper.STOPPED;
+			manualIntakePower = MotorWrapper.STOPPED;
 		}
-		this.configuration.intake.setPower(intakePower);
 
-		if (this.gamepads[JACK].getLeftBumper()) {
-			this.configuration.resetAutoShooter();
-			this.configuration.shootFast();
+		double autoIntakePower = MotorWrapper.STOPPED;
+		switch (this.ballState) {
+			case INTAKING:
+				autoIntakePower = MotorConstants.INTAKE_IN;
+				this.autoShooterUnlessBumper();
+				this.configuration.snake.setPosition(MotorConstants.SNAKE_HOLDING);
+				if (this.configuration.ballInSnake() && this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) this.nextBallState();
+				break;
+			case HOLDING:
+				this.autoShooterUnlessBumper();
+				this.configuration.snake.setPosition(MotorConstants.SNAKE_HOLDING);
+				if (this.configuration.isShooterDown() && this.shotBall) this.nextBallState();
+				break;
+			case LOADING:
+				this.configuration.teleopAdvanceShooterToDown();
+				this.configuration.snake.setPosition(MotorConstants.SNAKE_DUMPING);
+				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) {
+					this.shotBall = false;
+					this.nextBallState();
+				}
 		}
-		else {
-			this.configuration.teleopAdvanceShooterToDown();
-		}
+		if (manualIntakePower == MotorWrapper.STOPPED) this.configuration.intake.setPower(autoIntakePower); //not controlling it manually
+		else this.configuration.intake.setPower(manualIntakePower);
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
@@ -77,17 +106,23 @@ public class VelocityDrive extends BaseOpMode {
 			}
 			this.configuration.clutch.setPosition(clutchPosition);
 		}
-
-		final double snakePosition;
-		if (this.gamepads[JACK].getA()) {
-			snakePosition = MotorConstants.SNAKE_DUMPING;
-		}
-		else {
-			snakePosition = MotorConstants.SNAKE_HOLDING;
-		}
-		this.configuration.snake.setPosition(snakePosition);
 	}
 
+	private void autoShooterUnlessBumper() {
+		if (this.gamepads[JACK].getLeftBumper()) {
+			this.configuration.resetAutoShooter();
+			this.configuration.shootFast();
+			this.shotBall = true;
+		}
+		else {
+			this.configuration.teleopAdvanceShooterToDown();
+		}
+	}
+	private void nextBallState() {
+		this.ballStateTimer.reset();
+		final BallState[] ballStates = BallState.values();
+		this.ballState = ballStates[(this.ballState.ordinal() + 1) % ballStates.length];
+	}
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
 	}

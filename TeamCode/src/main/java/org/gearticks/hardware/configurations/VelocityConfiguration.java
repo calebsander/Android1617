@@ -20,10 +20,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
 	public final Servo clutch, snake;
-	public final CRServo shooterStopper;
+	private final CRServo shooterStopper;
 	public final BNO055 imu;
-	public final DigitalChannel shooterDown;
-	public final DigitalChannel shooterNear, shooterFar;
+	private final DigitalChannel shooterDown;
+	private final DigitalChannel shooterNear, shooterFar;
+	private final DigitalChannel badBoy1, badBoy2;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
@@ -57,6 +58,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterNear.setMode(Mode.INPUT);
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
+		this.badBoy1 = (DigitalChannel)hardwareMap.get("badBoy1");
+		this.badBoy1.setMode(Mode.INPUT);
+		this.badBoy2 = (DigitalChannel)hardwareMap.get("badBoy2");
+		this.badBoy2.setMode(Mode.INPUT);
 	}
 	public void teardown() {
 		this.imu.eulerRequest.stopReading();
@@ -88,6 +93,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			power = 0.0;
 		}
 		this.shooterStopper.setPower(power);
+	}
+	private boolean badBoy1Triggered() {
+		return !this.badBoy1.getState();
+	}
+	private boolean badBoy2Triggered() {
+		return !this.badBoy2.getState();
+	}
+	public boolean ballInSnake() {
+		return this.badBoy1Triggered() || this.badBoy2Triggered();
 	}
 	public void resetEncoder() {
 		final MotorWrapper driveMotor = this.driveLeft;
@@ -137,7 +151,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterWasDown = false;
 	}
 	public boolean isShooterDown() {
-		return this.shooterWasDown && !this.shooter.notAtTarget();
+		return this.shooterWasDown && Math.abs(this.shooter.encoderValue() - MotorConstants.SHOOTER_TICKS_TO_DOWN) < 5;
 	}
 
 	public static abstract class MotorConstants {
@@ -159,10 +173,5 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
-
-		//Flips a servo to the other range
-		private static double invert(double pos) {
-			return 1.0 - pos;
-		}
 	}
 }

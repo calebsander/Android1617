@@ -5,6 +5,8 @@
         <DigitalDevice name="shooterNear" port="0" />
         <DigitalDevice name="shooterFar" port="1" />
         <DigitalDevice name="shooterDown" port="2" />
+        <DigitalDevice name="badBoy1" port="3" />
+        <DigitalDevice name="badBoy2" port="4" />
     </DeviceInterfaceModule>
     <ServoController name="Servos" serialNumber="AL00XM5W">
         <ContinuousRotationServo name="shooterStopper" port="1" />
