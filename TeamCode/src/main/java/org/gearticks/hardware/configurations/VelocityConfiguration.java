@@ -10,7 +10,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.gearticks.dimsensors.i2c.BNO055;
+import org.gearticks.dimsensors.i2c.GearticksBNO055;
+import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
@@ -22,8 +23,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final TankDrive drive;
 	public final Servo clutch, snake;
 	private final CRServo shooterStopper;
-	public final BNO055 imu;
-	public final ModernRoboticsI2cRangeSensor rangeSensor;
+	public final GearticksBNO055 imu;
+	public final GearticksMRRangeSensor rangeSensor;
 	private final DigitalChannel shooterDown;
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
@@ -53,8 +54,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterStopper = (CRServo)hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 
-		this.imu = new BNO055((I2cDevice)hardwareMap.get("bno"));
-		this.rangeSensor = (ModernRoboticsI2cRangeSensor)hardwareMap.get("range");
+		this.imu = new GearticksBNO055((I2cDevice)hardwareMap.get("bno"));
+		this.rangeSensor = new GearticksMRRangeSensor((I2cDevice)hardwareMap.get("range"));
 		this.shooterDown = (DigitalChannel)hardwareMap.get("shooterDown");
 		this.shooterDown.setMode(Mode.INPUT);
 		this.shooterNear = (DigitalChannel)hardwareMap.get("shooterNear");
@@ -67,8 +68,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.badBoy2.setMode(Mode.INPUT);
 	}
 	public void teardown() {
-		this.imu.eulerRequest.stopReading();
 		this.imu.terminate();
+		this.rangeSensor.terminate();
 	}
 	public void stopMotion() {
 		this.intake.stop();

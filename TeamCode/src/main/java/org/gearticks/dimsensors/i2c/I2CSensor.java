@@ -185,6 +185,7 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 	protected void readyCallback() {}
 	//Stop communicating on the port
 	public void terminate() {
+		this.requests.clear();
 		this.device.deregisterForPortReadyCallback();
 	}
 }

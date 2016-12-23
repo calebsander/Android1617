@@ -6,7 +6,7 @@
     </MotorController>
     <DeviceInterfaceModule name="DIM" serialNumber="AL00VG8T">
         <I2cDevice name="bno" port="0" />
-        <ModernRoboticsI2cRangeSensor name="range" port="1" />
+        <I2cDevice name="range" port="1" />
         <DigitalDevice name="shooterNear" port="0" />
         <DigitalDevice name="shooterFar" port="1" />
         <DigitalDevice name="shooterDown" port="2" />

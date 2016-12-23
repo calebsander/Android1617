@@ -13,12 +13,15 @@ public class RangeAndIMUTest extends BaseOpMode {
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
 		this.configuration.imu.eulerRequest.startReading();
+		this.configuration.rangeSensor.ultrasonicRequest.startReading();
+		this.configuration.rangeSensor.opticalRequest.startReading();
 	}
 	protected void matchStart() {
 		this.configuration.imu.resetHeading();
 	}
 	protected void loopAfterStart() {
-		this.telemetry.addData("Range", this.configuration.rangeSensor.cmUltrasonic());
+		this.telemetry.addData("Ultrasonic", this.configuration.rangeSensor.cmUltrasonic());
+		this.telemetry.addData("Optical", this.configuration.rangeSensor.cmOptical());
 		this.telemetry.addData("Yaw", this.configuration.imu.getRelativeYaw());
 	}
 	protected void matchEnd() {
