@@ -1,5 +1,6 @@
 package org.gearticks.hardware.configurations;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -22,6 +23,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final Servo clutch, snake;
 	private final CRServo shooterStopper;
 	public final BNO055 imu;
+	public final ModernRoboticsI2cRangeSensor rangeSensor;
 	private final DigitalChannel shooterDown;
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
@@ -52,6 +54,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterStopper.setPower(0.0);
 
 		this.imu = new BNO055((I2cDevice)hardwareMap.get("bno"));
+		this.rangeSensor = (ModernRoboticsI2cRangeSensor)hardwareMap.get("range");
 		this.shooterDown = (DigitalChannel)hardwareMap.get("shooterDown");
 		this.shooterDown.setMode(Mode.INPUT);
 		this.shooterNear = (DigitalChannel)hardwareMap.get("shooterNear");
