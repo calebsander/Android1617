@@ -12,6 +12,7 @@
         <DigitalDevice name="shooterDown" port="2" />
         <DigitalDevice name="badBoy1" port="3" />
         <DigitalDevice name="badBoy2" port="4" />
+        <DigitalDevice name="whiteLine" port="5" />
     </DeviceInterfaceModule>
     <MotorController name="Intake and Shoot" serialNumber="AL00VD65">
         <Motor name="intake" port="1" />

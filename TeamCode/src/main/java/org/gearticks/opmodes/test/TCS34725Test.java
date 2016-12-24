@@ -1,14 +1,12 @@
 package org.gearticks.opmodes.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LED;
 import org.gearticks.dimsensors.i2c.TCS34725;
 
-@Autonomous(name = "Adafruit Color Test", group = "test")
-//@Disabled
+@Autonomous
 public class TCS34725Test extends OpMode {
 	private TCS34725 colorSensor;
 	private LED led;

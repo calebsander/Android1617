@@ -1,6 +1,5 @@
 package org.gearticks.hardware.configurations;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -28,6 +27,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel shooterDown;
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
+	public final DigitalChannel whiteLineSensor;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
@@ -66,6 +66,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.badBoy1.setMode(Mode.INPUT);
 		this.badBoy2 = (DigitalChannel)hardwareMap.get("badBoy2");
 		this.badBoy2.setMode(Mode.INPUT);
+		this.whiteLineSensor = (DigitalChannel)hardwareMap.get("whiteLine");
+		this.whiteLineSensor.setMode(Mode.INPUT);
 	}
 	public void teardown() {
 		this.imu.terminate();
