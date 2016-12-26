@@ -28,6 +28,7 @@ public class GiroDriveEncoder extends AutonomousComponentVelocityBase {
 	@Override
 	public void setup(int inputPort) {
 		super.setup(inputPort);
+		this.getConfiguration().resetEncoder();
 	}
 
 	@Override
