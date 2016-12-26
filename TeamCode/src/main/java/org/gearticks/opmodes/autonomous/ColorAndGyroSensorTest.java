@@ -12,8 +12,10 @@ import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.joystickoptions.IncrementOption;
 import org.gearticks.opmodes.BaseOpMode;
 
+
+//old, look in components for new one
 @Autonomous(name = "Color and Gyro Sensor Test Autonomous")
-//@Disabled
+@Disabled
 public class ColorAndGyroSensorTest extends BaseOpMode {
 	protected VelocityConfiguration configuration;
 	private DriveDirection direction;
