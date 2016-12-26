@@ -50,7 +50,11 @@ public class DriveSquareTest extends VelocityBaseOpMode {
 //        components.add(new Wait(2000, null, "Wait for 2 sec"));
         components.add(new GiroDriveEncoder(0.0, 0.5, 2000, this.configuration, "Drive for 2000 ticks heading forward"));
         components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
+        components.add(new GiroDriveEncoder(0.0, -0.5, 2000, this.configuration, "Drive for 2000 ticks heading backward"));
+        components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
         components.add(new GiroDriveEncoder(0.0, 0.5, 2000, this.configuration, "Drive for 2000 ticks heading forward"));
+        components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
+        components.add(new GiroDriveEncoder(0.0, -0.5, 2000, this.configuration, "Drive for 2000 ticks heading backward"));
         components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
         sm = new LinearStateMachineSimpleImpl(components);
     }
