@@ -22,11 +22,17 @@ public class ColorAndGyroSensorTest extends BaseOpMode {
 	private enum Stage {
 		FORWARD_1,
 		WAIT_2,
-		BACKWARD_3,
+		TURN_RIGHT_3,
 		WAIT_4,
 		FORWARD_5,
 		WAIT_6,
-		BACKWARD_7,
+		TURN_RIGHT_7,
+		WAIT_8,
+//		BACKWARD_3,
+//		WAIT_4,
+//		FORWARD_5,
+//		WAIT_6,
+//		BACKWARD_7,
 		STOPPED
 	}
 	private Stage stage;
@@ -54,9 +60,9 @@ public class ColorAndGyroSensorTest extends BaseOpMode {
 	protected void loopAfterStart() {
 		switch (this.stage) {
 			case FORWARD_1:
-				this.direction.drive(0.0, 0.7);
+				this.direction.drive(0.0, 0.5);
 				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 1700) {
+				if (this.configuration.encoderPositive() > 2500) {
 					this.direction.stopDrive();
 					this.nextStage();
 				}
@@ -66,22 +72,22 @@ public class ColorAndGyroSensorTest extends BaseOpMode {
 				this.configuration.resetEncoder();
 				if (this.stageTimer.seconds() > 0.5) this.nextStage();
 				break;
-			case BACKWARD_3:
-				this.direction.drive(0.0, -0.7);
-				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 1700) {
+			case TURN_RIGHT_3:
+				if (this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
 					this.direction.stopDrive();
+					this.configuration.resetEncoder();
 					this.nextStage();
 				}
+				break;
 			case WAIT_4:
 				this.direction.stopDrive();
 				this.configuration.resetEncoder();
 				if (this.stageTimer.seconds() > 0.5) this.nextStage();
 				break;
 			case FORWARD_5:
-				this.direction.drive(0.0, 0.7);
-				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 1700) {
+				this.direction.drive(0.0, 0.5);
+				this.direction.gyroCorrect(90.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+				if (this.configuration.encoderPositive() > 2500) {
 					this.direction.stopDrive();
 					this.nextStage();
 				}
@@ -91,14 +97,52 @@ public class ColorAndGyroSensorTest extends BaseOpMode {
 				this.configuration.resetEncoder();
 				if (this.stageTimer.seconds() > 0.5) this.nextStage();
 				break;
-			case BACKWARD_7:
-				this.direction.drive(0.0, -0.7);
-				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-				if (this.configuration.encoderPositive() > 1700) {
+			case TURN_RIGHT_7:
+				if (this.direction.gyroCorrect(180.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) > 10) {
 					this.direction.stopDrive();
+					this.configuration.resetEncoder();
 					this.nextStage();
 				}
 				break;
+			case WAIT_8:
+				this.direction.stopDrive();
+				this.configuration.resetEncoder();
+				if (this.stageTimer.seconds() > 0.5) this.nextStage();
+				break;
+//			case BACKWARD_3:
+//				this.direction.drive(0.0, -0.5);
+//				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+//				if (this.configuration.encoderPositive() > 2500) {
+//					this.direction.stopDrive();
+//					this.nextStage();
+//				}
+//				break;
+//			case WAIT_4:
+//				this.direction.stopDrive();
+//				this.configuration.resetEncoder();
+//				if (this.stageTimer.seconds() > 0.5) this.nextStage();
+//				break;
+//			case FORWARD_5:
+//				this.direction.drive(0.0, 0.5);
+//				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+//				if (this.configuration.encoderPositive() > 2500) {
+//					this.direction.stopDrive();
+//					this.nextStage();
+//				}
+//				break;
+//			case WAIT_6:
+//				this.direction.stopDrive();
+//				this.configuration.resetEncoder();
+//				if (this.stageTimer.seconds() > 0.5) this.nextStage();
+//				break;
+//			case BACKWARD_7:
+//				this.direction.drive(0.0, -0.5);
+//				this.direction.gyroCorrect(0.0, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+//				if (this.configuration.encoderPositive() > 2500) {
+//					this.direction.stopDrive();
+//					this.nextStage();
+//				}
+//				break;
 			case STOPPED:
 				this.configuration.stopMotion();
 		}
