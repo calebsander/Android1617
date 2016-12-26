@@ -7,21 +7,21 @@ import org.gearticks.hardware.drive.DriveDirection;
 public class GiroDriveEncoder extends AutonomousComponentVelocityBase {
     private final DriveDirection direction = new DriveDirection();
     private double power = 0;
-	private final double heading;
+	private final double targetHeading;
 	private long encoderTarget;
 
     /**
      *
+     * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
      * @param power - between 0 and 1, input for DriveDirection
-     * @param heading - ? input to DriveDirection.gyroCorrect
      * @param encoderTarget - target for the encoder. If the encoderPositive exceeds this target, the component transitions
      * @param configuration
      * @param id - descriptive name for logging
      */
-	public GiroDriveEncoder(double power, double heading, long encoderTarget, VelocityConfiguration configuration, String id) {
+	public GiroDriveEncoder(double targetHeading, double power, long encoderTarget, VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.power = power;
-		this.heading = heading;
+		this.targetHeading = targetHeading;
         this.encoderTarget = encoderTarget;
 	}
 
@@ -37,7 +37,7 @@ public class GiroDriveEncoder extends AutonomousComponentVelocityBase {
 		
 		//control giro drive
         this.direction.drive(0.0, this.power);
-        this.direction.gyroCorrect(this.heading, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1);
+        this.direction.gyroCorrect(this.targetHeading, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1);
         this.getConfiguration().move(this.direction, 0.06);
 
         if (this.getConfiguration().encoderPositive() > this.encoderTarget) {
