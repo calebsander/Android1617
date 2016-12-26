@@ -20,6 +20,7 @@ public class VelocityBaseOpMode extends BaseOpMode {
 
     protected void matchStart() {
         this.telemetry.clear();
+        this.configuration.imu.resetHeading();
     }
 
     protected void matchEnd() {

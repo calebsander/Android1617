@@ -33,6 +33,7 @@ public class GiroTurn extends AutonomousComponentVelocityBase {
 		if (this.direction.gyroCorrect(this.targetHeading, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1) > 10) {
 			transition = 1;
 		}
+		this.getConfiguration().move(this.direction, 0.06);
 
 		return transition;
 	}

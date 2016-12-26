@@ -8,6 +8,7 @@ import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
 import org.gearticks.autonomous.generic.statemachine.network.LinearStateMachineFullImpl;
 import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
+import org.gearticks.autonomous.velocity.components.GiroTurn;
 import org.gearticks.autonomous.velocity.components.Wait;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  *
  */
-@Autonomous(name = "Color and Gyro Sensor Test Autonomous")
+@Autonomous(name = "Drive Square Test Autonomous")
 public class DriveSquareTest extends VelocityBaseOpMode {
     private LinearStateMachine sm;
 
@@ -47,15 +48,21 @@ public class DriveSquareTest extends VelocityBaseOpMode {
 
     protected void createComponents(){
         List<AutonomousComponent> components = new ArrayList<>();
-//        components.add(new Wait(2000, null, "Wait for 2 sec"));
-        components.add(new GiroDriveEncoder(0.0, 0.5, 2000, this.configuration, "Drive for 2000 ticks heading forward"));
-        components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
-        components.add(new GiroDriveEncoder(0.0, -0.5, 2000, this.configuration, "Drive for 2000 ticks heading backward"));
-        components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
-        components.add(new GiroDriveEncoder(0.0, 0.5, 2000, this.configuration, "Drive for 2000 ticks heading forward"));
-        components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
-        components.add(new GiroDriveEncoder(0.0, -0.5, 2000, this.configuration, "Drive for 2000 ticks heading backward"));
-        components.add(new Wait(2000, this.configuration, "Wait for 2 sec"));
+        components.add(new GiroDriveEncoder(0.0, 0.2, 4000, this.configuration, "Drive for 2000 ticks heading forward"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroTurn(90.0, this.configuration, "Turn Right 90"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroDriveEncoder(90.0, 0.2, 4000, this.configuration, "Drive for 2000 ticks heading forward"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroTurn(180.0, this.configuration, "Turn Right 90"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroDriveEncoder(180.0, 0.2, 4000, this.configuration, "Drive for 2000 ticks heading forward"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroTurn(270.0, this.configuration, "Turn Right 90"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroDriveEncoder(270.0, 0.2, 4000, this.configuration, "Drive for 2000 ticks heading forward"));
+        components.add(new Wait(500, this.configuration, "Wait for 0.5 sec"));
+        components.add(new GiroTurn(0.0, this.configuration, "Turn Right 90"));
         sm = new LinearStateMachineSimpleImpl(components);
     }
 }
