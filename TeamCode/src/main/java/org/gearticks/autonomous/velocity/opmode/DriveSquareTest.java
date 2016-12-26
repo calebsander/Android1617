@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
+import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
+import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
 import org.gearticks.autonomous.generic.statemachine.network.LinearStateMachineFullImpl;
 import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.Wait;
@@ -16,7 +18,7 @@ import java.util.List;
  */
 @Autonomous(name = "Color and Gyro Sensor Test Autonomous")
 public class DriveSquareTest extends VelocityBaseOpMode {
-    private LinearStateMachineFullImpl sm;
+    private LinearStateMachine sm;
 
     protected void initialize() {
         super.initialize();
@@ -50,6 +52,6 @@ public class DriveSquareTest extends VelocityBaseOpMode {
         components.add(new Wait(2000, null, "Wait for 2 sec"));
         components.add(new GiroDriveEncoder(0.0, 0.5, 2000, null, "Drive for 2000 ticks heading forward"));
         components.add(new Wait(2000, null, "Wait for 2 sec"));
-        sm = new LinearStateMachineFullImpl(components);
+        sm = new LinearStateMachineSimpleImpl(components);
     }
 }
