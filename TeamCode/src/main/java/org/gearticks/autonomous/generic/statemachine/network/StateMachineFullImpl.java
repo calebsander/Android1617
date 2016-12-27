@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 
-//import com.google.common.collect.HashBasedTable;
-//import com.google.common.collect.Table;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 
 /**
  * A StateMachineFullImpl itself implements an AutonomousComponent, i.e. this supports hierarchical state-machines.
@@ -25,8 +25,6 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
  *
  */
 public class StateMachineFullImpl implements AutonomousComponent{
-//	private final int numInputPorts;
-//	private final int numOutputPorts;
 	protected AutonomousComponent currentState = null;
 	
 	protected Map<Integer, InputPort> inputPorts = new HashMap<>();
@@ -34,12 +32,10 @@ public class StateMachineFullImpl implements AutonomousComponent{
 	
 	protected Set<AutonomousComponent> components = new HashSet<>();
 	//protected Map<AutonomousComponent, Map<Integer, AutonomousComponent>> outputConnections;
-//	protected Table<AutonomousComponent, Integer, StateMachineConnection> outputConnections = HashBasedTable.create();
+	protected Table<AutonomousComponent, Integer, StateMachineConnection> outputConnections = HashBasedTable.create();
 	
 	public StateMachineFullImpl(int numInputPorts, int numOutputPorts) {
 		super();
-//		this.numInputPorts = numInputPorts;
-//		this.numOutputPorts = numOutputPorts;
 		
 		assert numInputPorts >= 1;
 		assert numOutputPorts >= 1;
@@ -70,12 +66,12 @@ public class StateMachineFullImpl implements AutonomousComponent{
 		
 		StateMachineConnection connection = new StateMachineConnection(originComponent, originPortNumber, destinationComponent, destinationPortNumber);
 		//TODO: check if there already exists a connection from the output port
-//		if (!this.outputConnections.contains(originComponent, originPortNumber)){
-//			this.outputConnections.put(originComponent, originPortNumber, connection);
-//		}
-//		else {
-//			//log warning/error?
-//		}
+		if (!this.outputConnections.contains(originComponent, originPortNumber)){
+			this.outputConnections.put(originComponent, originPortNumber, connection);
+		}
+		else {
+			//log warning/error?
+		}
 		
 	}
 	
@@ -122,20 +118,19 @@ public class StateMachineFullImpl implements AutonomousComponent{
 			//Check for transition:
 			if (transition > 0){
 				//Find next component
-//				StateMachineConnection connection = this.outputConnections.get(this.currentState, transition);
-//				if (connection != null){
-//					this.currentState.tearDown();
-////					System.out.println("Transition from " + this.currentState + " to " + connection.getDestinationComponent() + " port " + connection.getDestinationPortNumber());
-//					this.getLogger().info("Transition from " + this.currentState + " to " + connection.getDestinationComponent() + " port " + connection.getDestinationPortNumber());
-//					this.currentState = connection.getDestinationComponent();
-//					this.currentState.setup(connection.getDestinationPortNumber());
-//
-//				}
-//				else {
-//					//no connection: log warning?
-//					//set to default outputport? Or keep StateMachineFullImpl in this state forever?
-//					this.getLogger().warning("ERROR: Transition from " + this.currentState + " to transition # "+ transition + ". No connection found.");
-//				}
+				StateMachineConnection connection = this.outputConnections.get(this.currentState, transition);
+				if (connection != null){
+					this.currentState.tearDown();
+					this.getLogger().info("Transition from " + this.currentState + " to " + connection.getDestinationComponent() + " port " + connection.getDestinationPortNumber());
+					this.currentState = connection.getDestinationComponent();
+					this.currentState.setup(connection.getDestinationPortNumber());
+
+				}
+				else {
+					//no connection: log warning?
+					//set to default outputport? Or keep StateMachineFullImpl in this state forever?
+					this.getLogger().warning("ERROR: Transition from " + this.currentState + " to transition # "+ transition + ". No connection found.");
+				}
 			}
 		}
 		

@@ -10,6 +10,14 @@
 
 
 // Custom definitions may go here
+apply plugin: 'com.android.application'
 
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    //compile files('libs/guava-17.0.jar')
+}
 // Include common definitions from above.
 apply from: '../build.common.gradle'
