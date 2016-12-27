@@ -8,18 +8,18 @@ import org.gearticks.hardware.drive.DriveDirection;
 
 public class DebugPause extends AutonomousComponentVelocityBase {
 	private final DriveDirection direction = new DriveDirection();
-	private GamepadWrapper gamepad;
+	private GamepadWrapper[] gamepads;
 	private Telemetry telemetry;
 	/**
 	 *
 	 * @param telemetry - pass in the telemetry to see data on phone during debug
-	 * @param gamepad - press x on this gamepad to continue, input to DriveDirection.gyroCorrect
+	 * @param gamepads - press x on this gamepad to continue, input to DriveDirection.gyroCorrect
 	 * @param configuration
 	 * @param id - descriptive name for logging
 	 */
-	public DebugPause(GamepadWrapper gamepad, Telemetry telemetry, VelocityConfiguration configuration, String id) {
+	public DebugPause(GamepadWrapper[] gamepads, Telemetry telemetry, VelocityConfiguration configuration, String id) {
 		super(configuration, id);
-		this.gamepad = gamepad;
+		this.gamepads = gamepads;
 		this.telemetry = telemetry;
 	}
 
@@ -38,7 +38,7 @@ public class DebugPause extends AutonomousComponentVelocityBase {
 		this.telemetry.addData("heading:", this.getConfiguration().imu.getHeading());
 		this.telemetry.addData("drive left:", this.getConfiguration().driveLeft.encoderValue());
 		this.telemetry.addData("drive right:", this.getConfiguration().driveRight.encoderValue());
-		if (this.gamepad.getX()) {
+		if (this.gamepads[0].getX()) {
 			transition = 1;
 		}
 

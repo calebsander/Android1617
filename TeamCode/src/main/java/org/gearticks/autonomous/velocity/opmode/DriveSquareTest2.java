@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.opmode.VelocityLinearAutonomousBaseOpMode;
@@ -15,6 +16,8 @@ import java.util.List;
  *
  */
 @Autonomous(name = "DriveSquareTest2")
+@Disabled
+
 public class DriveSquareTest2 extends VelocityLinearAutonomousBaseOpMode {
 
     protected List<AutonomousComponent> createComponents(){

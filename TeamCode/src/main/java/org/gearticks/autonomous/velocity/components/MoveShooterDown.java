@@ -10,6 +10,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class MoveShooterDown extends AutonomousComponentVelocityBase {
     public MoveShooterDown(VelocityConfiguration configuration, String id) {
         super(configuration, id);
+        this.getConfiguration().resetAutoShooter();
     }
 
     @Override

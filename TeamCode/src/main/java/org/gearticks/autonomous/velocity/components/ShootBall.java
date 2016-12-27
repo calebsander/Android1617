@@ -20,7 +20,6 @@ public class ShootBall extends AutonomousComponentVelocityBase {
         this.getConfiguration().shooter.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
         this.getConfiguration().shooter.setTarget(VelocityConfiguration.MotorConstants.SHOOTER_TICKS_TO_SHOOTING);
         this.getConfiguration().shooter.setPower(VelocityConfiguration.MotorConstants.SHOOTER_BACK);
-
     }
 
     @Override

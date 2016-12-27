@@ -39,7 +39,10 @@ public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpM
 
     protected void matchEnd() {
         super.matchEnd();
-        this.sm.tearDown();
+        //Some matchEnd call happened with this.sm was null
+        if (this.sm != null) {
+            this.sm.tearDown();
+        }
     }
 
     protected void initializeStateMachine(){

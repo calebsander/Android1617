@@ -10,7 +10,7 @@ import org.gearticks.joystickoptions.JoystickOptionController;
 public abstract class BaseOpMode extends OpMode {
 	protected final ElapsedTime matchTime;
 	protected final JoystickOptionController optionController;
-	protected GamepadWrapper[] gamepads;
+	protected GamepadWrapper[] gamepads = new GamepadWrapper[2];
 
 	public BaseOpMode() {
 		this.matchTime = new ElapsedTime();
@@ -28,7 +28,9 @@ public abstract class BaseOpMode extends OpMode {
 	public void start() {
 		this.resetStartTime();
 		this.matchTime.reset();
-		this.gamepads = new GamepadWrapper[]{new GamepadWrapper(this.gamepad1), new GamepadWrapper(this.gamepad2)};
+		//this.gamepads = new GamepadWrapper[]{new GamepadWrapper(this.gamepad1), new GamepadWrapper(this.gamepad2)};
+		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
+		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
 		this.matchStart();
 	}
 	public void loop() {
