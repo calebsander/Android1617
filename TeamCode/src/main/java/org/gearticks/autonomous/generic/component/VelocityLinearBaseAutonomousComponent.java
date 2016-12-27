@@ -15,12 +15,6 @@ public abstract class VelocityLinearBaseAutonomousComponent extends AutonomousCo
         this.initializeStateMachine();
     }
 
-    @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
-        this.sm.setup();
-    }
-
     protected void initializeStateMachine(){
         List<AutonomousComponent> components = this.createComponents();
         sm = new LinearStateMachineSimpleImpl(components);
@@ -28,4 +22,26 @@ public abstract class VelocityLinearBaseAutonomousComponent extends AutonomousCo
     }
 
     protected abstract List<AutonomousComponent> createComponents();
+
+    @Override
+    public void setup(int inputPort) {
+        super.setup(inputPort);
+        this.sm.setup();
+    }
+    @Override
+    public int run() {
+        int transition = super.run();
+
+        if (this.sm.run() > 0) {
+            transition = 1;
+        }
+
+        return transition;
+    }
+
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        this.sm.tearDown();
+    }
 }
