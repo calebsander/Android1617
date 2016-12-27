@@ -28,8 +28,9 @@ public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
     protected List<AutonomousComponent> createComponents(){
         List<AutonomousComponent> components = new ArrayList<>();
         components.add(new MoveShooterDown(this.configuration, "MoveShooterDown"));
-        components.add(new LoadBall(this.configuration, "Load Ball"));
-        components.add(new ResetSnake(this.configuration, "Reset Snake"));
+//        components.add(new LoadBall(this.configuration, "Load Ball"));
+//        components.add(new ResetSnake(this.configuration, "Reset Snake"));
+        components.add(new CompleteBallLoad(this.configuration, "Load Ball + Reset"));
         components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until A is pressed"));
         components.add(new ShootBall(this.configuration, "Shoot Ball"));
         return components;
