@@ -7,6 +7,10 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBas
 
 import java.util.List;
 
+/**
+ * AutonomousComponent that contains a Linear State-Machine.
+ * Can be used to create composite components that are linear state-machines of other components
+ */
 public abstract class VelocityLinearBaseAutonomousComponent extends AutonomousComponentVelocityBase {
     private LinearStateMachine sm;
 
