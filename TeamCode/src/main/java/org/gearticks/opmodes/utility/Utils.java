@@ -9,7 +9,7 @@ import java.text.MessageFormat;
  */
 
 public class Utils {
-    private static final String TAG = "Gearticks"; //for use as tag in Android logging
+    public static final String TAG = "Gearticks"; //for use as tag in Android logging
 
     /**
      * Throws an AssertionError if the object is null.

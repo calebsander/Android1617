@@ -1,9 +1,11 @@
 package org.gearticks.autonomous.generic.statemachine.linear;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.StateMachineAbstractImpl;
+import org.gearticks.opmodes.utility.Utils;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -31,11 +33,13 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
         if (this.iterator.hasNext()) {
             this.currentState = this.iterator.next();
             this.currentState.setup();
-            this.getLogger().info("Starting with " + this.currentState);
+            //this.getLogger().info("Starting with " + this.currentState);
+            Log.i(Utils.TAG, "StateMachine: Starting with " + this.currentState);
         }
         else {
             this.currentState = null;
-            this.getLogger().warning("LinearStateMachine has no components. Cannot start " + this.getId());
+            //this.getLogger().warning("LinearStateMachine has no components. Cannot start " + this.getId());
+            Log.i(Utils.TAG, "StateMachine: LinearStateMachine has no components. Cannot start " + this.getId());
         }
     }
 
@@ -62,7 +66,8 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
                     //No more next component -> end of this state-machine
                     outputPortNumber = 1;
                     this.currentState.tearDown();
-                    this.getLogger().info("Ended " + this.currentState);
+                    //this.getLogger().info("Ended " + this.currentState);
+                    Log.i(Utils.TAG, "StateMachine: Ended " + this.currentState);
                     this.currentState = null;
                 }
             }
@@ -72,7 +77,9 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
     }
 
     private void transitionToNextStage(@NonNull AutonomousComponent nextStage){
-        this.getLogger().info("Transition from " + this.currentState + " => " + nextStage);
+        //this.getLogger().info("Transition from " + this.currentState + " => " + nextStage);
+        Log.i(Utils.TAG, "StateMachine: Transition from " + this.currentState + " => " + nextStage);
+
         if (this.currentState != null) {
             this.currentState.tearDown();
         }
