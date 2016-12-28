@@ -18,7 +18,7 @@ public class ComponentTest extends VelocityBaseOpMode {
 
     protected AutonomousComponent getComponent() {
         this.vuforiaConfiguration = new VuforiaConfiguration();
-        List<AutonomousComponent> components = new ArrayList<>();
+        final LinearStateMachine sm = new LinearStateMachine();
         // Shoot 2 balls
 //        components.add(new MoveShooterDown(this.configuration, "MoveShooterDown"));
 //        components.add(new LoadBall(this.configuration, "Load 1st ball"));
@@ -43,13 +43,13 @@ public class ComponentTest extends VelocityBaseOpMode {
 //        components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
 
         // Go to 1st beacon
-        components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
+        sm.addComponent(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
 
-        components.add(new VuforiaIn(500F, this.vuforiaConfiguration, this.configuration, "Drive to near target"));
-        components.add(new FacePicture(this.vuforiaConfiguration, this.configuration, "Face near target"));
-        components.add(new VuforiaIn(175F, this.vuforiaConfiguration, this.configuration, "Drive closer to near target"));
+        sm.addComponent(new VuforiaIn(500F, this.vuforiaConfiguration, this.configuration, "Drive to near target"));
+        sm.addComponent(new FacePicture(this.vuforiaConfiguration, this.configuration, "Face near target"));
+        sm.addComponent(new VuforiaIn(175F, this.vuforiaConfiguration, this.configuration, "Drive closer to near target"));
 
-        return new LinearStateMachine(components);
+        return sm;
     }
 
     @Override

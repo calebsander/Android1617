@@ -26,8 +26,8 @@ public abstract class VelocityBaseOpMode extends BaseOpMode {
 		this.component.run();
 	}
 	protected void matchEnd() {
-		this.configuration.teardown();
 		this.component.tearDown();
+		this.configuration.teardown();
 	}
 
 	protected abstract AutonomousComponent getComponent();

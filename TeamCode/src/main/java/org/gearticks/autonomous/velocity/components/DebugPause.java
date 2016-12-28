@@ -4,12 +4,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.hardware.drive.DriveDirection;
 
 public class DebugPause extends AutonomousComponentVelocityBase {
-	private final DriveDirection direction = new DriveDirection();
 	private GamepadWrapper gamepad;
 	private Telemetry telemetry;
+
 	/**
 	 *
 	 * @param telemetry - pass in the telemetry to see data on phone during debug
@@ -26,9 +25,7 @@ public class DebugPause extends AutonomousComponentVelocityBase {
 	@Override
 	public void setup() {
 		super.setup();
-		// make sure motor are stopped
-		this.direction.stopDrive();
-		this.configuration.move(this.direction, 0.06);
+		this.configuration.stopMotion();
 	}
 
 	@Override

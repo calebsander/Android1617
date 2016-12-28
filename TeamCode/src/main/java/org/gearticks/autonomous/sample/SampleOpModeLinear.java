@@ -1,9 +1,5 @@
 package org.gearticks.autonomous.sample;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.Wait;
@@ -18,11 +14,10 @@ public class SampleOpModeLinear extends OpModeTest {
 
 	@Override
 	public void initialize() {
-		final List<AutonomousComponent> components = new ArrayList<>();
-		components.add(new Wait(2.0, "Wait for 2 sec"));
-		components.add(new GyroDriveEncoder(2000, 100, 2000, null, "Drive for 2 sec heading 100"));
-		components.add(new Wait(2.0, "Wait for 2 sec"));
-		this.sm = new LinearStateMachine(components);
+		this.sm = new LinearStateMachine();
+		this.sm.addComponent(new Wait(2.0, "Wait for 2 sec"));
+		this.sm.addComponent(new GyroDriveEncoder(2000, 100, 2000, null, "Drive for 2 sec heading 100"));
+		this.sm.addComponent(new Wait(2.0, "Wait for 2 sec"));
 	}
 
 	public void setup() {
@@ -39,5 +34,4 @@ public class SampleOpModeLinear extends OpModeTest {
 
 		runOpMode(opMode, 10);
 	}
-
 }

@@ -1,7 +1,7 @@
 package org.gearticks.autonomous.generic.statemachine;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.opmodes.utility.Utils;
@@ -18,12 +18,12 @@ import org.gearticks.opmodes.utility.Utils;
  * The use of Input- and OutputPort AutonomousComponents allows the StateMachineFullImpl to have an internal network of AutonomousComponents.
  *
  */
-public class NonLinearStateMachine extends StateMachineAbstractImpl {
+public class NonLinearStateMachine extends StateMachineBase {
 	private Map<AutonomousComponent, Map<Integer, AutonomousComponent>> connections;
 	private Map<AutonomousComponent, Map<Integer, Integer>> exitConnections;
 
 	public NonLinearStateMachine(AutonomousComponent initialComponent) {
-		super();
+		super(new HashSet<AutonomousComponent>());
 		this.connections = new HashMap<>();
 		this.exitConnections = new HashMap<>();
 		this.currentState = initialComponent;
@@ -31,6 +31,8 @@ public class NonLinearStateMachine extends StateMachineAbstractImpl {
 
 	public void addConnection(AutonomousComponent originComponent,
 			int originPortNumber, AutonomousComponent destinationComponent) {
+		this.components.add(originComponent);
+		this.components.add(destinationComponent);
 		Map<Integer, AutonomousComponent> componentConnections = this.connections.get(originComponent);
 		if (componentConnections == null) {
 			componentConnections = new HashMap<>();
@@ -39,12 +41,16 @@ public class NonLinearStateMachine extends StateMachineAbstractImpl {
 		componentConnections.put(originPortNumber, destinationComponent);
 	}
 	public void addExitConnection(AutonomousComponent component, int portNumber, int exitPort) {
+		this.components.add(component);
 		Map<Integer, Integer> componentConnections = this.exitConnections.get(component);
 		if (componentConnections == null) {
 			componentConnections = new HashMap<>();
 			this.exitConnections.put(component, componentConnections);
 		}
 		componentConnections.put(portNumber, exitPort);
+	}
+	public void addExitConnection(AutonomousComponent component, int portNumber) {
+		this.addExitConnection(component, portNumber, NEXT_STATE);
 	}
 
 	@Override
@@ -63,17 +69,18 @@ public class NonLinearStateMachine extends StateMachineAbstractImpl {
 
 		this.currentState.tearDown();
 
-		final Integer exitPort = this.exitConnections.get(this.currentState).get(transition);
-		if (exitPort != null) return exitPort;
+		final Map<Integer, Integer> exitPorts = this.exitConnections.get(this.currentState);
+		if (exitPorts != null) {
+			final Integer exitPort = exitPorts.get(transition);
+			if (exitPort != null) return exitPort;
+		}
 
-		final AutonomousComponent nextState = this.connections.get(this.currentState).get(transition);
-		if (nextState == null) {
-			this.getLogger().warning("ERROR: Transition from " + this.currentState + " to transition # " + transition + ". No connection found.");
-		}
-		else {
-			this.currentState = nextState;
-			nextState.setup();
-		}
+		final Map<Integer, AutonomousComponent> componentConnections = this.connections.get(this.currentState);
+		Utils.assertThat(componentConnections != null, "No transitions defined for " + this.currentState);
+		final AutonomousComponent nextState = componentConnections.get(transition);
+		Utils.assertThat(nextState != null, "No transition defined for " + this.currentState + " on port " + transition);
+		this.currentState = nextState;
+		nextState.setup();
 		return NOT_DONE;
 	}
 }

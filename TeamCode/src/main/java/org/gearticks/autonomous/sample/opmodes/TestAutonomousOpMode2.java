@@ -1,7 +1,5 @@
-package org.gearticks.autonomous.sample.OpModes;
+package org.gearticks.autonomous.sample.opmodes;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
@@ -10,12 +8,7 @@ import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 
-/**
- * Test OpMode with AutonomousComponents icw Stage and switch.
- * Example with Inner Class and with Anonymous Class
- */
 public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
-
     private class GyroDriveEncoderInner extends AutonomousComponentVelocityBase {
         private final DriveDirection direction;
 
@@ -40,10 +33,10 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
     }
 
     protected AutonomousComponent getComponent() {
-        final List<AutonomousComponent> components = new ArrayList<>();
-        components.add(new GyroDriveEncoder(0.0, 1.0, 2000, this.configuration, "stage1"));
-        components.add(new GyroDriveEncoderInner(this.configuration, "gyro drive inner"));
-        components.add(new AutonomousComponentVelocityBase(this.configuration, "giro drive anonymous") { //Anonymous class
+        final LinearStateMachine sm = new LinearStateMachine();
+        sm.addComponent(new GyroDriveEncoder(0.0, 1.0, 2000, this.configuration, "stage1"));
+        sm.addComponent(new GyroDriveEncoderInner(this.configuration, "gyro drive inner"));
+        sm.addComponent(new AutonomousComponentVelocityBase(this.configuration, "giro drive anonymous") { //Anonymous class
             private final DriveDirection direction = new DriveDirection();
 
             @Override
@@ -60,6 +53,6 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
                 else return NOT_DONE;
             }
         });
-        return new LinearStateMachine(components);
+        return sm;
     }
 }

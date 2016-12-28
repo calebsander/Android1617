@@ -10,11 +10,14 @@ import java.util.logging.Logger;
  *
  */
 public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
-
 	public static final int NOT_DONE = 0;
 	public static final int NEXT_STATE = 1;
+	private static int firstUnusedTransition = Math.max(NOT_DONE, NEXT_STATE) + 1;
+	public static int newTransition() {
+		return firstUnusedTransition++;
+	}
 
-	private final String id;
+	protected final String id;
 
 	public AutonomousComponentAbstractImpl() {
 		this.id = this.getClass().getSimpleName();
@@ -49,10 +52,6 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 
 	@Override
 	public String toString() {
-		return this.id;
-	}
-
-	public String getId() {
 		return this.id;
 	}
 

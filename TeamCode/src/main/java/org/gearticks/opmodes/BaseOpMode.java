@@ -9,7 +9,7 @@ import org.gearticks.joystickoptions.JoystickOptionController;
 
 public abstract class BaseOpMode extends OpMode {
 	protected final ElapsedTime matchTime;
-	protected final JoystickOptionController optionController;
+	private final JoystickOptionController optionController;
 	protected GamepadWrapper[] gamepads = new GamepadWrapper[2];
 
 	public BaseOpMode() {

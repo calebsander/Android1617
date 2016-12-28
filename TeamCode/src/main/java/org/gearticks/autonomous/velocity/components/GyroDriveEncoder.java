@@ -37,7 +37,7 @@ public class GyroDriveEncoder extends AutonomousComponentVelocityBase {
 		final int superTransition = super.run();
 		if (superTransition != NOT_DONE) return superTransition;
 
-		//control giro drive
+		//control gyro drive
 		this.direction.drive(0.0, this.power);
 		this.direction.gyroCorrect(this.targetHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 		this.configuration.move(this.direction, 0.06);
