@@ -3,14 +3,9 @@ package org.gearticks.autonomous.velocity.components;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-/**
- * Created by irene on 12/26/2016.
- */
-
 public class LoadBall extends AutonomousComponentVelocityBase {
 
     /**
-     *
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
@@ -19,27 +14,18 @@ public class LoadBall extends AutonomousComponentVelocityBase {
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
-        this.getConfiguration().snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_DUMPING);
+    public void setup() {
+        super.setup();
+        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_DUMPING);
     }
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        this.getLogger().info("LoadBall - timer = " + this.getStageTimer().seconds());
-
-        if (this.getStageTimer().seconds() > 0.7) {
-            transition = 1;
-        }
-
-
-        return transition;
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
+        this.getLogger().info("LoadBall - timer = " + this.stageTimer.seconds());
+        if (this.stageTimer.seconds() > 0.7) return NEXT_STATE;
+        else return NOT_DONE;
     }
 }

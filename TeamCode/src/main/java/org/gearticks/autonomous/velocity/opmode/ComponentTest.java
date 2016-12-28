@@ -2,47 +2,22 @@ package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.gearticks.Vuforia.VuforiaConfiguration;
+import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
+import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
+import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.opmode.VelocityLinearAutonomousBaseOpMode;
-import org.gearticks.autonomous.velocity.components.CompleteBallLoad;
 import org.gearticks.autonomous.velocity.components.DebugPause;
 import org.gearticks.autonomous.velocity.components.FacePicture;
-import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.GiroTurn;
-import org.gearticks.autonomous.velocity.components.LoadBall;
-import org.gearticks.autonomous.velocity.components.MoveShooterDown;
-import org.gearticks.autonomous.velocity.components.ResetSnake;
-import org.gearticks.autonomous.velocity.components.ShootBall;
 import org.gearticks.autonomous.velocity.components.VuforiaIn;
-import org.gearticks.autonomous.velocity.components.Wait;
-import org.gearticks.GamepadWrapper;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
-@Autonomous(name = "Component Test")
-public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
-    private static final int CALVIN = 0, JACK = 1;
+@Autonomous
+public class ComponentTest extends VelocityBaseOpMode {
     private VuforiaConfiguration vuforiaConfiguration;
 
-    @Override
-    protected void initialize() {
+    protected AutonomousComponent getComponent() {
         this.vuforiaConfiguration = new VuforiaConfiguration();
-        super.initialize();
-    }
-
-    @Override
-    protected void matchStart(){
-        super.matchStart();
-        this.vuforiaConfiguration.activate(); // TODO may want to activate/deactivate in aut component
-    }
-
-    @Override
-    protected List<AutonomousComponent> createComponents(){
         List<AutonomousComponent> components = new ArrayList<>();
         // Shoot 2 balls
 //        components.add(new MoveShooterDown(this.configuration, "MoveShooterDown"));
@@ -74,7 +49,12 @@ public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
         components.add(new FacePicture(this.vuforiaConfiguration, this.configuration, "Face near target"));
         components.add(new VuforiaIn(175F, this.vuforiaConfiguration, this.configuration, "Drive closer to near target"));
 
+        return new LinearStateMachine(components);
+    }
 
-        return components;
+    @Override
+    protected void matchStart(){
+        super.matchStart();
+        this.vuforiaConfiguration.activate(); // TODO may want to activate/deactivate in aut component
     }
 }

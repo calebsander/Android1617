@@ -75,6 +75,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 	public void stopMotion() {
 		this.intake.stop();
+		this.shooter.stop();
 		this.driveLeft.stop();
 		this.driveRight.stop();
 	}
@@ -156,8 +157,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
 	}
+	public boolean isShooterAtTarget() {
+		return Math.abs(this.shooter.encoderValue() - MotorConstants.SHOOTER_TICKS_TO_DOWN) < 5;
+	}
 	public boolean isShooterDown() {
-		return this.shooterWasDown && Math.abs(this.shooter.encoderValue() - MotorConstants.SHOOTER_TICKS_TO_DOWN) < 5;
+		return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
 	public static abstract class MotorConstants {

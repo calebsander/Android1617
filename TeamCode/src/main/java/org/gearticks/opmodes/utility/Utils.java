@@ -1,15 +1,15 @@
 package org.gearticks.opmodes.utility;
 
-/**
- * Created by irene on 12/27/2016.
- */
-
 public class Utils {
+    public static void assertThat(boolean condition, String message) {
+        if (!condition) throw new AssertionError(message);
+    }
+    public static void assertThat(boolean condition) {
+        assertThat(condition, "Assertion failed");
+    }
 
     public static <T> T assertNotNull(T object){
-        if (object == null){
-            throw new AssertionError("Object can not be null");
-        }
+        assertThat(object != null, "Object cannot be null");
         return object;
     }
 }

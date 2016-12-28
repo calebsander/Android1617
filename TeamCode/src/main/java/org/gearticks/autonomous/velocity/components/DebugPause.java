@@ -8,7 +8,7 @@ import org.gearticks.hardware.drive.DriveDirection;
 
 public class DebugPause extends AutonomousComponentVelocityBase {
 	private final DriveDirection direction = new DriveDirection();
-	private GamepadWrapper[] gamepads;
+	private GamepadWrapper gamepad;
 	private Telemetry telemetry;
 	/**
 	 *
@@ -19,41 +19,27 @@ public class DebugPause extends AutonomousComponentVelocityBase {
 	 */
 	public DebugPause(GamepadWrapper[] gamepads, Telemetry telemetry, VelocityConfiguration configuration, String id) {
 		super(configuration, id);
-		this.gamepads = gamepads;
+		this.gamepad = gamepads[0];
 		this.telemetry = telemetry;
 	}
 
 	@Override
-	public void setup(int inputPort) {
-		super.setup(inputPort);
+	public void setup() {
+		super.setup();
 		// make sure motor are stopped
 		this.direction.stopDrive();
-		this.getConfiguration().move(this.direction, 0.06);
+		this.configuration.move(this.direction, 0.06);
 	}
 
 	@Override
 	public int run() {
-		int transition = 0;
-		super.run();
-		this.telemetry.addData("heading:", this.getConfiguration().imu.getHeading());
-		this.telemetry.addData("drive left:", this.getConfiguration().driveLeft.encoderValue());
-		this.telemetry.addData("drive right:", this.getConfiguration().driveRight.encoderValue());
-		if (this.gamepads[0].getX()) {
-			transition = 1;
-		}
+		final int superTransition = super.run();
+		if (superTransition != NOT_DONE) return superTransition;
 
-		return transition;
+		this.telemetry.addData("heading", this.configuration.imu.getHeading());
+		this.telemetry.addData("drive left", this.configuration.driveLeft.encoderValue());
+		this.telemetry.addData("drive right", this.configuration.driveRight.encoderValue());
+		if (this.gamepad.getA()) return NEXT_STATE;
+		else return NOT_DONE;
 	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
-		//stop motors
-		this.direction.stopDrive();
-		this.getConfiguration().move(this.direction, 0.06);
-	}
-
-
-
-
 }

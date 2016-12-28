@@ -1,51 +1,20 @@
 package org.gearticks.autonomous.velocity.components;
 
-import com.vuforia.HINT;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Vuforia;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.gearticks.Vuforia.VuforiaConfiguration;
-import org.gearticks.VuforiaKey;
+import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-
-/**
- * Created by irene on 12/26/2016.
- */
-
 public class VuforiaIn extends AutonomousComponentVelocityBase {
-    private final DriveDirection direction = new DriveDirection();
+    private final DriveDirection direction;
     private final float finalDistance;
     private final VuforiaConfiguration vuforiaConfiguration;
-
-
-    // Vuforia properties
     private VuforiaTrackableDefaultListener firstTargetListener;
-    private VuforiaTrackables beaconImages;
-    final String firstTargetName;
-    private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
-    static {
-        IMAGE_IDS.put("Wheels", 0);
-        IMAGE_IDS.put("Tools", 1);
-        IMAGE_IDS.put("Legos", 2);
-        IMAGE_IDS.put("Gears", 3);
-    }
-
-    private boolean allianceColorIsBlue;
-
 
     /**
      *
@@ -55,23 +24,20 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
      */
     public VuforiaIn(float finalDistance, VuforiaConfiguration vuforiaConfiguration, VelocityConfiguration configuration, String id) {
         super(configuration, id);
-
+        this.direction = new DriveDirection();
         this.finalDistance = finalDistance;
-        this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
-
-        this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
-        if (this.allianceColorIsBlue) firstTargetName = "Wheels";
-        else firstTargetName = "Gears";
-
-
+        this.vuforiaConfiguration = vuforiaConfiguration;
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
+    public void setup() {
+        super.setup();
         this.getLogger().info("Running Vuforia in setup");
-        this.firstTargetListener = Utils.assertNotNull(this.vuforiaConfiguration.getTargetListener(firstTargetName));
-
+        final boolean allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+        final String firstTargetName;
+        if (allianceColorIsBlue) firstTargetName = "Wheels";
+        else firstTargetName = "Gears";
+        this.firstTargetListener = this.vuforiaConfiguration.getTargetListener(firstTargetName);
     }
 
     @Override
@@ -100,11 +66,6 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
         }
 
         return transition;
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
     }
 
     //Gets distance we are to the left of the center of the image

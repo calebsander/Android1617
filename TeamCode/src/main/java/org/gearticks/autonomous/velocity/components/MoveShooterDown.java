@@ -3,42 +3,35 @@ package org.gearticks.autonomous.velocity.components;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-/**
- * Created by irene on 12/26/2016.
- */
-
 public class MoveShooterDown extends AutonomousComponentVelocityBase {
 
     /**
-     *
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
     public MoveShooterDown(VelocityConfiguration configuration, String id) {
         super(configuration, id);
-        this.getConfiguration().resetAutoShooter();
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
+    public void setup() {
+        super.setup();
+        this.configuration.resetAutoShooter();
     }
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        this.getConfiguration().advanceShooterToDown();
-        if (this.getConfiguration().isShooterDown()) {
-            transition = 1;
-        }
-
-        return transition;
+        this.configuration.advanceShooterToDown();
+        if (this.configuration.isShooterDown()) return NEXT_STATE;
+        else return NOT_DONE;
     }
 
     @Override
     public void tearDown() {
         super.tearDown();
-        this.getConfiguration().resetAutoShooter();
+        this.configuration.resetAutoShooter();
     }
 }

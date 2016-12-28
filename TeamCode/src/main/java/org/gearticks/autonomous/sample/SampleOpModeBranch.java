@@ -1,12 +1,11 @@
 package org.gearticks.autonomous.sample;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.Wait;
-import org.gearticks.autonomous.generic.statemachine.network.InputPort;
-import org.gearticks.autonomous.generic.statemachine.network.OutputPort;
-import org.gearticks.autonomous.generic.statemachine.network.StateMachineFullImpl;
+import org.gearticks.autonomous.sample.components.ObserveColor;
+import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
+import org.gearticks.autonomous.generic.statemachine.NonLinearStateMachine;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
 /**
  * This is a sample of a state-machine with branching.
@@ -14,15 +13,14 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  *
  */
 public class SampleOpModeBranch extends OpModeTest {
-	
-	private StateMachineFullImpl sm;
 
+	private NonLinearStateMachine stateMachine;
 
 	@Override
-	public void initialize(){
-		this.sm = this.createSampleStateMachine();
+	public void initialize() {
+		this.stateMachine = this.createSampleStateMachine();
 	}
-	
+
 	/**
 	 * Creates a StateMachineFullImpl with a branch.
 	 * Step 1: drive forward and stop
@@ -31,47 +29,35 @@ public class SampleOpModeBranch extends OpModeTest {
 	 * Step3-blue: turn and drive to blue
 	 * @return
 	 */
-	public StateMachineFullImpl createSampleStateMachine(){
-		StateMachineFullImpl sm = new StateMachineFullImpl(1,1);
+	public NonLinearStateMachine createSampleStateMachine() {
+		final VelocityConfiguration configuration = new VelocityConfiguration(null);
+		final AutonomousComponent drive1 = new GyroDriveEncoder(0.0, 1.0, 2000, configuration, "Drive for 2 sec heading 100");
+		final AutonomousComponent observeColor = new ObserveColor(configuration, "Observe color");
+		final AutonomousComponent driveRed = new GyroDriveEncoder(-90.0, 1.0, 2000, configuration, "Drive for 3 sec left to red");
+		final AutonomousComponent driveBlue = new GyroDriveEncoder(90.0, 1.0, 2000, configuration, "Drive for 3 sec right to blue");
 
-		AutonomousComponent drive1 = new GiroDriveEncoder(2000, 100, 2000, new VelocityConfiguration(null), "Drive for 2 sec heading 100");
-		AutonomousComponent driveRed = new GiroDriveEncoder(3000, 0, 2000, null, "Drive for 3 sec left to red");
-		AutonomousComponent driveBlue = new GiroDriveEncoder(3000, 180, 20000, null, "Drive for 3 sec right to blue");
-		AutonomousComponent observeColor = new Wait(2000, null, "Wait for 2 sec");
-
-		sm.addComponent(drive1);
-		sm.addComponent(observeColor);
-		sm.addComponent(driveRed);
-		sm.addComponent(driveBlue);
-
-		InputPort inputPort = sm.getInputPort(1);
-		OutputPort outputPort1 = sm.getOutputPort(1);
-		OutputPort outputPort2 = sm.getOutputPort(2);
-		sm.addConnection(inputPort, 1, observeColor, 1);
-		sm.addConnection(drive1, 1, drive1, 1);
-		sm.addConnection(drive1, 1, observeColor, 1);
-		sm.addConnection(observeColor, 1, driveRed, 1); //1 == red
-		sm.addConnection(observeColor, 2, driveBlue, 1); //2 == blue
-		sm.addConnection(driveRed, 1, outputPort1, 1);
-		sm.addConnection(driveBlue, 1, outputPort2, 1);
-
+		final NonLinearStateMachine sm = new NonLinearStateMachine(drive1);
+		sm.addConnection(drive1, NEXT_STATE, observeColor);
+		sm.addConnection(observeColor, ObserveColor.RED, driveRed);
+		sm.addConnection(observeColor, ObserveColor.BLUE, driveBlue);
+		sm.addExitConnection(driveRed, NEXT_STATE, ObserveColor.RED);
+		sm.addExitConnection(driveBlue, NEXT_STATE, ObserveColor.BLUE);
 		return sm;
 	}
-	
+
 	public void setup(){
-		this.sm.setup(1);
+		this.stateMachine.setup();
 	}
-	
+
 	public void loop(){
-		
-		this.sm.run();
-		
+		this.stateMachine.run();
+
 	}
-	
-	
+
+
 	public static void main(String[] args) {
 		SampleOpModeBranch opMode = new SampleOpModeBranch();
-		
+
 		runOpMode(opMode, 10);
 	}
 

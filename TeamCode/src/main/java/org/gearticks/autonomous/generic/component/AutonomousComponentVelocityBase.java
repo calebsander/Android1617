@@ -1,15 +1,9 @@
 package org.gearticks.autonomous.generic.component;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-/**
- * Created by vterpstra on 11/23/2016.
- */
-
 public class AutonomousComponentVelocityBase extends AutonomousComponentBase {
-
-    private final VelocityConfiguration configuration;
+    protected final VelocityConfiguration configuration;
 
     public AutonomousComponentVelocityBase(VelocityConfiguration configuration) {
         super();
@@ -21,7 +15,9 @@ public class AutonomousComponentVelocityBase extends AutonomousComponentBase {
         this.configuration = configuration;
     }
 
-    public VelocityConfiguration getConfiguration() {
-        return configuration;
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        this.configuration.stopMotion();
     }
 }

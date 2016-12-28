@@ -1,8 +1,7 @@
-package org.gearticks.autonomous.generic.statemachine.linear;
+package org.gearticks.autonomous.generic.statemachine;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.statemachine.StateMachineAbstractImpl;
-
+import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -10,23 +9,22 @@ import java.util.ListIterator;
  * Assumes all internal components form a linear/sequential chain.
  * Simplifies initialization of a sate-machine
  */
-public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl implements LinearStateMachine {
+public class LinearStateMachine extends StateMachineAbstractImpl {
 
-    protected ListIterator<AutonomousComponent> iterator;
+    private ListIterator<AutonomousComponent> iterator;
 
-	public LinearStateMachineSimpleImpl(List<AutonomousComponent> components) {
+    public LinearStateMachine(List<AutonomousComponent> components) {
         super();
-		this.addComponents(components);
-	}
+        this.addComponents(components);
+    }
 
     @Override
-    public void setup(int inputPort) {
+    public void setup() {
         //Set currentState to first component
         this.iterator = this.components.listIterator();
         if (this.iterator.hasNext()) {
-            this.currentState = this.iterator.next();
-            this.currentState.setup();
             this.getLogger().info("Starting with " + this.currentState);
+            this.transitionToNextStage();
         }
         else {
             this.currentState = null;
@@ -36,37 +34,41 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
 
     @Override
     public int run() {
-        int outputPortNumber = 0;
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        if (this.currentState == null){
+        final int outputPortNumber;
+        if (this.currentState == null) {
             //If there is no (more) current state, then end this state-machine
-            outputPortNumber = 1;
-            this.getLogger().warning("LinearStateMachine in run() has no currentState "+ this.getId());
+            outputPortNumber = NEXT_STATE;
+            this.getLogger().warning("LinearStateMachine in run() has no currentState " + this.getId());
         }
         else {
             //regular 'run':
-            int transition = this.currentState.run();
+            final int transition = this.currentState.run();
 
             //Check for transition:
-            if (transition > 0) {
+            if (transition == NOT_DONE) outputPortNumber = NOT_DONE;
+            else {
                 //Get next component
                 if (this.iterator.hasNext()) {
-                    this.transitionToNextStage(this.iterator.next());
+                    this.transitionToNextStage();
+                    outputPortNumber = NOT_DONE;
                 }
                 else {
                     //No more next component -> end of this state-machine
-                    outputPortNumber = 1;
+                    outputPortNumber = NEXT_STATE;
                 }
             }
         }
-
         return outputPortNumber;
     }
 
-    protected void transitionToNextStage(AutonomousComponent nextStage){
+    private void transitionToNextStage() {
+        final AutonomousComponent nextStage = this.iterator.next();
         this.getLogger().info("Transition from " + this.currentState + " => " + nextStage);
-        this.currentState.tearDown();
+        if (this.currentState != null) this.currentState.tearDown();
         this.currentState = nextStage;
-        this.currentState.setup();
+        nextStage.setup();
     }
 }

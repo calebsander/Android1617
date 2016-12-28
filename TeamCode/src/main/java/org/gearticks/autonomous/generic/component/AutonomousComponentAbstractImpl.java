@@ -1,79 +1,62 @@
 package org.gearticks.autonomous.generic.component;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import java.util.logging.Logger;
 
 /**
  * Implements the AutonomousComponent interface.
  * Adds
- * - setup() without a input port number as a convenience method 
+ * - setup() without a input port number as a convenience method
  * - toString()
  *
  */
-public abstract class AutonomousComponentAbstractImpl implements
-        AutonomousComponent {
-	
+public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
+
+	public static final int NOT_DONE = 0;
+	public static final int NEXT_STATE = 1;
+
 	private final String id;
-	
+
 	public AutonomousComponentAbstractImpl() {
-		super();
 		this.id = this.getClass().getSimpleName();
 	}
 
 	public AutonomousComponentAbstractImpl(String id) {
-		super();
 		this.id = id;
 	}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	@Override
-	public void initialize() {
-		// Default doesn't do anything
-	}
+	public void initialize() {}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	@Override
-	public void setup(int inputPort) {
-		// TODO Auto-generated method stub
-
-	}
-	
-	/**
-	 * Convenience method.
-	 * Calls this.setup(1);
-	 */
-	public void setup() {
-		this.setup(1);
-	}
+	public void setup() {}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary.
 	 * Returns 0;
 	 */
-	@Override
 	public int run() {
-		return 0;
+		return NOT_DONE;
 	}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	@Override
-	public void tearDown() {
-		// TODO Auto-generated method stub
+	public void tearDown() {}
 
-	}
-	
 	@Override
-	public String toString(){
+	public String toString() {
 		return this.id;
 	}
 
-
 	public String getId() {
-		return id;
+		return this.id;
+	}
+
+	public Logger getLogger() {
+		return Logger.getLogger(this.getClass().getSimpleName());
 	}
 }

@@ -3,33 +3,31 @@ package org.gearticks.autonomous.velocity.components;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-/**
- * Created by irene on 12/26/2016.
- */
-
 public class SampleAutonumousComponent extends AutonomousComponentVelocityBase {
     public SampleAutonumousComponent(VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
+    public void setup() {
+        super.setup();
+        //Custom code here
     }
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        if (true) {
-            transition = 1;
-        }
+        //Code to update control system
 
-        return transition;
+        if (true /*end condition met*/) return NEXT_STATE;
+        else return NOT_DONE;
     }
 
     @Override
     public void tearDown() {
         super.tearDown();
+        //Custom code here
     }
 }
