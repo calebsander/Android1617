@@ -9,7 +9,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  *
  */
 public class ObserveColor extends AutonomousComponentVelocityBase {
-	public static final int RED = 1, BLUE = 2;
+	public static final int RED = newTransition(), BLUE = newTransition();
 
 	public ObserveColor(VelocityConfiguration configuration, String id) {
 		super(configuration, id);

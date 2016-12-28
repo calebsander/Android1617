@@ -8,6 +8,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImp
 import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NonLinearStateMachine;
+import org.gearticks.autonomous.velocity.components.Stopped;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 
 @Autonomous
@@ -120,6 +121,7 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		branch3.addComponent(new BranchFourChoice());
 		final LinearStateMachine branch4 = new LinearStateMachine();
 		branch4.addComponent(new SimulatedStage(8));
+		final AutonomousComponent stopped = new Stopped(this.configuration);
 
 		final NonLinearStateMachine sm = new NonLinearStateMachine(entranceComponent);
 		sm.addConnection(entranceComponent, BRANCH_ONE_TRANSITION, branch1);
@@ -127,8 +129,8 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		sm.addConnection(branch1, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);
 		sm.addConnection(branch2, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);
 		sm.addConnection(branch3, BRANCH_FOUR_TRANSITION, branch4);
-		sm.addExitConnection(branch3, END_TRANSITION);
-		sm.addExitConnection(branch4, AutonomousComponentAbstractImpl.NEXT_STATE);
+		sm.addConnection(branch3, END_TRANSITION, stopped);
+		sm.addConnection(branch4, AutonomousComponentAbstractImpl.NEXT_STATE, stopped);
 		return sm;
 	}
 

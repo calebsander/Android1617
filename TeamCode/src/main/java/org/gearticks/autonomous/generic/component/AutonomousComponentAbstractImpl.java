@@ -7,7 +7,6 @@ import java.util.logging.Logger;
  * Adds
  * - setup() without a input port number as a convenience method
  * - toString()
- *
  */
 public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
 	public static final int NOT_DONE = 0;
