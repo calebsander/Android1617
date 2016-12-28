@@ -56,6 +56,8 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
                 else {
                     //No more next component -> end of this state-machine
                     outputPortNumber = 1;
+                    this.currentState.tearDown();
+                    this.getLogger().info("Ended " + this.currentState);
                 }
             }
         }
