@@ -25,6 +25,8 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
         this.iterator = this.components.listIterator();
         if (this.iterator.hasNext()) {
             this.currentState = this.iterator.next();
+            this.currentState.setup();
+            this.getLogger().info("Starting with " + this.currentState);
         }
         else {
             this.currentState = null;
@@ -62,7 +64,7 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
     }
 
     protected void transitionToNextStage(AutonomousComponent nextStage){
-        this.getLogger().info("Transition from " + this.currentState + " to " + nextStage);
+        this.getLogger().info("Transition from " + this.currentState + " => " + nextStage);
         this.currentState.tearDown();
         this.currentState = nextStage;
         this.currentState.setup();
