@@ -19,7 +19,7 @@ public class AutonomousComponentPort extends AutonomousComponentAbstractImpl {
 	
 	@Override
 	public int run() {
-		int transition = 0;
+		int transition;
 		super.run();
 		
 		if (this.isInput){

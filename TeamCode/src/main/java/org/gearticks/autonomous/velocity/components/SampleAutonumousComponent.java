@@ -6,9 +6,8 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBas
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 /**
- * Created by irene on 12/26/2016.
+ * Please add some comments on this component.
  */
-
 public class SampleAutonumousComponent extends AutonomousComponentVelocityBase {
     public SampleAutonumousComponent(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);

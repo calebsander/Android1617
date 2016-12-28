@@ -85,7 +85,7 @@ public class StateMachineFullImpl implements AutonomousComponent{
 
 		
 		StateMachineConnection connection = new StateMachineConnection(originComponent, originPortNumber, destinationComponent, destinationPortNumber);
-		//TODO: check if there already exists a connection from the output port
+		//Check if there already exists a connection from the output port
 		if (!this.outputConnections.contains(originComponent, originPortNumber)){
 			this.outputConnections.put(originComponent, originPortNumber, connection);
 		}

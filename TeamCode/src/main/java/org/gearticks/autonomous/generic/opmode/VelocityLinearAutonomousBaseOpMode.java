@@ -1,15 +1,10 @@
 package org.gearticks.autonomous.generic.opmode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
-import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.Wait;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
