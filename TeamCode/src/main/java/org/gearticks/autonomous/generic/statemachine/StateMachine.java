@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 public interface StateMachine extends AutonomousComponent{
 
-    public void addComponent(AutonomousComponent ac);
+    void addComponent(AutonomousComponent ac);
 
-    public void addComponents(Collection<AutonomousComponent> components);
+    void addComponents(Collection<AutonomousComponent> components);
 }

@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.generic.opmode;
 
+import android.support.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -19,7 +21,8 @@ import java.util.Map;
 public abstract class VelocityAutonomousBaseOpMode<T extends Enum<T>> extends VelocityBaseOpMode {
     protected ElapsedTime stageTimer;
     protected T stage;
-	Map<T, AutonomousComponent> componentOfStageMap = new HashMap<>();
+	@NonNull
+    Map<T, AutonomousComponent> componentOfStageMap = new HashMap<>();
 
 	protected void setComponent(T stage, AutonomousComponent ac){
 		this.componentOfStageMap.put(stage, ac);

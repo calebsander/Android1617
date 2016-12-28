@@ -17,7 +17,7 @@ public class TestAutonomousOpMode1 extends VelocityAutonomousBaseOpMode<TestAuto
 
     protected enum Stage {
         STAGE1,
-        STAGE2;
+        STAGE2
     }
     protected Stage[] getStageValues(){
         return Stage.values();

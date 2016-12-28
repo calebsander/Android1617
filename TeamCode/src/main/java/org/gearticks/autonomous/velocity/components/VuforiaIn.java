@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import com.vuforia.HINT;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
@@ -35,6 +37,7 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     // Vuforia properties
     private VuforiaTrackableDefaultListener firstTargetListener;
     private VuforiaTrackables beaconImages;
+    @NonNull
     final String firstTargetName;
     private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
     static {
@@ -53,7 +56,7 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
-    public VuforiaIn(float finalDistance, VuforiaConfiguration vuforiaConfiguration, VelocityConfiguration configuration, String id) {
+    public VuforiaIn(float finalDistance, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
 
         this.finalDistance = finalDistance;
@@ -108,11 +111,11 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     }
 
     //Gets distance we are to the left of the center of the image
-    private static float getLateralDistance(VectorF translation) {
+    private static float getLateralDistance(@NonNull VectorF translation) {
         final int target = 0;
         return -(translation.get(1) - target);
     }
-    private boolean vuforiaTurn(VectorF translation, double minPower) {
+    private boolean vuforiaTurn(@NonNull VectorF translation, double minPower) {
         final float lateralDistance = getLateralDistance(translation);
         if (Math.abs(lateralDistance) > 50) {
             double turnPower = lateralDistance * 0.0007;

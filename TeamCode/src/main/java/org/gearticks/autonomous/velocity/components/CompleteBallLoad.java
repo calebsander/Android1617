@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.autonomous.generic.component.VelocityLinearBaseAutonomousComponent;
@@ -15,10 +17,11 @@ import java.util.List;
  */
 
 public class CompleteBallLoad extends VelocityLinearBaseAutonomousComponent {
-    public CompleteBallLoad(VelocityConfiguration configuration, String id) {
+    public CompleteBallLoad(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 
+    @NonNull
     protected List<AutonomousComponent> createComponents(){
         List<AutonomousComponent> components = new ArrayList<>();
         components.add(new LoadBall(this.getConfiguration(), this.getId() + "_Load Ball"));

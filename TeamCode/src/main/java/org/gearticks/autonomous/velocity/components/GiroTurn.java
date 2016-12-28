@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -18,7 +20,7 @@ public class GiroTurn extends AutonomousComponentVelocityBase {
 	 * @param configuration - config file
 	 * @param id - descriptive name for logging
 	 */
-	public GiroTurn(double targetHeading,  VelocityConfiguration configuration, String id) {
+	public GiroTurn(double targetHeading, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.targetHeading = targetHeading;
 		this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;

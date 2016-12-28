@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.sample;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.Wait;
@@ -38,10 +40,11 @@ public class SampleOpModeSwitch extends OpModeTest {
         WAIT1 ,
         DRIVE1,
         DRIVE2,
-        WAIT2;
+        WAIT2
     }
 	
 	private Stage stage;
+    @NonNull
     Map<Stage, AutonomousComponent> componentOfStageMap = new HashMap<>();
 
     protected void setComponent(Stage stage, AutonomousComponent ac){

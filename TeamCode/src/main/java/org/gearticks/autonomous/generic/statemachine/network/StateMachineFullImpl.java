@@ -1,5 +1,9 @@
 package org.gearticks.autonomous.generic.statemachine.network;
 
+import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +12,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.opmodes.utility.Utils;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -25,20 +30,29 @@ import com.google.common.collect.Table;
  *
  */
 public class StateMachineFullImpl implements AutonomousComponent{
-	protected AutonomousComponent currentState = null;
+	@Nullable
+    protected AutonomousComponent currentState = null;
 	
-	protected Map<Integer, InputPort> inputPorts = new HashMap<>();
-	protected Map<Integer, OutputPort> outputPorts = new HashMap<>();
+	@SuppressLint("UseSparseArrays")
+    @NonNull
+    protected Map<Integer, InputPort> inputPorts = new HashMap<>();
+	@SuppressLint("UseSparseArrays")
+    @NonNull
+    protected Map<Integer, OutputPort> outputPorts = new HashMap<>();
 	
-	protected Set<AutonomousComponent> components = new HashSet<>();
+	@NonNull
+    protected Set<AutonomousComponent> components = new HashSet<>();
 	//protected Map<AutonomousComponent, Map<Integer, AutonomousComponent>> outputConnections;
-	protected Table<AutonomousComponent, Integer, StateMachineConnection> outputConnections = HashBasedTable.create();
+	@NonNull
+    protected Table<AutonomousComponent, Integer, StateMachineConnection> outputConnections = HashBasedTable.create();
 	
 	public StateMachineFullImpl(int numInputPorts, int numOutputPorts) {
 		super();
-		
-		assert numInputPorts >= 1;
-		assert numOutputPorts >= 1;
+
+        Utils.assertTrue(numInputPorts >= 1, "Illegal number of input ports ({0}). StateMachine should have at least one input port", numInputPorts);
+        Utils.assertTrue(numOutputPorts >= 1, "Illegal number of input ports ({0}). StateMachine should have at least one output port", numOutputPorts);
+//        assert numInputPorts >= 1;
+//		assert numOutputPorts >= 1;
 		
 		for (int i = 1; i <= numInputPorts; i++){
 			this.inputPorts.put(i, new InputPort(i));
@@ -52,17 +66,23 @@ public class StateMachineFullImpl implements AutonomousComponent{
 	public void addComponent(AutonomousComponent ac){
 		this.components.add(ac);
 	}
-	public void addComponents(Collection<AutonomousComponent> components){
+	public void addComponents(@NonNull Collection<AutonomousComponent> components){
 		this.components.addAll(components);
 	}
 	
-	public void addConnection(AutonomousComponent originComponent,
-			int originPortNumber, AutonomousComponent destinationComponent,
-			int destinationPortNumber){
-		assert originComponent != null;
-		assert destinationComponent != null;
+	public void addConnection(@NonNull AutonomousComponent originComponent,
+                              int originPortNumber, @NonNull AutonomousComponent destinationComponent,
+                              int destinationPortNumber){
+//		assert originComponent != null;
+//		assert destinationComponent != null;
+        Utils.assertNotNull(originComponent, "originComponent cannot be null");
+        Utils.assertNotNull(destinationComponent, "destinationComponent cannot be null");
+
+        //Check that ac in components set
+        Utils.assertTrue(this.components.contains(originComponent), "originComponent not in the current set of components");
+        Utils.assertTrue(this.components.contains(destinationComponent), "destinationComponent not in the current set of components");
 		
-		//TODO: check that ac in components set?
+
 		
 		StateMachineConnection connection = new StateMachineConnection(originComponent, originPortNumber, destinationComponent, destinationPortNumber);
 		//TODO: check if there already exists a connection from the output port
@@ -103,36 +123,36 @@ public class StateMachineFullImpl implements AutonomousComponent{
 		
 		if (this.currentState == null){
 			//throw some exception
-			return 0;
+			//return 0;
 		}
-		
-		
-		//Exit StateMachineFullImpl if in output port
-		if (this.currentState instanceof OutputPort){
-			outputPortNumber = ((OutputPort) this.currentState).getPortNumber();
-		}
-		else {
-			//regular 'run':
-			int transition = this.currentState.run();
+        else {
 
-			//Check for transition:
-			if (transition > 0){
-				//Find next component
-				StateMachineConnection connection = this.outputConnections.get(this.currentState, transition);
-				if (connection != null){
-					this.currentState.tearDown();
-					this.getLogger().info("Transition from " + this.currentState + " to " + connection.getDestinationComponent() + " port " + connection.getDestinationPortNumber());
-					this.currentState = connection.getDestinationComponent();
-					this.currentState.setup(connection.getDestinationPortNumber());
 
-				}
-				else {
-					//no connection: log warning?
-					//set to default outputport? Or keep StateMachineFullImpl in this state forever?
-					this.getLogger().warning("ERROR: Transition from " + this.currentState + " to transition # "+ transition + ". No connection found.");
-				}
-			}
-		}
+            //Exit StateMachineFullImpl if in output port
+            if (this.currentState instanceof OutputPort) {
+                outputPortNumber = ((OutputPort) this.currentState).getPortNumber();
+            } else {
+                //regular 'run':
+                int transition = this.currentState.run();
+
+                //Check for transition:
+                if (transition > 0) {
+                    //Find next component
+                    StateMachineConnection connection = this.outputConnections.get(this.currentState, transition);
+                    if (connection != null) {
+                        this.currentState.tearDown();
+                        this.getLogger().info("Transition from " + this.currentState + " to " + connection.getDestinationComponent() + " port " + connection.getDestinationPortNumber());
+                        this.currentState = Utils.assertNotNull(connection.getDestinationComponent());
+                        this.currentState.setup(connection.getDestinationPortNumber());
+
+                    } else {
+                        //no connection: log warning?
+                        //set to default outputport? Or keep StateMachineFullImpl in this state forever?
+                        this.getLogger().warning("ERROR: Transition from " + this.currentState + " to transition # " + transition + ". No connection found.");
+                    }
+                }
+            }
+        }
 		
 		return outputPortNumber;
 	}

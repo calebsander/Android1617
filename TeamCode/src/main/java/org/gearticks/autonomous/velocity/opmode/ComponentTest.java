@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
+import android.support.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.gearticks.Vuforia.VuforiaConfiguration;
@@ -41,6 +43,7 @@ public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
         this.vuforiaConfiguration.activate(); // TODO may want to activate/deactivate in aut component
     }
 
+    @NonNull
     @Override
     protected List<AutonomousComponent> createComponents(){
         List<AutonomousComponent> components = new ArrayList<>();

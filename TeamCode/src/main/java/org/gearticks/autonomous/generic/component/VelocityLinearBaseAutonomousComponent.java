@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.generic.component;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
@@ -12,16 +14,17 @@ import java.util.List;
  * Can be used to create composite components that are linear state-machines of other components
  */
 public abstract class VelocityLinearBaseAutonomousComponent extends AutonomousComponentVelocityBase {
-    private LinearStateMachine sm;
+    private final LinearStateMachine sm = new LinearStateMachineSimpleImpl();
 
-    public VelocityLinearBaseAutonomousComponent(VelocityConfiguration configuration, String id) {
+    public VelocityLinearBaseAutonomousComponent(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
         this.initializeStateMachine();
     }
 
     protected void initializeStateMachine(){
         List<AutonomousComponent> components = this.createComponents();
-        sm = new LinearStateMachineSimpleImpl(components);
+        //sm = new LinearStateMachineSimpleImpl(components);
+        this.sm.addComponents(components);
         this.sm.initialize();
     }
 

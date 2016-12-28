@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.sample.OpModes;
 
+import android.support.annotation.NonNull;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
@@ -22,7 +24,7 @@ public class TestAutonomousOpMode2 extends VelocityAutonomousBaseOpMode<TestAuto
     protected enum Stage {
         STAGE1,
         STAGE2,
-        STAGE3;
+        STAGE3
     }
     protected Stage[] getStageValues(){
         return Stage.values();
@@ -31,7 +33,7 @@ public class TestAutonomousOpMode2 extends VelocityAutonomousBaseOpMode<TestAuto
 
 
     class GiroDriveEncoderInner extends AutonomousComponentVelocityBase{
-        public GiroDriveEncoderInner(VelocityConfiguration configuration, String id) {
+        public GiroDriveEncoderInner(@NonNull VelocityConfiguration configuration, String id) {
             super(configuration, id);
         }
         @Override

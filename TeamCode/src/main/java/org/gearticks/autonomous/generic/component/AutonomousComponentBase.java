@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.generic.component;
 
+import android.support.annotation.NonNull;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
@@ -8,7 +10,7 @@ import java.util.logging.Logger;
 
 /**
  * Adds:
- * * Timer (TODO)
+ * * Timer
  * * getLogger()
  *
  */
@@ -39,11 +41,11 @@ public class AutonomousComponentBase extends AutonomousComponentAbstractImpl {
         this.stageTimer.reset();
     }
 	
-	public Logger getLogger(){
+	public @NonNull Logger getLogger(){
 		return Logger.getLogger(this.getClass().getSimpleName());
 	}
 
-    protected ElapsedTime getStageTimer() {
+    protected @NonNull ElapsedTime getStageTimer() {
         return stageTimer;
     }
 }

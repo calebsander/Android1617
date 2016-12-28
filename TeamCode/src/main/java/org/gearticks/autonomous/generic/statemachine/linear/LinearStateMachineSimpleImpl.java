@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.generic.statemachine.linear;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.StateMachineAbstractImpl;
 
@@ -12,9 +14,12 @@ import java.util.ListIterator;
  */
 public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl implements LinearStateMachine {
 
-    protected ListIterator<AutonomousComponent> iterator;
+    private ListIterator<AutonomousComponent> iterator;
 
-	public LinearStateMachineSimpleImpl(List<AutonomousComponent> components) {
+    public LinearStateMachineSimpleImpl() {
+        super();
+    }
+	public LinearStateMachineSimpleImpl(@NonNull List<AutonomousComponent> components) {
         super();
 		this.addComponents(components);
 	}
@@ -41,7 +46,7 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
         if (this.currentState == null){
             //If there is no (more) current state, then end this state-machine
             outputPortNumber = 1;
-            this.getLogger().warning("LinearStateMachine in run() has no currentState "+ this.getId());
+            this.getLogger().warning("LinearStateMachine in run() has no currentState. Ending StateMachine. "+ this.getId());
         }
         else {
             //regular 'run':
@@ -65,9 +70,11 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
         return outputPortNumber;
     }
 
-    protected void transitionToNextStage(AutonomousComponent nextStage){
+    private void transitionToNextStage(@NonNull AutonomousComponent nextStage){
         this.getLogger().info("Transition from " + this.currentState + " => " + nextStage);
-        this.currentState.tearDown();
+        if (this.currentState != null) {
+            this.currentState.tearDown();
+        }
         this.currentState = nextStage;
         this.currentState.setup();
     }

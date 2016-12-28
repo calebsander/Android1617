@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.sample.components;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
@@ -10,7 +12,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  */
 public class ObserveColor extends AutonomousComponentVelocityBase {
 	
-	public ObserveColor(VelocityConfiguration configuration, String id) {
+	public ObserveColor(@NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 	}
 

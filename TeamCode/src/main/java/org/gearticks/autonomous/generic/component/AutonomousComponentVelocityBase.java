@@ -1,27 +1,31 @@
 package org.gearticks.autonomous.generic.component;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 /**
- * Created by vterpstra on 11/23/2016.
+ * Base class for Velocity AutonomousComponents.
+ * Adds VelocityConfiguration
  */
 
 public class AutonomousComponentVelocityBase extends AutonomousComponentBase {
 
+    @NonNull
     private final VelocityConfiguration configuration;
 
-    public AutonomousComponentVelocityBase(VelocityConfiguration configuration) {
+    public AutonomousComponentVelocityBase(@NonNull VelocityConfiguration configuration) {
         super();
         this.configuration = configuration;
     }
 
-    public AutonomousComponentVelocityBase(VelocityConfiguration configuration, String id) {
+    public AutonomousComponentVelocityBase(@NonNull VelocityConfiguration configuration, String id) {
         super(id);
         this.configuration = configuration;
     }
 
-    public VelocityConfiguration getConfiguration() {
+    public @NonNull VelocityConfiguration getConfiguration() {
         return configuration;
     }
 }

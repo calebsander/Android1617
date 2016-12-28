@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
@@ -17,7 +19,7 @@ public class DebugPause extends AutonomousComponentVelocityBase {
 	 * @param configuration
 	 * @param id - descriptive name for logging
 	 */
-	public DebugPause(GamepadWrapper[] gamepads, Telemetry telemetry, VelocityConfiguration configuration, String id) {
+	public DebugPause(GamepadWrapper[] gamepads, Telemetry telemetry, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.gamepads = gamepads;
 		this.telemetry = telemetry;

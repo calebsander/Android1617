@@ -1,5 +1,8 @@
 package org.gearticks.autonomous.generic.statemachine;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 
 import java.util.ArrayList;
@@ -13,7 +16,9 @@ import java.util.logging.Logger;
 public abstract class StateMachineAbstractImpl implements AutonomousComponent {
 
 	private final String id;
+    @Nullable
     protected AutonomousComponent currentState = null;
+    @NonNull
     protected List<AutonomousComponent> components = new ArrayList<>();
 
 	public StateMachineAbstractImpl() {
@@ -29,7 +34,7 @@ public abstract class StateMachineAbstractImpl implements AutonomousComponent {
     public void addComponent(AutonomousComponent ac){
         this.components.add(ac);
     }
-    public void addComponents(Collection<AutonomousComponent> components){
+    public void addComponents(@NonNull Collection<AutonomousComponent> components){
         this.components.addAll(components);
     }
 

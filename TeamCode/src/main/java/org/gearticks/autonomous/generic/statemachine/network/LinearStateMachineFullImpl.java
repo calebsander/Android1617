@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.generic.statemachine.network;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
@@ -12,7 +14,7 @@ import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 public class LinearStateMachineFullImpl extends StateMachineFullImpl implements LinearStateMachine {
 	//private final List<AutonomousComponent> components = new ArrayList<>();
 
-	public LinearStateMachineFullImpl(List<AutonomousComponent> components) {
+	public LinearStateMachineFullImpl(@NonNull List<AutonomousComponent> components) {
 		super(1,1);
 		this.addComponents(components);
 		

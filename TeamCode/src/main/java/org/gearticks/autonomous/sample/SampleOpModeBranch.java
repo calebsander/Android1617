@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.sample;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.Wait;
@@ -31,7 +33,8 @@ public class SampleOpModeBranch extends OpModeTest {
 	 * Step3-blue: turn and drive to blue
 	 * @return
 	 */
-	public StateMachineFullImpl createSampleStateMachine(){
+	@NonNull
+    public StateMachineFullImpl createSampleStateMachine(){
 		StateMachineFullImpl sm = new StateMachineFullImpl(1,1);
 
 		AutonomousComponent drive1 = new GiroDriveEncoder(2000, 100, 2000, new VelocityConfiguration(null), "Drive for 2 sec heading 100");

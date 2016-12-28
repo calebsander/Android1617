@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
@@ -13,7 +15,7 @@ public class ResetSnake extends AutonomousComponentVelocityBase {
      *
      * @param configuration - config file
      * @param id - descriptive name for logging
-     */public ResetSnake(VelocityConfiguration configuration, String id) {
+     */public ResetSnake(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 

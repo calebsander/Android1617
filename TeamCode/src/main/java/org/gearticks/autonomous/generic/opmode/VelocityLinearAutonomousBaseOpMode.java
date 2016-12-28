@@ -16,7 +16,7 @@ import java.util.List;
  * Includes a linear state-machine
  */
 public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpMode {
-    private LinearStateMachine sm;
+    private final LinearStateMachine sm = new LinearStateMachineSimpleImpl();
 
     protected void initialize() {
         super.initialize();
@@ -39,15 +39,13 @@ public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpM
 
     protected void matchEnd() {
         super.matchEnd();
-        //Some matchEnd call happened with this.sm was null
-        if (this.sm != null) {
-            this.sm.tearDown();
-        }
+        this.sm.tearDown();
     }
 
     protected void initializeStateMachine(){
         List<AutonomousComponent> components = this.createComponents();
-        sm = new LinearStateMachineSimpleImpl(components);
+        //sm = new LinearStateMachineSimpleImpl(components);
+        sm.addComponents(components);
         this.sm.initialize();
     }
 

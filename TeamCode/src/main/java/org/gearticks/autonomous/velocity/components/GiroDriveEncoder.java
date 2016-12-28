@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -18,7 +20,7 @@ public class GiroDriveEncoder extends AutonomousComponentVelocityBase {
      * @param configuration
      * @param id - descriptive name for logging
      */
-	public GiroDriveEncoder(double targetHeading, double power, long encoderTarget, VelocityConfiguration configuration, String id) {
+	public GiroDriveEncoder(double targetHeading, double power, long encoderTarget, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.power = power;
 		this.targetHeading = targetHeading;

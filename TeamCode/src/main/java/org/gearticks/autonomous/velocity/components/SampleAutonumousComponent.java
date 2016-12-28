@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
+import android.support.annotation.NonNull;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
@@ -8,7 +10,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  */
 
 public class SampleAutonumousComponent extends AutonomousComponentVelocityBase {
-    public SampleAutonumousComponent(VelocityConfiguration configuration, String id) {
+    public SampleAutonumousComponent(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 

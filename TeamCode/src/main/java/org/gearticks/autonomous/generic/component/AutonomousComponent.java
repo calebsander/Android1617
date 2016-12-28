@@ -12,7 +12,7 @@ public interface AutonomousComponent {
 	/**
 	 * To be called once at start of autonomous program, e.g. to initialize some sensors
 	 */
-	public void initialize();
+    void initialize();
 	
 	
 	/**
@@ -21,13 +21,13 @@ public interface AutonomousComponent {
 	 * For regular single-input-single-output components, this is not relevant.
 	 * @param inputPort - The port through which this component/state is entered
 	 */
-	public void setup(int inputPort);
+    void setup(int inputPort);
 
     /**
      * Convenience method.
      * Calls this.setup(1);
      */
-    public void setup();
+    void setup();
 	
 	/**
 	 * To be called in each loop cycle.
@@ -36,12 +36,12 @@ public interface AutonomousComponent {
 	 * 
 	 * @return 'outputPort', 0 means not ready
 	 */
-	public int run();
+    int run();
 	
 	/**
 	 * Called each time the component state ends
 	 */
-	public void tearDown();
+    void tearDown();
 	
 //	public Logger getLogger();
 

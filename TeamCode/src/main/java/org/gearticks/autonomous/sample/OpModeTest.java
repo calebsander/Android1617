@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.sample;
 
+import android.support.annotation.NonNull;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,7 +26,7 @@ public abstract class OpModeTest {
 		
 	}
 	
-	public static void runOpMode(OpModeTest opMode, int maxRunTimeSeconds) {
+	public static void runOpMode(@NonNull OpModeTest opMode, int maxRunTimeSeconds) {
 		
 		System.out.println("Start");
 		opMode.initialize();
