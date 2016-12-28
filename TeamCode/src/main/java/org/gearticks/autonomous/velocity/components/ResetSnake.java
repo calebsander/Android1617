@@ -8,7 +8,12 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  */
 
 public class ResetSnake extends AutonomousComponentVelocityBase {
-    public ResetSnake(VelocityConfiguration configuration, String id) {
+
+    /**
+     *
+     * @param configuration - config file
+     * @param id - descriptive name for logging
+     */public ResetSnake(VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 
@@ -23,6 +28,7 @@ public class ResetSnake extends AutonomousComponentVelocityBase {
     public int run() {
         int transition = super.run();
 
+        this.getLogger().info("ResetSnake - timer = " + this.getStageTimer().seconds());
         if (this.getStageTimer().seconds() > 0.5) {
             transition = 1;
         }

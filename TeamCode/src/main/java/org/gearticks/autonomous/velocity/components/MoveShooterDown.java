@@ -8,6 +8,12 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  */
 
 public class MoveShooterDown extends AutonomousComponentVelocityBase {
+
+    /**
+     *
+     * @param configuration - config file
+     * @param id - descriptive name for logging
+     */
     public MoveShooterDown(VelocityConfiguration configuration, String id) {
         super(configuration, id);
         this.getConfiguration().resetAutoShooter();

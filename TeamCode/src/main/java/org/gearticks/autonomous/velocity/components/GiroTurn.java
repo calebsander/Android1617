@@ -3,20 +3,27 @@ package org.gearticks.autonomous.velocity.components;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
+import org.gearticks.joystickoptions.AllianceOption;
 
 public class GiroTurn extends AutonomousComponentVelocityBase {
 	private final DriveDirection direction = new DriveDirection();
 	private final double targetHeading;
+	private boolean allianceColorIsBlue;
+	private final double angleMultiplier;
+
 
 	/**
 	 *
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
-	 * @param configuration
+	 * @param configuration - config file
 	 * @param id - descriptive name for logging
 	 */
 	public GiroTurn(double targetHeading,  VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.targetHeading = targetHeading;
+		this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+		if (this.allianceColorIsBlue) angleMultiplier = 1.0; //angles were calculated for blue side
+		else angleMultiplier = -1.0; //invert all angles for red side
 	}
 
 	@Override
@@ -30,7 +37,7 @@ public class GiroTurn extends AutonomousComponentVelocityBase {
 		int transition = 0;
 		super.run();
 
-		if (this.direction.gyroCorrect(this.targetHeading, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1) > 10) {
+		if (this.direction.gyroCorrect(this.targetHeading, angleMultiplier, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1) > 10) {
 			transition = 1;
 		}
 		this.getConfiguration().move(this.direction, 0.06);

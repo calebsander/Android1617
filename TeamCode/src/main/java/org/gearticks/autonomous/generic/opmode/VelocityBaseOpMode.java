@@ -24,7 +24,9 @@ public class VelocityBaseOpMode extends BaseOpMode {
     }
 
     protected void matchEnd() {
-        this.configuration.imu.eulerRequest.stopReading();
+        if (this.configuration != null) {
+            this.configuration.imu.eulerRequest.stopReading();
+        }
     }
 
 }

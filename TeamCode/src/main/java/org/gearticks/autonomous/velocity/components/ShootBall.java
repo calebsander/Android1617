@@ -10,6 +10,13 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  */
 
 public class ShootBall extends AutonomousComponentVelocityBase {
+
+
+    /**
+     *
+     * @param configuration - config file
+     * @param id - descriptive name for logging
+     */
     public ShootBall(VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }

@@ -8,6 +8,12 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  */
 
 public class LoadBall extends AutonomousComponentVelocityBase {
+
+    /**
+     *
+     * @param configuration - config file
+     * @param id - descriptive name for logging
+     */
     public LoadBall(VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
@@ -21,6 +27,8 @@ public class LoadBall extends AutonomousComponentVelocityBase {
     @Override
     public int run() {
         int transition = super.run();
+
+        this.getLogger().info("LoadBall - timer = " + this.getStageTimer().seconds());
 
         if (this.getStageTimer().seconds() > 0.7) {
             transition = 1;

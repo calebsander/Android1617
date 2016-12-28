@@ -71,7 +71,9 @@ public abstract class AutonomousComponentAbstractImpl implements
 	public String toString(){
 		return this.id;
 	}
-	
-	
 
+
+	public String getId() {
+		return id;
+	}
 }

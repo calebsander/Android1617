@@ -5,7 +5,13 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class Wait extends AutonomousComponentVelocityBase {
 	private final int waitTime;//msec
-	
+
+	/**
+	 *
+	 * @param waitTime - wait time
+	 * @param configuration - config file
+	 * @param id - descriptive name for logging
+	 */
 	public Wait(int waitTime, VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.waitTime = waitTime;
