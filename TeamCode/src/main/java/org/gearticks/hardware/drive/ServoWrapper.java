@@ -4,10 +4,11 @@ package org.gearticks.hardware.drive;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ServoWrapper {
 	//A map of servos to servo positions
-	private static final HashMap<ServoWrapper, Double> lastPositions = new HashMap<>();
+	private static final Map<Servo, Double> lastPositions = new HashMap<>();
 	//The value stored in lastPos before any value has been set
 	private static final double UNSET = Double.MIN_VALUE;
 
@@ -60,18 +61,18 @@ public class ServoWrapper {
 		this.servo = servo;
 		this.lastPos = UNSET;
 		this.incrementTask = null;
-		if (ServoWrapper.lastPositions.containsKey(servo)) this.setPos(ServoWrapper.lastPositions.get(this));
+		final Double lastPosition = lastPositions.get(servo);
+		if (lastPosition != null) this.setPos(lastPosition);
 	}
 
 	//Sets the pos of the servo
 	public void setPos(double pos) {
 		if (pos < 0.0) pos = 0.0;
 		else if (pos > 1.0) pos = 1.0;
-		if (this.lastPos == UNSET) this.servo.setPosition((pos + 0.5) % 1.0); //ensure HiTechnic controller's PWM is enabled (due to bug)
 		if (pos != this.lastPos) {
 			this.servo.setPosition(pos);
 			this.lastPos = pos;
-			ServoWrapper.lastPositions.put(this, pos);
+			ServoWrapper.lastPositions.put(this.servo, pos);
 		}
 	}
 	//Starts moving the servo towards a target at a set speed
