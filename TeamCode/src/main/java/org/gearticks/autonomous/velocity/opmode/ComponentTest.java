@@ -20,6 +20,7 @@ import org.gearticks.autonomous.velocity.components.ShootBall;
 import org.gearticks.autonomous.velocity.components.VuforiaIn;
 import org.gearticks.autonomous.velocity.components.Wait;
 import org.gearticks.GamepadWrapper;
+import org.gearticks.opmodes.utility.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
         components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
 
         // Go to 1st beacon
-        Log.i("my tag", "This is a test");
+        Log.i(Utils.TAG, "This is a test");
 //        components.add(new GiroDriveEncoder(0.0, 0.7, 10, this.configuration, "Drive off wall for 1700 ticks"));
         components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
         components.add(new VuforiaIn(500F, this.vuforiaConfiguration, this.configuration, "Drive to near target"));

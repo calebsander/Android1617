@@ -66,7 +66,7 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     @Override
     public void setup(int inputPort) {
         super.setup(inputPort);
-        Log.d("vuforia", "running vuforia in setup : create first target listener");
+        Log.d(Utils.TAG, "running vuforia in setup : create first target listener");
         this.firstTargetListener = Utils.assertNotNull(this.vuforiaConfiguration.getTargetListener(firstTargetName));
 
     }
@@ -76,30 +76,30 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
         int transition = super.run();
 
         Utils.assertNotNull(this.firstTargetListener);
-        Log.v("vuforia", "get pose from listener");
+        Log.v(Utils.TAG, "get pose from listener");
         final OpenGLMatrix pose = this.firstTargetListener.getPose();
 
 
         if (pose == null) {
-            Log.v("vuforia", "pose == null");
+            Log.v(Utils.TAG, "pose == null");
 
             this.direction.drive(0.0, 0.05);
             this.direction.turn(0.0);
         }
         else {
-            Log.v("vuforia", "pose != null");
+            Log.v(Utils.TAG, "pose != null");
 
             final VectorF translation = pose.getTranslation();
             final float normalDistance = -translation.get(2);
-            Log.v("vuforia", "normal distance = " + normalDistance);
+            Log.v(Utils.TAG, "normal distance = " + normalDistance);
 
             if (normalDistance < this.finalDistance) {
-                Log.v("vuforia", "stop drive");
+                Log.v(Utils.TAG, "stop drive");
                 this.direction.stopDrive();
                 transition = 1;
             }
             else {
-                Log.v("vuforia", "drive and turn to beacon");
+                Log.v(Utils.TAG, "drive and turn to beacon");
                 this.direction.drive(0.0, 0.12);
                 this.vuforiaTurn(translation, 0.0);
             }
