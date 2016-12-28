@@ -1,6 +1,7 @@
 package org.gearticks.Vuforia;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.vuforia.HINT;
 import com.vuforia.Image;
@@ -38,6 +39,8 @@ public class VuforiaConfiguration {
 
 
     public VuforiaConfiguration() {
+        Log.d("vuforia", "vuforia configuration construction");
+
         final VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(/*R.id.cameraMonitorViewId*/);
         parameters.vuforiaLicenseKey = VuforiaKey.KEY;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
@@ -45,8 +48,8 @@ public class VuforiaConfiguration {
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 2);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
         this.beaconImages = vuforia.loadTrackablesFromAsset("FTC_2016-17");
-        this.frameQueue = vuforia.getFrameQueue();
         vuforia.setFrameQueueCapacity(1);
+        this.frameQueue = vuforia.getFrameQueue();
     }
 
     public VuforiaTrackableDefaultListener getTargetListener(String targetName){

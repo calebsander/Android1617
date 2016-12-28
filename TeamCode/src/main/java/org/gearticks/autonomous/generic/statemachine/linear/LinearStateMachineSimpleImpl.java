@@ -46,7 +46,7 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
         if (this.currentState == null){
             //If there is no (more) current state, then end this state-machine
             outputPortNumber = 1;
-            this.getLogger().warning("LinearStateMachine in run() has no currentState. Ending StateMachine. "+ this.getId());
+            //this.getLogger().warning("LinearStateMachine in run() has no currentState. Ending StateMachine. "+ this.getId());
         }
         else {
             //regular 'run':
@@ -63,6 +63,7 @@ public class LinearStateMachineSimpleImpl extends StateMachineAbstractImpl imple
                     outputPortNumber = 1;
                     this.currentState.tearDown();
                     this.getLogger().info("Ended " + this.currentState);
+                    this.currentState = null;
                 }
             }
         }

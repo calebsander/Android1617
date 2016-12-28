@@ -38,13 +38,6 @@ public class FacePicture extends AutonomousComponentVelocityBase {
     private VuforiaTrackableDefaultListener firstTargetListener;
     @NonNull
     final String firstTargetName;
-    private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
-    static {
-        IMAGE_IDS.put("Wheels", 0);
-        IMAGE_IDS.put("Tools", 1);
-        IMAGE_IDS.put("Legos", 2);
-        IMAGE_IDS.put("Gears", 3);
-    }
 
     private boolean allianceColorIsBlue;
     final double angleMultiplier;
@@ -98,7 +91,7 @@ public class FacePicture extends AutonomousComponentVelocityBase {
             transition = 1; //wait until getting a frame
         }
 
-
+        this.getConfiguration().move(this.direction, 0.06);
         return transition;
     }
 

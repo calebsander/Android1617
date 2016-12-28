@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.vuforia.HINT;
 import com.vuforia.PIXEL_FORMAT;
@@ -39,13 +40,6 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     private VuforiaTrackables beaconImages;
     @NonNull
     final String firstTargetName;
-    private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
-    static {
-        IMAGE_IDS.put("Wheels", 0);
-        IMAGE_IDS.put("Tools", 1);
-        IMAGE_IDS.put("Legos", 2);
-        IMAGE_IDS.put("Gears", 3);
-    }
 
     private boolean allianceColorIsBlue;
 
@@ -72,7 +66,7 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     @Override
     public void setup(int inputPort) {
         super.setup(inputPort);
-        this.getLogger().info("Running Vuforia in setup");
+        Log.d("vuforia", "running vuforia in setup : create first target listener");
         this.firstTargetListener = Utils.assertNotNull(this.vuforiaConfiguration.getTargetListener(firstTargetName));
 
     }
@@ -82,25 +76,36 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
         int transition = super.run();
 
         Utils.assertNotNull(this.firstTargetListener);
+        Log.v("vuforia", "get pose from listener");
         final OpenGLMatrix pose = this.firstTargetListener.getPose();
 
 
         if (pose == null) {
+            Log.v("vuforia", "pose == null");
+
             this.direction.drive(0.0, 0.05);
             this.direction.turn(0.0);
         }
         else {
+            Log.v("vuforia", "pose != null");
+
             final VectorF translation = pose.getTranslation();
             final float normalDistance = -translation.get(2);
+            Log.v("vuforia", "normal distance = " + normalDistance);
+
             if (normalDistance < this.finalDistance) {
+                Log.v("vuforia", "stop drive");
                 this.direction.stopDrive();
                 transition = 1;
             }
             else {
+                Log.v("vuforia", "drive and turn to beacon");
                 this.direction.drive(0.0, 0.12);
                 this.vuforiaTurn(translation, 0.0);
             }
         }
+
+        this.getConfiguration().move(this.direction, 0.06);
 
         return transition;
     }
