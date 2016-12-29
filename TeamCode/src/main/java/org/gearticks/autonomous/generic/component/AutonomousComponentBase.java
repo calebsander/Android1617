@@ -3,12 +3,9 @@ package org.gearticks.autonomous.generic.component;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Adds:
- * * Timer (TODO)
- * * getLogger()
+ * Adds a timer on top of AutonomousComponentAbstractImpl
  */
 public class AutonomousComponentBase extends AutonomousComponentAbstractImpl {
-
 	protected final ElapsedTime stageTimer;
 
 	public AutonomousComponentBase() {
@@ -24,7 +21,7 @@ public class AutonomousComponentBase extends AutonomousComponentAbstractImpl {
 	@Override
 	public void initialize() {
 		super.initialize();
-		this.stageTimer.reset();//makes sense if somehow stageTimer is used without a call to setup()
+		this.stageTimer.reset(); //makes sense if somehow stageTimer is used without a call to setup()
 	}
 
 	@Override

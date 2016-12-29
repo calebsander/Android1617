@@ -4,6 +4,10 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import java.util.Collection;
 
+/**
+ * A bare state machine.
+ * Handles mass initialization of component states.
+ */
 public abstract class StateMachineBase extends AutonomousComponentAbstractImpl {
 	protected AutonomousComponent currentState;
 	protected final Collection<AutonomousComponent> components;

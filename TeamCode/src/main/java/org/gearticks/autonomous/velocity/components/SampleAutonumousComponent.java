@@ -1,9 +1,9 @@
 package org.gearticks.autonomous.velocity.components;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class SampleAutonumousComponent extends AutonomousComponentVelocityBase {
+public class SampleAutonumousComponent extends AutonomousComponentHardware<VelocityConfiguration> {
     public SampleAutonumousComponent(VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }

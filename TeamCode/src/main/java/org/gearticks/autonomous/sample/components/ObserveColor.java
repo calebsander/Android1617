@@ -1,14 +1,12 @@
 package org.gearticks.autonomous.sample.components;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 /**
  * Sample of an AutonomousComponent that makes a decision and has 2 output ports
- * Transition 1 for red, transition 2 for blue
- *
  */
-public class ObserveColor extends AutonomousComponentVelocityBase {
+public class ObserveColor extends AutonomousComponentHardware<VelocityConfiguration> {
 	public static final int RED = newTransition(), BLUE = newTransition();
 
 	public ObserveColor(VelocityConfiguration configuration, String id) {

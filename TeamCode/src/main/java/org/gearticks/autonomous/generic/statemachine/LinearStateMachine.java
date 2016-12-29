@@ -10,7 +10,6 @@ import java.util.List;
  * Simplifies initialization of a state-machine
  */
 public class LinearStateMachine extends StateMachineBase {
-
     private Iterator<AutonomousComponent> iterator;
 
     public LinearStateMachine() {
@@ -20,6 +19,11 @@ public class LinearStateMachine extends StateMachineBase {
         super(components);
     }
 
+    /**
+     * Adds a component to the end of the chain.
+     * Must be called before the state machine gets initialized.
+     * @param component the component to add
+    */
     public void addComponent(AutonomousComponent component) {
         this.components.add(component);
     }

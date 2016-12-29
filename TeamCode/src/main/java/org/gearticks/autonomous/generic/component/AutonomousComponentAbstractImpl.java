@@ -5,13 +5,24 @@ import java.util.logging.Logger;
 /**
  * Implements the AutonomousComponent interface.
  * Adds
- * - setup() without a input port number as a convenience method
+ * - Transition constants and a transition id generator
  * - toString()
  */
 public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
+	/**
+	 * Returning this from run() means that the component is not ready to transition to the next one
+	 */
 	public static final int NOT_DONE = 0;
+	/**
+	 * The default output port.
+	 * Use if there is only one output port
+	 */
 	public static final int NEXT_STATE = 1;
 	private static int firstUnusedTransition = Math.max(NOT_DONE, NEXT_STATE) + 1;
+	/**
+	 * Gets a unique transition id
+	 * @return the lowest unused transition id
+	 */
 	public static int newTransition() {
 		return firstUnusedTransition++;
 	}

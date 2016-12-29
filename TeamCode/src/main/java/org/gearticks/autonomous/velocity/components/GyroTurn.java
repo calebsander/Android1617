@@ -1,11 +1,11 @@
 package org.gearticks.autonomous.velocity.components;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class GyroTurn extends AutonomousComponentVelocityBase {
+public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration> {
 	private final DriveDirection direction;
 	private final double targetHeading;
 	private double angleMultiplier;

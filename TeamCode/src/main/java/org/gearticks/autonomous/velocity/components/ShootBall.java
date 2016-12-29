@@ -1,10 +1,10 @@
 package org.gearticks.autonomous.velocity.components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class ShootBall extends AutonomousComponentVelocityBase {
+public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
      * @param configuration - config file
      * @param id - descriptive name for logging

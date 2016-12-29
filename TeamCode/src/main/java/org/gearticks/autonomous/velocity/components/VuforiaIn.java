@@ -4,13 +4,13 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.gearticks.vuforia.VuforiaConfiguration;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
-public class VuforiaIn extends AutonomousComponentVelocityBase {
+public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration> {
     private final DriveDirection direction;
     private final float finalDistance;
     private final VuforiaConfiguration vuforiaConfiguration;
@@ -42,28 +42,30 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        Utils.assertNotNull(this.firstTargetListener);
         final OpenGLMatrix pose = this.firstTargetListener.getPose();
-
-
+        final int transition;
         if (pose == null) {
             this.direction.drive(0.0, 0.05);
             this.direction.turn(0.0);
+            transition = NOT_DONE;
         }
         else {
             final VectorF translation = pose.getTranslation();
             final float normalDistance = -translation.get(2);
             if (normalDistance < this.finalDistance) {
                 this.direction.stopDrive();
-                transition = 1;
+                transition = NEXT_STATE;
             }
             else {
                 this.direction.drive(0.0, 0.12);
                 this.vuforiaTurn(translation, 0.0);
+                transition = NOT_DONE;
             }
         }
+        this.configuration.move(this.direction, 0.06);
 
         return transition;
     }

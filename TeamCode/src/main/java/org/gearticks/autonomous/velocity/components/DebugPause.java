@@ -2,10 +2,10 @@ package org.gearticks.autonomous.velocity.components;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class DebugPause extends AutonomousComponentVelocityBase {
+public class DebugPause extends AutonomousComponentHardware<VelocityConfiguration> {
 	private GamepadWrapper gamepad;
 	private Telemetry telemetry;
 

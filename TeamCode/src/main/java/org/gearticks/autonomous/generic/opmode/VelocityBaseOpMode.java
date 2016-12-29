@@ -4,6 +4,10 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
 
+/**
+ * An OpMode that instantiates a VelocityConfiguration
+ * and executes a single component (which could be a state machine)
+ */
 public abstract class VelocityBaseOpMode extends BaseOpMode {
 	protected VelocityConfiguration configuration;
 	private AutonomousComponent component;
@@ -30,5 +34,10 @@ public abstract class VelocityBaseOpMode extends BaseOpMode {
 		this.configuration.teardown();
 	}
 
+	/**
+	 * Specifies the component to execute.
+	 * Will be called in initialize() after configuration is created.
+	 * @return the component to run
+	 */
 	protected abstract AutonomousComponent getComponent();
 }

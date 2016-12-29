@@ -1,7 +1,7 @@
 package org.gearticks.autonomous.sample.opmodes;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
@@ -9,7 +9,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 
 public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
-    private class GyroDriveEncoderInner extends AutonomousComponentVelocityBase {
+    private class GyroDriveEncoderInner extends AutonomousComponentHardware<VelocityConfiguration> {
         private final DriveDirection direction;
 
         public GyroDriveEncoderInner(VelocityConfiguration configuration, String id) {
@@ -36,7 +36,7 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
         final LinearStateMachine sm = new LinearStateMachine();
         sm.addComponent(new GyroDriveEncoder(0.0, 1.0, 2000, this.configuration, "stage1"));
         sm.addComponent(new GyroDriveEncoderInner(this.configuration, "gyro drive inner"));
-        sm.addComponent(new AutonomousComponentVelocityBase(this.configuration, "giro drive anonymous") { //Anonymous class
+        sm.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(this.configuration, "giro drive anonymous") { //Anonymous class
             private final DriveDirection direction = new DriveDirection();
 
             @Override

@@ -5,12 +5,12 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.gearticks.vuforia.VuforiaConfiguration;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class FacePicture extends AutonomousComponentVelocityBase {
+public class FacePicture extends AutonomousComponentHardware<VelocityConfiguration> {
     private final DriveDirection direction;
     private final VuforiaConfiguration vuforiaConfiguration;
     private double angleMultiplier;
@@ -57,6 +57,7 @@ public class FacePicture extends AutonomousComponentVelocityBase {
             }
             else this.direction.stopDrive(); //then pause for .2 seconds
         }
+        this.configuration.move(this.direction, 0.06);
         if (this.angleCorrectionTimer.seconds() > 0.4) return NEXT_STATE; //if we have been on target for .4 seconds in a row, take the picture
         return NOT_DONE;
     }

@@ -1,10 +1,10 @@
 package org.gearticks.autonomous.velocity.components;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 
-public class GyroDriveEncoder extends AutonomousComponentVelocityBase {
+public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
 	private final DriveDirection direction;
 	private final double power;
 	private final double targetHeading;

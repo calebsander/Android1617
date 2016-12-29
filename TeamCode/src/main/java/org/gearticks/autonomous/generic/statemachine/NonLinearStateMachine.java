@@ -7,16 +7,10 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.opmodes.utility.Utils;
 
 /**
- * A StateMachineFullImpl itself implements an AutonomousComponent, i.e. this supports hierarchical state-machines.
- * Internally, a StateMachineFullImpl contains InputPorts, AutonomousComponents, StateMachineConnections and OutputPorts
- * (where Input- and OutputPorts are AutonomousComponents)
- * StateMachineConnections connect between an output-port of one AutonomousComponent to the input-port of another AutonomousComponent.
- *
- * A StateMachineFullImpl uses the specialized Input- and OutputPort AutonomousComponents to implement the ports,
- * but in general for a custom AutonomousComponent this is not necessary.
- *
- * The use of Input- and OutputPort AutonomousComponents allows the StateMachineFullImpl to have an internal network of AutonomousComponents.
- *
+ * A state machine with a number of component states that don't necessarily proceed in a linear fashion.
+ * This is useful for looping and conditionally branching state machines.
+ * Each output port emitted by each component should be connected to the component to execute next.
+ * Output ports not connected to another component must cause the state machine to end.
  */
 public class NonLinearStateMachine extends StateMachineBase {
 	private Map<AutonomousComponent, Map<Integer, AutonomousComponent>> connections;
@@ -27,8 +21,15 @@ public class NonLinearStateMachine extends StateMachineBase {
 		this.connections = new HashMap<>();
 		this.exitConnections = new HashMap<>();
 		this.currentState = initialComponent;
+		this.components.add(initialComponent); //in case this is the only state
 	}
 
+	/**
+	 * Indicates that an output port on one component should switch to a specified state
+	 * @param originComponent the component being switched from
+	 * @param originPortNumber the output port on originComponent this applies to
+	 * @param destinationComponent the component to switch to when the output port is triggered
+	 */
 	public void addConnection(AutonomousComponent originComponent,
 			int originPortNumber, AutonomousComponent destinationComponent) {
 		this.components.add(originComponent);
@@ -40,6 +41,12 @@ public class NonLinearStateMachine extends StateMachineBase {
 		}
 		componentConnections.put(originPortNumber, destinationComponent);
 	}
+	/**
+	 * Indicates that an output port on one component should terminate the state machine
+	 * @param component the final component
+	 * @param portNumber the output port for which component is the final component
+	 * @param exitPort the output port of the state machine to trigger in this case
+	 */
 	public void addExitConnection(AutonomousComponent component, int portNumber, int exitPort) {
 		this.components.add(component);
 		Map<Integer, Integer> componentConnections = this.exitConnections.get(component);
@@ -49,6 +56,12 @@ public class NonLinearStateMachine extends StateMachineBase {
 		}
 		componentConnections.put(portNumber, exitPort);
 	}
+	/**
+	 * Shorthand for addExitConnection(component, portNumber, NEXT_STATE).
+	 * Use if you don't care what output port of the state machine is triggered upon exit.
+	 * @param component the final component
+	 * @param portNumber the output port for which component is the final component
+	 */
 	public void addExitConnection(AutonomousComponent component, int portNumber) {
 		this.addExitConnection(component, portNumber, NEXT_STATE);
 	}
@@ -64,6 +77,8 @@ public class NonLinearStateMachine extends StateMachineBase {
 		final int superTransition = super.run();
 		if (superTransition != NOT_DONE) return superTransition;
 
+		if (this.currentState == null) return NEXT_STATE;
+
 		final int transition = this.currentState.run();
 		if (transition == NOT_DONE) return transition;
 
@@ -72,7 +87,10 @@ public class NonLinearStateMachine extends StateMachineBase {
 		final Map<Integer, Integer> exitPorts = this.exitConnections.get(this.currentState);
 		if (exitPorts != null) {
 			final Integer exitPort = exitPorts.get(transition);
-			if (exitPort != null) return exitPort;
+			if (exitPort != null) {
+				this.currentState = null;
+				return exitPort;
+			}
 		}
 
 		final Map<Integer, AutonomousComponent> componentConnections = this.connections.get(this.currentState);
