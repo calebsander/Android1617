@@ -2,31 +2,28 @@ package org.gearticks.autonomous.generic.component;
 
 import android.support.annotation.NonNull;
 
+import org.gearticks.autonomous.generic.statemachine.StateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
+import org.gearticks.autonomous.generic.statemachine.network.StateMachineFullImpl;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 import java.util.List;
 
 /**
- * AutonomousComponent that contains a Linear State-Machine.
- * Can be used to create composite components that are linear state-machines of other components
+ * AutonomousComponent that contains a Full State-Machine.
+ * Can be used to create composite components that are full/non-linear state-machines of other components
  */
-public abstract class VelocityLinearBaseAutonomousComponent extends AutonomousComponentVelocityBase {
-    private final LinearStateMachine sm = new LinearStateMachineSimpleImpl();
+public abstract class VelocityNonLinearBaseAutonomousComponent extends AutonomousComponentVelocityBase {
+    private final StateMachine sm;
 
-    public VelocityLinearBaseAutonomousComponent(@NonNull VelocityConfiguration configuration, String id) {
+    public VelocityNonLinearBaseAutonomousComponent(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
-        this.initializeStateMachine();
+        this.sm = this.initializeStateMachine();
     }
 
-    protected void initializeStateMachine(){
-        List<AutonomousComponent> components = this.createComponents();
-        //sm = new LinearStateMachineSimpleImpl(components);
-        this.sm.addComponents(components);
-    }
+    protected abstract StateMachine initializeStateMachine();
 
-    protected abstract List<AutonomousComponent> createComponents();
 
     @Override
     public void initializeAtMatchStart(){
