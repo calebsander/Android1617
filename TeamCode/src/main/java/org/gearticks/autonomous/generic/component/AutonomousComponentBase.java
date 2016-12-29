@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
-
 import java.util.logging.Logger;
 
 /**
@@ -27,8 +25,8 @@ public class AutonomousComponentBase extends AutonomousComponentAbstractImpl {
 	}
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeAtMatchStart() {
+        super.initializeAtMatchStart();
         this.stageTimer.reset();//makes sense if somehow stageTimer is used without a call to setup()
     }
 

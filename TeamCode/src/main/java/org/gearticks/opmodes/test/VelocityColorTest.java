@@ -10,7 +10,7 @@ import org.gearticks.opmodes.BaseOpMode;
 public class VelocityColorTest extends BaseOpMode {
 	/*private VelocityConfiguration configuration;
 
-	protected void initialize() {
+	protected void initializeAtMatchStart() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
 	}
 	protected void matchStart() {

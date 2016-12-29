@@ -7,7 +7,6 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
-import org.gearticks.autonomous.generic.statemachine.network.LinearStateMachineFullImpl;
 import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.GiroTurn;
 import org.gearticks.autonomous.velocity.components.Wait;
@@ -26,7 +25,7 @@ public class DriveSquareTest extends VelocityBaseOpMode {
     protected void initialize() {
         super.initialize();
         this.createComponents();
-        this.sm.initialize();
+        this.sm.initializeAtMatchStart();
     }
 
     protected void loopBeforeStart() {

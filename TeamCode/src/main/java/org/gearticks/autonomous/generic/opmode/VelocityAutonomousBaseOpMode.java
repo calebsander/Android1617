@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +36,8 @@ public abstract class VelocityAutonomousBaseOpMode<T extends Enum<T>> extends Ve
 		return this.componentOfStageMap.get(stage);
 	}
 
-//	protected void initialize() {
-//		super.initialize();
+//	protected void initializeAtMatchStart() {
+//		super.initializeAtMatchStart();
 //	}
 //	protected void loopBeforeStart() {
 //		super.loopBeforeStart();
@@ -98,7 +97,7 @@ public abstract class VelocityAutonomousBaseOpMode<T extends Enum<T>> extends Ve
 
     protected void initializeComponents(){
         for (AutonomousComponent ac : this.componentOfStageMap.values()){
-            ac.initialize();
+            ac.initializeAtMatchStart();
         }
     }
 

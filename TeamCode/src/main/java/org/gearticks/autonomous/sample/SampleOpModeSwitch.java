@@ -67,7 +67,7 @@ public class SampleOpModeSwitch extends OpModeTest {
         this.setComponent(Stage.WAIT2, new Wait(2000, this.configuration, "Wait for 2 sec"));
 
 		for (AutonomousComponent ac : this.componentOfStageMap.values()){
-			ac.initialize();
+			ac.initializeAtMatchStart();
 		}
 	}
 	

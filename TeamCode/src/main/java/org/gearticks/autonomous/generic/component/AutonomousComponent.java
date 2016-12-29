@@ -10,9 +10,9 @@ package org.gearticks.autonomous.generic.component;
  */
 public interface AutonomousComponent {
 	/**
-	 * To be called once at start of autonomous program, e.g. to initialize some sensors
+	 * To be called once at start of autonomous program, e.g. to initializeAtMatchStart some sensors
 	 */
-    void initialize();
+    void initializeAtMatchStart();
 	
 	
 	/**

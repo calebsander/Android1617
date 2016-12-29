@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.generic.opmode;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
 
@@ -15,7 +14,7 @@ public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpM
 
     protected void initialize() {
         super.initialize();
-        this.initializeStateMachine();
+        sm.addComponents(this.createComponents());
     }
 
     protected void loopBeforeStart() {
@@ -24,6 +23,7 @@ public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpM
 
     protected void matchStart() {
         super.matchStart();
+        this.sm.initializeAtMatchStart();
         this.sm.setup();
     }
 
@@ -35,13 +35,6 @@ public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpM
     protected void matchEnd() {
         super.matchEnd();
         this.sm.tearDown();
-    }
-
-    protected void initializeStateMachine(){
-        List<AutonomousComponent> components = this.createComponents();
-        //sm = new LinearStateMachineSimpleImpl(components);
-        sm.addComponents(components);
-        this.sm.initialize();
     }
 
     /**

@@ -96,9 +96,9 @@ public class StateMachineFullImpl implements AutonomousComponent{
 	}
 	
 	@Override
-	public void initialize() {
+	public void initializeAtMatchStart() {
 		for (AutonomousComponent ac : this.components){
-			ac.initialize();
+			ac.initializeAtMatchStart();
 		}
 	}
 

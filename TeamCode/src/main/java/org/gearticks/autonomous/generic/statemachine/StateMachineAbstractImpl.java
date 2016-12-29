@@ -39,9 +39,9 @@ public abstract class StateMachineAbstractImpl implements AutonomousComponent {
     }
 
     @Override
-    public void initialize() {
+    public void initializeAtMatchStart() {
         for (AutonomousComponent ac : this.components){
-            ac.initialize();
+            ac.initializeAtMatchStart();
         }
     }
 

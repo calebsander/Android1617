@@ -31,7 +31,7 @@ public abstract class AutonomousComponentAbstractImpl implements
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
 	@Override
-	public void initialize() {
+	public void initializeAtMatchStart() {
 		// Default doesn't do anything
 	}
 

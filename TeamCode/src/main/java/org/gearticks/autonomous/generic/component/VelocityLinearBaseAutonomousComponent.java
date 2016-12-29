@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public abstract class VelocityLinearBaseAutonomousComponent extends AutonomousCo
         List<AutonomousComponent> components = this.createComponents();
         //sm = new LinearStateMachineSimpleImpl(components);
         this.sm.addComponents(components);
-        this.sm.initialize();
+        this.sm.initializeAtMatchStart();
     }
 
     protected abstract List<AutonomousComponent> createComponents();
