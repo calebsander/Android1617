@@ -180,4 +180,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
 	}
+
+	/**
+	 *
+	 * @return true if white line detected
+     */
+	public boolean isWhiteLine(){
+		//result of sensor is inverted
+		return !this.whiteLineSensor.getState();
+	}
 }

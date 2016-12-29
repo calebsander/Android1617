@@ -1,6 +1,9 @@
 package org.gearticks.autonomous.generic.component;
 
+import android.util.Log;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.opmodes.utility.Utils;
 
 /**
  * Implements the AutonomousComponent interface.
@@ -37,8 +40,7 @@ public abstract class AutonomousComponentAbstractImpl implements
 	 */
 	@Override
 	public void setup(int inputPort) {
-		// TODO Auto-generated method stub
-
+		Log.d(Utils.TAG, "Setup of " + this.getId());
 	}
 	
 	/**
@@ -63,8 +65,7 @@ public abstract class AutonomousComponentAbstractImpl implements
 	 */
 	@Override
 	public void tearDown() {
-		// TODO Auto-generated method stub
-
+		Log.d(Utils.TAG, "TearDown of " + this.getId());
 	}
 	
 	@Override

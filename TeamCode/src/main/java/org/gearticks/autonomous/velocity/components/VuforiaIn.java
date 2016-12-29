@@ -40,7 +40,6 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     private VuforiaTrackables beaconImages;
     @NonNull
     final String firstTargetName;
-
     private boolean allianceColorIsBlue;
 
 
