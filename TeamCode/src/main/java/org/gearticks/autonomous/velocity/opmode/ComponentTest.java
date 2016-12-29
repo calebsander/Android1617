@@ -80,23 +80,37 @@ public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
         components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
 
         // Go to 1st beacon
-        Log.i(Utils.TAG, "This is a test");
+//        Log.i(Utils.TAG, "This is a test");
 //        components.add(new GiroDriveEncoder(0.0, 0.7, 10, this.configuration, "Drive off wall for 1700 ticks"));
         //components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
-        components.add(new VuforiaIn(500F, this.vuforiaConfiguration, this.configuration, "Drive to near target"));
+        components.add(new VuforiaIn(500F, true, this.vuforiaConfiguration, this.configuration, "Drive to near target"));
         //components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
         components.add(new FacePicture(this.vuforiaConfiguration, this.configuration, "Face near target"));
         //components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
-        components.add(new VuforiaIn(175F, this.vuforiaConfiguration, this.configuration, "Drive closer to near target"));
+        components.add(new VuforiaIn(175F, true, this.vuforiaConfiguration, this.configuration, "Drive closer to near target"));
         components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
 
         // Press correct button
         components.add(new PressBeaconButton(this.vuforiaConfiguration, this.configuration, "Press beacon button"));
         components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
         //components.add(new GiroDriveEncoder(90.0, -0.5, 1000, this.configuration, "Drive back for 2000 ticks"));
+
+        // Drive to second beacon
         components.add(new GiroTurn(0.0, this.configuration, "Turn to far target"));
         components.add(new GiroDriveEncoder(0.0, 0.5, 500, this.configuration, "Drive off 1st white line"));
-        components.add(new GiroDriveToLine(0.0, 0.05, 5000, this.configuration, "Drive to 2nd white line"));
+        components.add(new GiroDriveToLine(0.0, 0.20, 5000, this.configuration, "Drive to 2nd white line"));
+        components.add(new GiroTurn(90.0, this.configuration, "Turn to 2nd beacon"));
+        components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
+
+        // Press second beacon
+        components.add(new GiroDriveEncoder(90.0, -0.25, 500, this.configuration, "Back off target"));
+        components.add(new VuforiaIn(500F, true, this.vuforiaConfiguration, this.configuration, "Drive to far target"));
+        components.add(new FacePicture(this.vuforiaConfiguration, this.configuration, "Face far target"));
+        components.add(new VuforiaIn(175F, false, this.vuforiaConfiguration, this.configuration, "Drive to far target"));
+        components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
+        components.add(new PressBeaconButton(this.vuforiaConfiguration, this.configuration, "Press beacon button"));
+
+
 
 
 

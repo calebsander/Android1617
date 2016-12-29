@@ -46,18 +46,25 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
     /**
      *
      * @param finalDistance - distance from picture the robot stops
+     * @param isNearBeacon - what beacon it's looking for
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
-    public VuforiaIn(float finalDistance, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+    public VuforiaIn(float finalDistance, boolean isNearBeacon, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
 
         this.finalDistance = finalDistance;
         this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
 
         this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
-        if (this.allianceColorIsBlue) firstTargetName = "Wheels";
-        else firstTargetName = "Gears";
+        if (isNearBeacon) {
+            if (this.allianceColorIsBlue) firstTargetName = "Wheels";
+            else firstTargetName = "Gears";
+        }
+        else {
+            if (this.allianceColorIsBlue) firstTargetName = "Legos";
+            else firstTargetName = "Tools";
+        }
 
 
     }

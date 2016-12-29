@@ -51,11 +51,11 @@ public class GiroDriveToLine extends AutonomousComponentVelocityBase {
 
         Log.v(Utils.TAG, "white line sensor = " + this.getConfiguration().isWhiteLine());
         if (this.getConfiguration().isWhiteLine()){
-            Log.v(Utils.TAG, "white line sensor = " + this.getConfiguration().isWhiteLine());
+            Log.d(Utils.TAG, "Transitioning because found white line");
             transition = 1;
         }
         else if (this.getConfiguration().encoderPositive() > this.maxEncoderTarget) {
-            Log.v(Utils.TAG, "encoder limit reached = " + this.getConfiguration().encoderPositive());
+            Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.getConfiguration().encoderPositive());
             transition = 1;
         }
 

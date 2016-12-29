@@ -124,7 +124,7 @@ public class PressBeaconButton extends AutonomousComponentVelocityBase {
                 Log.v(Utils.TAG, "Backing up");
                 this.direction.drive(0.0, -0.5);
                 this.direction.gyroCorrect(90.0 * angleMultiplier, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1);
-                if (this.getConfiguration().encoderPositive() > 200) {
+                if (this.getConfiguration().encoderPositive() > 300) {
                     this.direction.stopDrive();
                     this.nextStage();
                 }
