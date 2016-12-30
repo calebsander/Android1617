@@ -74,8 +74,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.rangeSensor.terminate();
 	}
 	public void stopMotion() {
-		this.intake.stop();
-		this.shooter.stop();
 		this.driveLeft.stop();
 		this.driveRight.stop();
 	}
