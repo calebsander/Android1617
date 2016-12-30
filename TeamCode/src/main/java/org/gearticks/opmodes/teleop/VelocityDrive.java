@@ -39,28 +39,29 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	protected void loopAfterStart() {
 		final int driveGamepad = CALVIN;
-		final double yScaleFactor = 1.0,
-			sScaleAtRest = 0.4,
-			sScaleWhenMoving = 1.0;
+		final double yScaleFactor = 1.0;
+//			sScaleAtRest = 0.8,
+//			sScaleWhenMoving = 0.8;
+		double sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY()*yScaleFactor));
 		if (this.gamepads[driveGamepad].leftStickAtRest()) { //if just turning, turn slower for greater accuracy
 			this.direction.drive(0.0, 0.0);
-			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleAtRest);
+			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor); //sScaleAtRest
 		}
 		else { //if banana-turning, turn faster
 			this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
-			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleWhenMoving);
+			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor); //sScaleWhenMoving
 		}
 		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 
 		final double intakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
-			intakePower = MotorWrapper.STOPPED;
+			intakePower = MotorConstants.INTAKE_IN;
 		}
 		else if (this.gamepads[CALVIN].getRightTrigger() || this.gamepads[JACK].getRightTrigger()) {
 			intakePower = MotorConstants.INTAKE_OUT;
 		}
 		else {
-			intakePower = MotorConstants.INTAKE_IN; //leave intake on all the time by default
+			intakePower = MotorWrapper.STOPPED; //leave intake on all the time by default -- not
 		}
 		this.configuration.intake.setPower(intakePower);
 
