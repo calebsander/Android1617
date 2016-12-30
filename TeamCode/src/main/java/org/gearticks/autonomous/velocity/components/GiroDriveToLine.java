@@ -36,6 +36,8 @@ public class GiroDriveToLine extends AutonomousComponentVelocityBase {
     public void setup(int inputPort) {
         super.setup(inputPort);
         this.getConfiguration().resetEncoder();
+        this.getConfiguration().activateWhiteLineColor();
+
 
     }
 
@@ -68,5 +70,6 @@ public class GiroDriveToLine extends AutonomousComponentVelocityBase {
         //stop motors
         this.direction.stopDrive();
         this.getConfiguration().move(this.direction, 0.06);
+        this.getConfiguration().deactivateWhiteLineColor();
     }
 }

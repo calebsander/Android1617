@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.gearticks.dimsensors.i2c.GearticksBNO055;
 import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
@@ -33,6 +34,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel badBoy1, badBoy2;
 	//public final DigitalChannel whiteLineSensor;
 	public final TCS34725 whiteLineColorSensor;
+	public final LED whiteLineColorLed;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
@@ -74,6 +76,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 //		this.whiteLineSensor = (DigitalChannel)hardwareMap.get("whiteLine");
 //		this.whiteLineSensor.setMode(Mode.INPUT);
 		this.whiteLineColorSensor = new TCS34725((I2cDevice)hardwareMap.get("whiteLineColor"));
+		this.whiteLineColorLed = (LED)hardwareMap.get("whiteLineColorLed");
 	}
 	public void teardown() {
 		this.imu.terminate();
@@ -195,15 +198,26 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		//result of sensor is inverted
 //		return !this.whiteLineSensor.getState();
 		boolean isWhiteLine = false;
-		int blue = this.whiteLineColorSensor.getBlue();
-		Log.v(Utils.TAG, "Blue = " + blue);
-		int red = this.whiteLineColorSensor.getRed();
-		Log.v(Utils.TAG, "Red = " + red);
-		int green = this.whiteLineColorSensor.getGreen();
-		Log.v(Utils.TAG, "Green = " + green);
 		int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
+		int whiteLineThreshold = 280;
+
+		if (clear > whiteLineThreshold){
+			isWhiteLine = true;
+		}
 
 		return isWhiteLine;
 	}
+
+	public void activateWhiteLineColor(){
+		this.whiteLineColorSensor.startReadingClear();
+		this.whiteLineColorLed.enable(true);
+		this.whiteLineColorSensor.setIntegrationTime(50);
+
+	}
+	public void deactivateWhiteLineColor(){
+		this.whiteLineColorSensor.stopReading();
+		this.whiteLineColorLed.enable(false);
+	}
+
 }

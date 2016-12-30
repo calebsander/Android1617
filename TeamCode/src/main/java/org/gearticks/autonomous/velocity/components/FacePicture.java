@@ -38,13 +38,19 @@ public class FacePicture extends AutonomousComponentVelocityBase {
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
-    public FacePicture(VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+    public FacePicture(boolean isNearBeacon, VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
         this.vuforiaConfiguration = vuforiaConfiguration;
 
         this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
-        if (this.allianceColorIsBlue) firstTargetName = "Wheels";
-        else firstTargetName = "Gears";
+        if (isNearBeacon) {
+            if (this.allianceColorIsBlue) firstTargetName = "Wheels";
+            else firstTargetName = "Gears";
+        }
+        else {
+            if (this.allianceColorIsBlue) firstTargetName = "Legos";
+            else firstTargetName = "Tools";
+        }
         if (this.allianceColorIsBlue) angleMultiplier = 1.0; //angles were calculated for blue side
         else angleMultiplier = -1.0; //invert all angles for red side
         this.angleCorrectionTimer = new ElapsedTime();
@@ -55,6 +61,7 @@ public class FacePicture extends AutonomousComponentVelocityBase {
     @Override
     public void setup(int inputPort) {
         super.setup(inputPort);
+        this.vuforiaConfiguration.activate();
         this.firstTargetListener = this.vuforiaConfiguration.getTargetListener(firstTargetName);
 
     }
@@ -86,6 +93,7 @@ public class FacePicture extends AutonomousComponentVelocityBase {
 
     @Override
     public void tearDown() {
+        this.vuforiaConfiguration.deactivate();
         super.tearDown();
     }
 

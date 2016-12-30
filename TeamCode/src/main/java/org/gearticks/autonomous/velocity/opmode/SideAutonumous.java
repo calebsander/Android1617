@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.Vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.opmode.VelocityLinearAutonomousBaseOpMode;
-import org.gearticks.autonomous.velocity.components.CompleteBallLoad;
 import org.gearticks.autonomous.velocity.components.DebugPause;
 import org.gearticks.autonomous.velocity.components.FacePicture;
 import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
@@ -22,7 +21,6 @@ import org.gearticks.autonomous.velocity.components.ResetSnake;
 import org.gearticks.autonomous.velocity.components.ShootBall;
 import org.gearticks.autonomous.velocity.components.VuforiaIn;
 import org.gearticks.autonomous.velocity.components.Wait;
-import org.gearticks.GamepadWrapper;
 import org.gearticks.opmodes.utility.Utils;
 
 import java.util.ArrayList;
@@ -31,8 +29,8 @@ import java.util.List;
 /**
  *
  */
-@Autonomous(name = "Component Test")
-public class ComponentTest extends VelocityLinearAutonomousBaseOpMode {
+@Autonomous(name = "Side Autonomous")
+public class SideAutonumous extends VelocityLinearAutonomousBaseOpMode {
     private static final int CALVIN = 0, JACK = 1;
     private VuforiaConfiguration vuforiaConfiguration;
 

@@ -40,6 +40,10 @@ public class NonLinearPressBeaconButton extends VelocityNonLinearBaseAutonomousC
         AutonomousComponent selectSide = new SelectBlueSideBeaconButton(this.vuforiaConfiguration, this.getConfiguration(), "Press beacon button");
         AutonomousComponent pushRightButton = new GiroTurnBeacon(10.0, this.getConfiguration(), "Turn right");
         AutonomousComponent pushLeftButton = new GiroTurnBeacon(-10.0, this.getConfiguration(), "Turn left");
+        AutonomousComponent driveInRightButton = new GiroDriveEncoderBeacon(10.0, 0.3, 200, this.getConfiguration(), "Press right button");
+        AutonomousComponent driveInLeftButton = new GiroDriveEncoderBeacon(-10.0, 0.3, 200, this.getConfiguration(), "Press left button");
+        AutonomousComponent squareUp = new GiroTurnBeacon(0.0, this.getConfiguration(), "Square up");
+
 
         sm.addComponent(selectSide);
         sm.addComponent(pushRightButton);
@@ -51,8 +55,11 @@ public class NonLinearPressBeaconButton extends VelocityNonLinearBaseAutonomousC
         sm.addConnection(selectSide, 1, pushRightButton, 1);
         sm.addConnection(selectSide, 2, pushLeftButton, 1);
         sm.addConnection(selectSide, 3, outputPort1, 1);
-        sm.addConnection(pushRightButton, 1, outputPort1, 1);
-        sm.addConnection(pushLeftButton, 1, outputPort1, 1);
+        sm.addConnection(pushRightButton, 1, driveInRightButton, 1);
+        sm.addConnection(pushLeftButton, 1, driveInLeftButton, 1);
+        sm.addConnection(driveInRightButton, 1, squareUp, 1);
+        sm.addConnection(driveInLeftButton, 1, squareUp, 1);
+        sm.addConnection(squareUp, 1, outputPort1, 1);
 
 
         Log.d(Utils.TAG, "end full state machine initialization of SimpleNonLinearComposite");

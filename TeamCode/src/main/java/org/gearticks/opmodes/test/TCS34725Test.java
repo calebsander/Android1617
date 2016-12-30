@@ -12,11 +12,12 @@ public class TCS34725Test extends OpMode {
 	private LED led;
 
 	public void init() {
-		this.colorSensor = new TCS34725((I2cDevice)this.hardwareMap.get("color"));
-		this.led = (LED)this.hardwareMap.get("led");
+		this.colorSensor = new TCS34725((I2cDevice)this.hardwareMap.get("whiteLineColor"));
+		this.led = (LED)this.hardwareMap.get("whiteLineColorLed");
 	}
 	public void start() {
 		this.colorSensor.startReadingColor();
+		this.led.enable(true);
 	}
 	public void loop() {
 		this.led.enable(this.gamepad1.a);
