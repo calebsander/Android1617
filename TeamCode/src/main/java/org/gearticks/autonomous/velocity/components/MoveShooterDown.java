@@ -4,7 +4,6 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class MoveShooterDown extends AutonomousComponentHardware<VelocityConfiguration> {
-
     /**
      * @param configuration - config file
      * @param id - descriptive name for logging

@@ -6,8 +6,8 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class DebugPause extends AutonomousComponentHardware<VelocityConfiguration> {
-	private GamepadWrapper gamepad;
-	private Telemetry telemetry;
+	private final GamepadWrapper gamepad;
+	private final Telemetry telemetry;
 
 	/**
 	 *
