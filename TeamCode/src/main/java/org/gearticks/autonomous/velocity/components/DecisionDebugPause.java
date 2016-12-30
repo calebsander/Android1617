@@ -1,17 +1,19 @@
 package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
+import org.gearticks.opmodes.utility.Utils;
 
 public class DecisionDebugPause extends AutonomousComponentVelocityBase {
 	private final DriveDirection direction = new DriveDirection();
-	private GamepadWrapper[] gamepads;
-	private Telemetry telemetry;
+	private final GamepadWrapper[] gamepads;
+	private final Telemetry telemetry;
 	/**
 	 *
 	 * @param telemetry - pass in the telemetry to see data on phone during debug
@@ -19,10 +21,10 @@ public class DecisionDebugPause extends AutonomousComponentVelocityBase {
 	 * @param configuration
 	 * @param id - descriptive name for logging
 	 */
-	public DecisionDebugPause(GamepadWrapper[] gamepads, Telemetry telemetry, @NonNull VelocityConfiguration configuration, String id) {
+	public DecisionDebugPause(GamepadWrapper[] gamepads, @NonNull Telemetry telemetry, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.gamepads = gamepads;
-		this.telemetry = telemetry;
+		this.telemetry = Utils.assertNotNull(telemetry);
 	}
 
 	@Override
@@ -37,11 +39,17 @@ public class DecisionDebugPause extends AutonomousComponentVelocityBase {
 	public int run() {
 		int transition = 0;
 		super.run();
+		Telemetry telemetry = Utils.assertNotNull(this.telemetry);
 		this.telemetry.addData("heading:", this.getConfiguration().imu.getHeading());
 		this.telemetry.addData("drive left:", this.getConfiguration().driveLeft.encoderValue());
 		this.telemetry.addData("drive right:", this.getConfiguration().driveRight.encoderValue());
 		if (this.gamepads[0].getX()) {
 			transition = 1;
+			Log.d(Utils.TAG, "Transition 1 at DecisionDebugPause: X pressed");
+		}
+		else if (this.gamepads[0].getY()){
+			Log.d(Utils.TAG, "Transition 2 at DecisionDebugPause: Y pressed");
+			transition = 2;
 		}
 
 		return transition;

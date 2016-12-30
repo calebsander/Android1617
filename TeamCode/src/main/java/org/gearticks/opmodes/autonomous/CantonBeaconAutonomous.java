@@ -1,10 +1,9 @@
 package org.gearticks.opmodes.autonomous;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
-import android.os.Environment;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,9 +11,7 @@ import com.vuforia.HINT;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -26,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.gearticks.VuforiaKey;
+import org.gearticks.Vuforia.VuforiaKey;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
-import org.gearticks.VuforiaKey;
+import org.gearticks.Vuforia.VuforiaKey;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp

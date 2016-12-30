@@ -3,26 +3,15 @@ package org.gearticks.autonomous.velocity.components;
 import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.HINT;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Vuforia;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.gearticks.Vuforia.VuforiaConfiguration;
-import org.gearticks.VuforiaKey;
 import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by irene on 12/26/2016.

@@ -39,9 +39,9 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	protected void loopAfterStart() {
 		final int driveGamepad = CALVIN;
-		final double yScaleFactor = 0.6,
-			sScaleAtRest = 0.2,
-			sScaleWhenMoving = 0.6;
+		final double yScaleFactor = 0.8,
+			sScaleAtRest = 0.6,
+			sScaleWhenMoving = 0.8;
 		if (this.gamepads[driveGamepad].leftStickAtRest()) { //if just turning, turn slower for greater accuracy
 			this.direction.drive(0.0, 0.0);
 			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleAtRest);

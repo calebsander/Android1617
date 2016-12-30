@@ -16,7 +16,7 @@ public class WhiteLineIRTest extends BaseOpMode {
 		this.direction = new DriveDirection();
 	}
 	protected void loopAfterStart() {
-		this.telemetry.addData("IR sensor", this.configuration.whiteLineSensor.getState());
+//		this.telemetry.addData("IR sensor", this.configuration.whiteLineSensor.getState());
 		this.direction.drive(0.0, scaleStick(this.gamepads[0].getLeftY()));
 		this.direction.turn(scaleStick(this.gamepads[0].getRightX()));
 		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);

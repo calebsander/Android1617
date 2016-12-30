@@ -1,8 +1,11 @@
 package org.gearticks.autonomous.generic.opmode;
 
+import android.util.Log;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.linear.LinearStateMachineSimpleImpl;
+import org.gearticks.opmodes.utility.Utils;
 
 import java.util.List;
 
@@ -13,8 +16,11 @@ public abstract class VelocityLinearAutonomousBaseOpMode extends VelocityBaseOpM
     private final LinearStateMachine sm = new LinearStateMachineSimpleImpl();
 
     protected void initialize() {
+        Log.d(Utils.TAG, "Start VelocityLinearAutonomousBaseOpMode initialize");
         super.initialize();
+        Log.d(Utils.TAG, "Start VelocityLinearAutonomousBaseOpMode initialize - createComponents");
         sm.addComponents(this.createComponents());
+        Log.d(Utils.TAG, "End VelocityLinearAutonomousBaseOpMode initialize");
     }
 
     protected void loopBeforeStart() {

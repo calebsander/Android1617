@@ -15,11 +15,11 @@ import java.util.List;
  * Can be used to create composite components that are full/non-linear state-machines of other components
  */
 public abstract class VelocityNonLinearBaseAutonomousComponent extends AutonomousComponentVelocityBase {
-    private final StateMachine sm;
+    protected StateMachine sm;
 
     public VelocityNonLinearBaseAutonomousComponent(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
-        this.sm = this.initializeStateMachine();
+        //this.sm = this.initializeStateMachine();
     }
 
     protected abstract StateMachine initializeStateMachine();

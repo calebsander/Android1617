@@ -14,7 +14,6 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.gearticks.VuforiaKey;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.gearticks.opmodes.units.SideOfButton;
 import org.gearticks.opmodes.utility.Utils;
@@ -64,6 +63,10 @@ public class VuforiaConfiguration {
 
     public void activate(){
         this.beaconImages.activate();
+    }
+
+    public void deactivate(){
+        this.beaconImages.deactivate();
     }
 
     /**

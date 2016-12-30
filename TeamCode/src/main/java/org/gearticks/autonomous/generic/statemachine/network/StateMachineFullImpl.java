@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.generic.statemachine.StateMachine;
 import org.gearticks.opmodes.utility.Utils;
 
 import com.google.common.collect.HashBasedTable;
@@ -29,7 +30,7 @@ import com.google.common.collect.Table;
  * The use of Input- and OutputPort AutonomousComponents allows the StateMachineFullImpl to have an internal network of AutonomousComponents.
  *
  */
-public class StateMachineFullImpl implements AutonomousComponent{
+public class StateMachineFullImpl implements StateMachine{
 	@Nullable
     protected AutonomousComponent currentState = null;
 	
@@ -79,8 +80,11 @@ public class StateMachineFullImpl implements AutonomousComponent{
         Utils.assertNotNull(destinationComponent, "destinationComponent cannot be null");
 
         //Check that ac in components set
-        Utils.assertTrue(this.components.contains(originComponent), "originComponent not in the current set of components");
-        Utils.assertTrue(this.components.contains(destinationComponent), "destinationComponent not in the current set of components");
+		/*
+		TODO: only check if NOT an Input or OutputPort
+		 */
+//        Utils.assertTrue(this.components.contains(originComponent), "originComponent not in the current set of components");
+//        Utils.assertTrue(this.components.contains(destinationComponent), "destinationComponent not in the current set of components");
 		
 
 		

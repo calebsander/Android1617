@@ -28,7 +28,7 @@ public class PressBeaconButton extends AutonomousComponentVelocityBase {
     private final DriveDirection direction = new DriveDirection();
     private final VuforiaConfiguration vuforiaConfiguration;
     private boolean allianceColorIsBlue;
-    private final double angleMultiplier;
+    private double angleMultiplier = 1;
     private double buttonAngle;
 
 
@@ -37,6 +37,10 @@ public class PressBeaconButton extends AutonomousComponentVelocityBase {
         super(configuration, id);
         this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
 
+    }
+
+    @Override
+    public void initializeAtMatchStart(){
         this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
         if (this.allianceColorIsBlue) angleMultiplier = 1.0; //angles were calculated for blue side
         else angleMultiplier = -1.0; //invert all angles for red side

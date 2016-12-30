@@ -1,5 +1,7 @@
 package org.gearticks.hardware.configurations;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -11,9 +13,11 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.gearticks.dimsensors.i2c.GearticksBNO055;
 import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
+import org.gearticks.dimsensors.i2c.TCS34725;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
+import org.gearticks.opmodes.utility.Utils;
 
 public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper intake, shooter;
@@ -27,7 +31,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel shooterDown;
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
-	public final DigitalChannel whiteLineSensor;
+	//public final DigitalChannel whiteLineSensor;
+	public final TCS34725 whiteLineColorSensor;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
@@ -66,8 +71,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.badBoy1.setMode(Mode.INPUT);
 		this.badBoy2 = (DigitalChannel)hardwareMap.get("badBoy2");
 		this.badBoy2.setMode(Mode.INPUT);
-		this.whiteLineSensor = (DigitalChannel)hardwareMap.get("whiteLine");
-		this.whiteLineSensor.setMode(Mode.INPUT);
+//		this.whiteLineSensor = (DigitalChannel)hardwareMap.get("whiteLine");
+//		this.whiteLineSensor.setMode(Mode.INPUT);
+		this.whiteLineColorSensor = new TCS34725((I2cDevice)hardwareMap.get("whiteLineColor"));
 	}
 	public void teardown() {
 		this.imu.terminate();
@@ -187,6 +193,17 @@ public class VelocityConfiguration implements HardwareConfiguration {
      */
 	public boolean isWhiteLine(){
 		//result of sensor is inverted
-		return !this.whiteLineSensor.getState();
+//		return !this.whiteLineSensor.getState();
+		boolean isWhiteLine = false;
+		int blue = this.whiteLineColorSensor.getBlue();
+		Log.v(Utils.TAG, "Blue = " + blue);
+		int red = this.whiteLineColorSensor.getRed();
+		Log.v(Utils.TAG, "Red = " + red);
+		int green = this.whiteLineColorSensor.getGreen();
+		Log.v(Utils.TAG, "Green = " + green);
+		int clear = this.whiteLineColorSensor.getClear();
+		Log.v(Utils.TAG, "Clear = " + clear);
+
+		return isWhiteLine;
 	}
 }

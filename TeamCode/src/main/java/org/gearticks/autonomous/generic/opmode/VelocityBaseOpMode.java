@@ -13,9 +13,10 @@ public class VelocityBaseOpMode extends BaseOpMode {
 	protected VelocityConfiguration configuration;
 
 	protected void initialize() {
-        Log.d(Utils.TAG, "Starting OpMode initialize");
+        Log.d(Utils.TAG, "Start OpMode initialize");
         this.configuration = new VelocityConfiguration(this.hardwareMap);
         this.configuration.imu.eulerRequest.startReading();
+        Log.d(Utils.TAG, "End OpMode initialize");
 	}
 
     protected void loopBeforeStart() {
