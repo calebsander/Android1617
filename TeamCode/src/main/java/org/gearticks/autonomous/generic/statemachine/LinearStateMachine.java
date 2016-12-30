@@ -72,10 +72,10 @@ public class LinearStateMachine extends StateMachineBase {
     }
 
     private void transitionToNextStage() {
-        final AutonomousComponent nextStage = this.iterator.next();
-        this.getLogger().info("Transition from " + this.currentState + " => " + nextStage);
+        final AutonomousComponent nextState = this.iterator.next();
+        this.getLogger().info("Transition from " + this.currentState + " => " + nextState);
         if (this.currentState != null) this.currentState.tearDown();
-        this.currentState = nextStage;
-        nextStage.setup();
+        this.currentState = nextState;
+        nextState.setup();
     }
 }

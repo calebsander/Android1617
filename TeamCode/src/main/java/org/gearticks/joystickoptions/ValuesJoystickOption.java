@@ -24,7 +24,7 @@ public class ValuesJoystickOption<E> implements JoystickOption {
 				return;
 			}
 		}
-		this.selectedOption = 0; //if no matching string is found
+		this.selectedOption = 0; //if no matching option is found
 	}
 	//Move upwards in the option list unless at the end
 	public void incrementOption() {

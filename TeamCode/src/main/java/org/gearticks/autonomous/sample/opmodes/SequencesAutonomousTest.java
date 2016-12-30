@@ -136,24 +136,24 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 	@Override
 	protected void initialize() {
 		this.datalogger = new AutonomousDatalogger();
+		this.datalogger.writeLine("Init");
 		super.initialize();
 		this.firstBranchOption = new ValuesJoystickOption<>("First Branch", FirstBranchOption.values());
 		this.addOption(this.firstBranchOption);
 		this.branchFourOption = new ValuesJoystickOption<>("Branch 4?", BranchFourOption.values());
 		this.addOption(this.branchFourOption);
-		this.datalogger.writeLine("Init");
 	}
 
 	@Override
 	protected void matchStart() {
-		super.matchStart();
 		this.datalogger.writeLine("Start");
+		super.matchStart();
 	}
 
 	@Override
 	protected void matchEnd() {
-		super.matchEnd();
 		this.datalogger.writeLine("End");
 		this.datalogger.close();
+		super.matchEnd();
 	}
 }

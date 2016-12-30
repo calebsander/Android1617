@@ -92,6 +92,7 @@ public class NetworkedStateMachine extends StateMachineBase {
 		if (exitPorts != null) {
 			final Integer exitPort = exitPorts.get(transition);
 			if (exitPort != null) {
+				this.getLogger().info("Exiting from " + this.currentState + " on port " + transition);
 				this.currentState = null;
 				return exitPort;
 			}
@@ -101,6 +102,7 @@ public class NetworkedStateMachine extends StateMachineBase {
 		Utils.assertThat(componentConnections != null, "No transitions defined for " + this.currentState);
 		final AutonomousComponent nextState = componentConnections.get(transition);
 		Utils.assertThat(nextState != null, "No transition defined for " + this.currentState + " on port " + transition);
+		this.getLogger().info("Transition from " + this.currentState + " => " + nextState);
 		this.currentState = nextState;
 		nextState.setup();
 		return NOT_DONE;
