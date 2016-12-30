@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.AutonomousDatalogger;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
-import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
+import org.gearticks.autonomous.velocity.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NonLinearStateMachine;
 import org.gearticks.autonomous.velocity.components.Stopped;

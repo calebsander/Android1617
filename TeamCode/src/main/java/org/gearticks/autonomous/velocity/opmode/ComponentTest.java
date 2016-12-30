@@ -2,15 +2,12 @@ package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.velocity.components.DebugPause;
 import org.gearticks.autonomous.velocity.components.FacePicture;
 import org.gearticks.autonomous.velocity.components.VuforiaIn;
-import java.util.ArrayList;
-import java.util.List;
 
 @Autonomous
 public class ComponentTest extends VelocityBaseOpMode {

@@ -1,28 +1,23 @@
 package org.gearticks.autonomous.generic.opmode;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
 
 /**
- * An OpMode that instantiates a VelocityConfiguration
+ * An OpMode that instantiates a configuration
  * and executes a single component (possibly a state machine)
  */
-public abstract class VelocityBaseOpMode extends BaseOpMode {
-	protected VelocityConfiguration configuration;
+public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends HardwareConfiguration> extends BaseOpMode {
+	protected HARDWARE_TYPE configuration;
 	private AutonomousComponent component;
 
 	protected void initialize() {
-		this.configuration = new VelocityConfiguration(this.hardwareMap);
-		this.configuration.imu.eulerRequest.startReading();
+		this.configuration = this.newConfiguration();
 		this.component = this.getComponent();
-	}
-	protected void loopBeforeStart() {
-		this.telemetry.addData("Heading", this.configuration.imu.getHeading());
 	}
 	protected void matchStart() {
 		this.telemetry.clear();
-		this.configuration.imu.resetHeading();
 		this.component.onMatchStart();
 		this.component.setup();
 	}
@@ -40,4 +35,12 @@ public abstract class VelocityBaseOpMode extends BaseOpMode {
 	 * @return the component to run
 	 */
 	protected abstract AutonomousComponent getComponent();
+	/**
+	 * Creates a configuration object of the specified type.
+	 * The idea is to have a subclass of this class for each configuration type in use
+	 * which will implement this method.
+	 * Then every autonomous using that type of configuration can inherit from the subclass.
+	 * @return an instance of HARDWARE_TYPE created from the hardware map
+	 */
+	protected abstract HARDWARE_TYPE newConfiguration();
 }

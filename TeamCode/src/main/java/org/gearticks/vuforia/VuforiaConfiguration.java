@@ -16,7 +16,6 @@ public class VuforiaConfiguration {
     private final BlockingQueue<VuforiaLocalizer.CloseableFrame> frameQueue;
     private final VuforiaTrackables beaconImages;
 
-
     public VuforiaConfiguration() {
         final VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(/*R.id.cameraMonitorViewId*/);
         parameters.vuforiaLicenseKey = VuforiaKey.KEY;
@@ -25,8 +24,8 @@ public class VuforiaConfiguration {
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 2);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
         this.beaconImages = vuforia.loadTrackablesFromAsset("FTC_2016-17");
-        this.frameQueue = vuforia.getFrameQueue();
         vuforia.setFrameQueueCapacity(1);
+        this.frameQueue = vuforia.getFrameQueue();
     }
 
     public VuforiaTrackableDefaultListener getTargetListener(String targetName) {
@@ -38,6 +37,7 @@ public class VuforiaConfiguration {
     }
 
     /**
+     * Capture an image from Vuforia as a 720p (1280 x 720) bitmap
      * @return can be null if Vuforia didn't return a usable frame
      */
     public Bitmap getBitmap() {
@@ -47,7 +47,7 @@ public class VuforiaConfiguration {
             frame = this.frameQueue.take();
         }
         catch (InterruptedException e) {
-            System.out.println("Error: Vuforia frameQue take failed");
+            System.err.println("Error: Vuforia frameQueue take failed");
         }
         if (frame != null) {
             final long images = frame.getNumImages();
@@ -64,7 +64,7 @@ public class VuforiaConfiguration {
 
         }
         else {
-            System.out.println("Error: Vuforia frameQue returned null");
+            System.err.println("Error: Vuforia frameQueue returned null");
         }
         return bitmap;
     }

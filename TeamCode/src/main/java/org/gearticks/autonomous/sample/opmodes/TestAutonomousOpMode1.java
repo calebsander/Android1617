@@ -1,7 +1,7 @@
 package org.gearticks.autonomous.sample.opmodes;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.opmode.VelocityBaseOpMode;
+import org.gearticks.autonomous.velocity.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.GyroTurn;
 import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
