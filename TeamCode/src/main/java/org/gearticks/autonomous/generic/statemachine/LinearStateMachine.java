@@ -64,6 +64,7 @@ public class LinearStateMachine extends StateMachineBase {
             return NOT_DONE;
         }
         else {
+            this.currentState.tearDown();
             //No more components -> end of this state-machine
             this.currentState = null;
             return transition;

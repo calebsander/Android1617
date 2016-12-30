@@ -10,7 +10,6 @@ public class DebugPause extends AutonomousComponentHardware<VelocityConfiguratio
 	private final Telemetry telemetry;
 
 	/**
-	 *
 	 * @param telemetry - pass in the telemetry to see data on phone during debug
 	 * @param gamepads - press x on this gamepad to continue, input to DriveDirection.gyroCorrect
 	 * @param configuration

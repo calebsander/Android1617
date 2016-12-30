@@ -16,11 +16,11 @@ import org.gearticks.opmodes.utility.Utils;
  *
  * Keep in mind that no state is aware of the prior states, specifically the state that transitioned to it.
  */
-public class NonLinearStateMachine extends StateMachineBase {
+public class NetworkedStateMachine extends StateMachineBase {
 	private Map<AutonomousComponent, Map<Integer, AutonomousComponent>> connections;
 	private Map<AutonomousComponent, Map<Integer, Integer>> exitConnections;
 
-	public NonLinearStateMachine(AutonomousComponent initialComponent) {
+	public NetworkedStateMachine(AutonomousComponent initialComponent) {
 		super(new HashSet<AutonomousComponent>());
 		this.connections = new HashMap<>();
 		this.exitConnections = new HashMap<>();

@@ -1,18 +1,16 @@
 package org.gearticks.autonomous.sample.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.AutonomousDatalogger;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.velocity.opmode.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.generic.statemachine.NonLinearStateMachine;
+import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.Stopped;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 
 @Autonomous
-@Disabled
 public class SequencesAutonomousTest extends VelocityBaseOpMode {
 	private static final int
 		BRANCH_ONE_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
@@ -124,7 +122,7 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		branch4.addComponent(new SimulatedStage(8));
 		final AutonomousComponent stopped = new Stopped(this.configuration);
 
-		final NonLinearStateMachine sm = new NonLinearStateMachine(entranceComponent);
+		final NetworkedStateMachine sm = new NetworkedStateMachine(entranceComponent);
 		sm.addConnection(entranceComponent, BRANCH_ONE_TRANSITION, branch1);
 		sm.addConnection(entranceComponent, BRANCH_TWO_TRANSITION, branch2);
 		sm.addConnection(branch1, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);

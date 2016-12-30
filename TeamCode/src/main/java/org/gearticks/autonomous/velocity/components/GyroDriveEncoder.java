@@ -11,7 +11,6 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 	private final long encoderTarget;
 
 	/**
-	 *
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
 	 * @param power - between 0 and 1, input for DriveDirection
 	 * @param encoderTarget - target for the encoder. If the encoderPositive exceeds this target, the component transitions

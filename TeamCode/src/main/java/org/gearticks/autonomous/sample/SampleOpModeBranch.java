@@ -3,7 +3,7 @@ package org.gearticks.autonomous.sample;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.sample.components.ObserveColor;
 import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
-import org.gearticks.autonomous.generic.statemachine.NonLinearStateMachine;
+import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
@@ -14,7 +14,7 @@ import static org.gearticks.autonomous.generic.component.AutonomousComponentAbst
  */
 public class SampleOpModeBranch extends OpModeTest {
 
-	private NonLinearStateMachine stateMachine;
+	private NetworkedStateMachine stateMachine;
 
 	@Override
 	public void initialize() {
@@ -29,14 +29,14 @@ public class SampleOpModeBranch extends OpModeTest {
 	 * Step3-blue: turn and drive to blue
 	 * @return
 	 */
-	public NonLinearStateMachine createSampleStateMachine() {
+	public NetworkedStateMachine createSampleStateMachine() {
 		final VelocityConfiguration configuration = new VelocityConfiguration(null);
 		final AutonomousComponent drive1 = new GyroDriveEncoder(0.0, 1.0, 2000, configuration, "Drive for 2 sec heading 100");
 		final AutonomousComponent observeColor = new ObserveColor(configuration, "Observe color");
 		final AutonomousComponent driveRed = new GyroDriveEncoder(-90.0, 1.0, 2000, configuration, "Drive for 3 sec left to red");
 		final AutonomousComponent driveBlue = new GyroDriveEncoder(90.0, 1.0, 2000, configuration, "Drive for 3 sec right to blue");
 
-		final NonLinearStateMachine sm = new NonLinearStateMachine(drive1);
+		final NetworkedStateMachine sm = new NetworkedStateMachine(drive1);
 		sm.addConnection(drive1, NEXT_STATE, observeColor);
 		sm.addConnection(observeColor, ObserveColor.RED, driveRed);
 		sm.addConnection(observeColor, ObserveColor.BLUE, driveBlue);
