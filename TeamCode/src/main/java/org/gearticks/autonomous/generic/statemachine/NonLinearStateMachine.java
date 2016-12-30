@@ -9,8 +9,12 @@ import org.gearticks.opmodes.utility.Utils;
 /**
  * A state machine with a number of component states that don't necessarily proceed in a linear fashion.
  * This is useful for looping and conditionally branching state machines.
+ *
  * Each output port emitted by each component should be connected to the component to execute next.
  * Output ports not connected to another component must cause the state machine to end.
+ * You can alternatively add a {@link org.gearticks.autonomous.velocity.components.Stopped} component and connect the terminal states to it.
+ *
+ * Keep in mind that no state is aware of the prior states, specifically the state that transitioned to it.
  */
 public class NonLinearStateMachine extends StateMachineBase {
 	private Map<AutonomousComponent, Map<Integer, AutonomousComponent>> connections;

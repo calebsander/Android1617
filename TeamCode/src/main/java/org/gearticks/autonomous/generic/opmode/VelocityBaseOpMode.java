@@ -6,7 +6,7 @@ import org.gearticks.opmodes.BaseOpMode;
 
 /**
  * An OpMode that instantiates a VelocityConfiguration
- * and executes a single component (which could be a state machine)
+ * and executes a single component (possibly a state machine)
  */
 public abstract class VelocityBaseOpMode extends BaseOpMode {
 	protected VelocityConfiguration configuration;

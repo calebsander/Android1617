@@ -49,7 +49,7 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary.
-	 * Returns 0;
+	 * Returns NOT_DONE
 	 */
 	public int run() {
 		return NOT_DONE;

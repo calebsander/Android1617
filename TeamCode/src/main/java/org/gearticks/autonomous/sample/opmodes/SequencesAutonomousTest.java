@@ -14,7 +14,8 @@ import org.gearticks.joystickoptions.ValuesJoystickOption;
 @Autonomous
 @Disabled
 public class SequencesAutonomousTest extends VelocityBaseOpMode {
-	public static final int BRANCH_ONE_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
+	private static final int
+		BRANCH_ONE_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
 		BRANCH_TWO_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
 		BRANCH_FOUR_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
 		END_TRANSITION = AutonomousComponentAbstractImpl.newTransition();
@@ -142,5 +143,19 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		this.addOption(this.firstBranchOption);
 		this.branchFourOption = new ValuesJoystickOption<>("Branch 4?", BranchFourOption.values());
 		this.addOption(this.branchFourOption);
+		this.datalogger.writeLine("Init");
+	}
+
+	@Override
+	protected void matchStart() {
+		super.matchStart();
+		this.datalogger.writeLine("Start");
+	}
+
+	@Override
+	protected void matchEnd() {
+		super.matchEnd();
+		this.datalogger.writeLine("End");
+		this.datalogger.close();
 	}
 }
