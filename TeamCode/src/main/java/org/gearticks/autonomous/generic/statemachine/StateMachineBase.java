@@ -25,10 +25,10 @@ public abstract class StateMachineBase extends AutonomousComponentAbstractImpl {
 	}
 
 	@Override
-	public void initialize() {
-		super.initialize();
+	public void onMatchStart() {
+		super.onMatchStart();
 		for (final AutonomousComponent component : this.components) {
-			component.initialize();
+			component.onMatchStart();
 		}
 	}
 

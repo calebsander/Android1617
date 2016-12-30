@@ -16,7 +16,6 @@ public abstract class VelocityBaseOpMode extends BaseOpMode {
 		this.configuration = new VelocityConfiguration(this.hardwareMap);
 		this.configuration.imu.eulerRequest.startReading();
 		this.component = this.getComponent();
-		this.component.initialize();
 	}
 	protected void loopBeforeStart() {
 		this.telemetry.addData("Heading", this.configuration.imu.getHeading());
@@ -24,6 +23,7 @@ public abstract class VelocityBaseOpMode extends BaseOpMode {
 	protected void matchStart() {
 		this.telemetry.clear();
 		this.configuration.imu.resetHeading();
+		this.component.onMatchStart();
 		this.component.setup();
 	}
 	protected void loopAfterStart() {

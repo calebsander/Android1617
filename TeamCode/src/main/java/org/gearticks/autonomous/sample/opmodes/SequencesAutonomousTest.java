@@ -68,8 +68,8 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		}
 
 		@Override
-		public void initialize() {
-			super.initialize();
+		public void onMatchStart() {
+			super.onMatchStart();
 			SequencesAutonomousTest.this.datalogger.writeLine(this.number, "Initialize");
 		}
 		@Override

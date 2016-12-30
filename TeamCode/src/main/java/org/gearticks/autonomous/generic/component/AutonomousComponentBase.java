@@ -19,8 +19,8 @@ public class AutonomousComponentBase extends AutonomousComponentAbstractImpl {
 	}
 
 	@Override
-	public void initialize() {
-		super.initialize();
+	public void onMatchStart() {
+		super.onMatchStart();
 		this.stageTimer.reset(); //makes sense if somehow stageTimer is used without a call to setup()
 	}
 

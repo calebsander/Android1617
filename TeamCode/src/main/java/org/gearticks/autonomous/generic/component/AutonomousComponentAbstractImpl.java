@@ -40,7 +40,7 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	public void initialize() {}
+	public void onMatchStart() {}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary

@@ -13,7 +13,7 @@ public interface AutonomousComponent {
 	/**
 	 * To be called once at start of autonomous program, e.g. to initialize some sensors
 	 */
-	void initialize();
+	void onMatchStart();
 
 	/**
 	 * Called each time the component state starts, can be multiple times in same autonomous program.
