@@ -1,12 +1,21 @@
-//Represents a tank drive - stores the motors on each side and can calculate what power to set them at
 package org.gearticks.hardware.drive;
 
 import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * Represents a tank drive.
+ * Stores the drive motors on each side and calculates what power to send them.
+ */
 public class TankDrive extends DriveSystem {
-	//The motors on the left and right sides of the robot
-	private HashSet<MotorWrapper> leftMotors, rightMotors;
-	//The motors to coast when we want to only drive with a few motors
+	/**
+	 * The motors on the left side of the robot
+	 */
+	private final Set<MotorWrapper> leftMotors;
+	/**
+	 * The motors on the right side of the robot
+	 */
+	private final Set<MotorWrapper> rightMotors;
 
 	public TankDrive() {
 		super();
@@ -14,12 +23,19 @@ public class TankDrive extends DriveSystem {
 		this.rightMotors = new HashSet<>();
 	}
 
-	//Adds a motor to the left side of the robot
+	/**
+	 * Adds a motor to the left side of the robot
+	 * @param leftMotor the motor to add
+	 */
 	public void addLeftMotor(MotorWrapper leftMotor) {
 		this.leftMotors.add(leftMotor);
 		this.addMotor(leftMotor);
 	}
-	//Adds a motor to the right side of the robot
+
+	/**
+	 * Adds a motor to the right side of the robot
+	 * @param rightMotor the motor to add
+	 */
 	public void addRightMotor(MotorWrapper rightMotor) {
 		this.rightMotors.add(rightMotor);
 		this.addMotor(rightMotor);

@@ -1,18 +1,30 @@
-/*Stores the various choices for a setting with a certain name
-	Usage:
-	-Create option
-	-Add option to controller
-	-Select option with joystick using option controller
-	-Get the selected value from the option*/
 package org.gearticks.joystickoptions;
 
+/**
+ * Stores the various choices for a named setting
+ * Usage:
+ * -Create option
+ * -Add option to controller
+ * -Select option with joystick using option controller
+ * -Get the selected value from the option
+ */
 public interface JoystickOption {
-	//Move downwards in the option list unless at the start
+	/**
+	 * Move to lower indices in the option list unless at the start
+	 */
 	void decrementOption();
-	//Move upwards in the option list unless at the end
+	/**
+	 * Move to higher indices in the option list unless at the start
+	 */
 	void incrementOption();
-	//Get the title of the option selector
+	/**
+	 * Get the display name of this option
+	 * @return the title to display on the Drive Station telemetry
+	 */
 	String getTitle();
-	//Get the value of the currently selected option
+	/**
+	 * Get the value of the currently selected value as a string
+	 * @return a displayable value for the currently selected value
+	 */
 	String getSelectedOption();
 }
