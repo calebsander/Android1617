@@ -37,4 +37,11 @@ public abstract class StateMachineBase extends AutonomousComponentAbstractImpl {
 		super.tearDown();
 		this.currentState = null;
 	}
+
+	@Override
+	public String getId() {
+		final String initialSegment = super.getId() + " - in ";
+		if (this.currentState == null) return initialSegment + "null";
+		else return initialSegment + this.currentState.getId();
+	}
 }

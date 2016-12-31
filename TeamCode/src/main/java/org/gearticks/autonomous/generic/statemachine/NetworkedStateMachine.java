@@ -26,6 +26,11 @@ public class NetworkedStateMachine extends StateMachineBase {
 		this.connections = new HashMap<>();
 		this.exitConnections = new HashMap<>();
 	}
+	public NetworkedStateMachine(String id) {
+		super(new HashSet<AutonomousComponent>(), id);
+		this.connections = new HashMap<>();
+		this.exitConnections = new HashMap<>();
+	}
 
 	public void setInitialComponent(AutonomousComponent initialComponent) {
 		this.currentState = initialComponent;

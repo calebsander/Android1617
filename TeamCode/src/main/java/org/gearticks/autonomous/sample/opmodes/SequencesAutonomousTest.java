@@ -96,6 +96,7 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 	}
 
 	private AutonomousDatalogger datalogger;
+	private NetworkedStateMachine sm;
 
 	protected AutonomousComponent getComponent() {
 		/*
@@ -109,31 +110,31 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 			Branch 4 may or may not be run
 		*/
 		final AutonomousComponent entranceComponent = new FirstBranchChoice();
-		final LinearStateMachine branch1 = new LinearStateMachine();
+		final LinearStateMachine branch1 = new LinearStateMachine("branch1");
 		branch1.addComponent(new SimulatedStage(1));
 		branch1.addComponent(new SimulatedStage(2));
 		branch1.addComponent(new SimulatedStage(3));
-		final LinearStateMachine branch2 = new LinearStateMachine();
+		final LinearStateMachine branch2 = new LinearStateMachine("branch2");
 		branch2.addComponent(new SimulatedStage(4));
 		branch2.addComponent(new SimulatedStage(5));
 		branch2.addComponent(new SimulatedStage(6));
-		final LinearStateMachine branch3 = new LinearStateMachine();
+		final LinearStateMachine branch3 = new LinearStateMachine("branch3");
 		branch3.addComponent(new SimulatedStage(7));
 		branch3.addComponent(new BranchFourChoice());
-		final LinearStateMachine branch4 = new LinearStateMachine();
+		final LinearStateMachine branch4 = new LinearStateMachine("branch4");
 		branch4.addComponent(new SimulatedStage(8));
 		final AutonomousComponent stopped = new Stopped(this.configuration);
 
-		final NetworkedStateMachine sm = new NetworkedStateMachine();
-		sm.setInitialComponent(entranceComponent);
-		sm.addConnection(entranceComponent, BRANCH_ONE_TRANSITION, branch1);
-		sm.addConnection(entranceComponent, BRANCH_TWO_TRANSITION, branch2);
-		sm.addConnection(branch1, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);
-		sm.addConnection(branch2, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);
-		sm.addConnection(branch3, BRANCH_FOUR_TRANSITION, branch4);
-		sm.addConnection(branch3, END_TRANSITION, stopped);
-		sm.addConnection(branch4, AutonomousComponentAbstractImpl.NEXT_STATE, stopped);
-		return sm;
+		this.sm = new NetworkedStateMachine("sm");
+		this.sm.setInitialComponent(entranceComponent);
+		this.sm.addConnection(entranceComponent, BRANCH_ONE_TRANSITION, branch1);
+		this.sm.addConnection(entranceComponent, BRANCH_TWO_TRANSITION, branch2);
+		this.sm.addConnection(branch1, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);
+		this.sm.addConnection(branch2, AutonomousComponentAbstractImpl.NEXT_STATE, branch3);
+		this.sm.addConnection(branch3, BRANCH_FOUR_TRANSITION, branch4);
+		this.sm.addConnection(branch3, END_TRANSITION, stopped);
+		this.sm.addConnection(branch4, AutonomousComponentAbstractImpl.NEXT_STATE, stopped);
+		return this.sm;
 	}
 
 	@Override
@@ -151,6 +152,12 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 	protected void matchStart() {
 		this.datalogger.writeLine("Start");
 		super.matchStart();
+	}
+
+	@Override
+	protected void loopAfterStart() {
+		this.datalogger.writeLine("Looping", this.sm);
+		super.loopAfterStart();
 	}
 
 	@Override

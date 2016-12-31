@@ -32,4 +32,10 @@ public interface AutonomousComponent {
 	 * Called each time the component ends
 	 */
 	void tearDown();
+
+	/**
+	 * Returns a string identifier for this component
+	 * @return a display name for this component
+	 */
+	String getId();
 }
