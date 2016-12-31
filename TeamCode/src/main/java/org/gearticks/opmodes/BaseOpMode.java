@@ -21,6 +21,8 @@ public abstract class BaseOpMode extends OpMode {
 	}
 
 	public void init() {
+		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
+		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
 		this.addOption(AllianceOption.allianceOption);
 		this.initialize();
 	}
@@ -31,8 +33,6 @@ public abstract class BaseOpMode extends OpMode {
 	public void start() {
 		this.resetStartTime();
 		this.matchTime.reset();
-		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
-		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
 		this.matchStart();
 	}
 	public void loop() {
