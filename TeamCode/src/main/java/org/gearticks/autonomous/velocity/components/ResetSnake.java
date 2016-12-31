@@ -1,46 +1,33 @@
 package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
-
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import android.util.Log;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.opmodes.utility.Utils;
 
-/**
- * Created by irene on 12/26/2016.
- */
-
-public class ResetSnake extends AutonomousComponentVelocityBase {
-
+public class ResetSnake extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
-     *
      * @param configuration - config file
      * @param id - descriptive name for logging
-     */public ResetSnake(@NonNull VelocityConfiguration configuration, String id) {
+     */
+    public ResetSnake(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
-        this.getConfiguration().snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_HOLDING);
-
+    public void setup() {
+        super.setup();
+        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_HOLDING);
     }
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        this.getLogger().info("ResetSnake - timer = " + this.getStageTimer().seconds());
-        if (this.getStageTimer().seconds() > 0.5) {
-            transition = 1;
-        }
-
-
-        return transition;
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
+        Log.i(Utils.TAG, "ResetSnake - timer = " + this.stageTimer.seconds());
+        if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
+        else return NOT_DONE;
     }
 }

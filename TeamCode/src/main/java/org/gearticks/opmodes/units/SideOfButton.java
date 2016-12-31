@@ -1,7 +1,5 @@
 package org.gearticks.opmodes.units;
 
-import org.gearticks.Vuforia.VuforiaConfiguration;
-
 /**
  * Represents the side of a button on a beacon
  * Includes unknown to represent an unknown button location
@@ -17,8 +15,8 @@ public enum SideOfButton{
      * Keeps unknown the same
      * @return
      */
-    public SideOfButton getInverse(){
-        switch (this){
+    public SideOfButton getInverse() {
+        switch (this) {
             case LEFT:
                 return SideOfButton.RIGHT;
             case RIGHT:

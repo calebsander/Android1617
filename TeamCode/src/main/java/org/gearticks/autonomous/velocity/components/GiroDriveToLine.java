@@ -3,19 +3,22 @@ package org.gearticks.autonomous.velocity.components;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
+import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
 /**
  * Please add some comments on this component.
  */
-public class GiroDriveToLine extends AutonomousComponentVelocityBase {
-    private final DriveDirection direction = new DriveDirection();
-    private double power = 0;
+public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfiguration> {
+    private static final int LINE_FOUND = newTransition(), ENCODER_TIMEOUT = newTransition();
+    private final DriveDirection direction;
+    private final double power;
     private final double targetHeading;
-    private long maxEncoderTarget;
+    private double angleMultiplier;
+    private final long maxEncoderTarget;
 
     /**
      *
@@ -27,49 +30,49 @@ public class GiroDriveToLine extends AutonomousComponentVelocityBase {
      */
     public GiroDriveToLine(double targetHeading, double power, long maxEncoderTarget, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
+        this.direction = new DriveDirection();
         this.power = power;
         this.targetHeading = targetHeading;
         this.maxEncoderTarget = maxEncoderTarget;
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
-        this.getConfiguration().resetEncoder();
-        this.getConfiguration().activateWhiteLineColor();
-
-
+    public void setup() {
+        super.setup();
+        final boolean allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+        if (allianceColorIsBlue) this.angleMultiplier = 1.0; //angles were calculated for blue side
+        else this.angleMultiplier = -1.0; //invert all angles for red side
+        this.configuration.resetEncoder();
+        this.configuration.activateWhiteLineColor();
     }
 
     @Override
     public int run() {
-        int transition = 0;
-        super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
         //control giro drive
         this.direction.drive(0.0, this.power);
-        this.direction.gyroCorrect(this.targetHeading, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1);
-        this.getConfiguration().move(this.direction, 0.06);
+        this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+        this.configuration.move(this.direction, 0.06);
 
-        Log.v(Utils.TAG, "white line sensor = " + this.getConfiguration().isWhiteLine());
-        if (this.getConfiguration().isWhiteLine()){
+        Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLine());
+        if (this.configuration.isWhiteLine()){
             Log.d(Utils.TAG, "Transitioning because found white line");
-            transition = 1;
+            return LINE_FOUND;
         }
-        else if (this.getConfiguration().encoderPositive() > this.maxEncoderTarget) {
-            Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.getConfiguration().encoderPositive());
-            transition = 1;
+        if (this.configuration.encoderPositive() > this.maxEncoderTarget) {
+            Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
+            return ENCODER_TIMEOUT;
         }
-
-        return transition;
+        return NOT_DONE;
     }
 
     @Override
     public void tearDown() {
         super.tearDown();
+        this.configuration.deactivateWhiteLineColor();
         //stop motors
-        this.direction.stopDrive();
-        this.getConfiguration().move(this.direction, 0.06);
-        this.getConfiguration().deactivateWhiteLineColor();
+        this.configuration.stopMotion();
     }
 }

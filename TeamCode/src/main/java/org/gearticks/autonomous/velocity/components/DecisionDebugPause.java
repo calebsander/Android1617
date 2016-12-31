@@ -2,16 +2,14 @@ package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.opmodes.utility.Utils;
 
-public class DecisionDebugPause extends AutonomousComponentVelocityBase {
-	private final DriveDirection direction = new DriveDirection();
+public class DecisionDebugPause extends AutonomousComponentHardware<VelocityConfiguration> {
+	public static final int X_TRANSITION = newTransition(), Y_TRANSITION = newTransition();
 	private final GamepadWrapper[] gamepads;
 	private final Telemetry telemetry;
 	/**
@@ -28,42 +26,35 @@ public class DecisionDebugPause extends AutonomousComponentVelocityBase {
 	}
 
 	@Override
-	public void setup(int inputPort) {
-		super.setup(inputPort);
+	public void setup() {
+		super.setup();
 		// make sure motor are stopped
-		this.direction.stopDrive();
-		this.getConfiguration().move(this.direction, 0.06);
+		this.configuration.stopMotion();
 	}
 
 	@Override
 	public int run() {
-		int transition = 0;
-		super.run();
-		Telemetry telemetry = Utils.assertNotNull(this.telemetry);
-		this.telemetry.addData("heading:", this.getConfiguration().imu.getHeading());
-		this.telemetry.addData("drive left:", this.getConfiguration().driveLeft.encoderValue());
-		this.telemetry.addData("drive right:", this.getConfiguration().driveRight.encoderValue());
+		final int superTransition = super.run();
+		if (superTransition != NOT_DONE) return superTransition;
+
+		this.telemetry.addData("heading:", this.configuration.imu.getHeading());
+		this.telemetry.addData("drive left:", this.configuration.driveLeft.encoderValue());
+		this.telemetry.addData("drive right:", this.configuration.driveRight.encoderValue());
 		if (this.gamepads[0].getX()) {
-			transition = 1;
 			Log.d(Utils.TAG, "Transition 1 at DecisionDebugPause: X pressed");
+			return X_TRANSITION;
 		}
 		else if (this.gamepads[0].getY()){
 			Log.d(Utils.TAG, "Transition 2 at DecisionDebugPause: Y pressed");
-			transition = 2;
+			return Y_TRANSITION;
 		}
-
-		return transition;
+		else return NOT_DONE;
 	}
 
 	@Override
 	public void tearDown() {
 		super.tearDown();
 		//stop motors
-		this.direction.stopDrive();
-		this.getConfiguration().move(this.direction, 0.06);
+		this.configuration.stopMotion();
 	}
-
-
-
-
 }

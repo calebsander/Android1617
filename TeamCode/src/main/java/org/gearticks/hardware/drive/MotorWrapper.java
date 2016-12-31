@@ -110,6 +110,10 @@ public class MotorWrapper {
 			this.lastTarget = target;
 		}
 	}
+	//Gets the last set target
+	public int getTarget() {
+		return this.lastTarget;
+	}
 	//Returns whether or not the motor is still trying to reach the target position (wrapper for DcMotor)
 	public boolean notAtTarget() {
 		return this.motor.isBusy();

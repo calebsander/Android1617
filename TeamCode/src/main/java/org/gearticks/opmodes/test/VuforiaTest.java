@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.gearticks.Vuforia.VuforiaKey;
+import org.gearticks.vuforia.VuforiaKey;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 

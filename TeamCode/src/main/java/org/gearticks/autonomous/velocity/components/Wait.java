@@ -1,54 +1,26 @@
 package org.gearticks.autonomous.velocity.components;
 
-import android.support.annotation.NonNull;
+import org.gearticks.autonomous.generic.component.AutonomousComponentBase;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
-import org.gearticks.hardware.configurations.VelocityConfiguration;
-
-public class Wait extends AutonomousComponentVelocityBase {
-	private final int waitTime;//msec
+public class Wait extends AutonomousComponentBase {
+	private final double waitSeconds;
 
 	/**
 	 *
-	 * @param waitTime - wait time
-	 * @param configuration - config file
+	 * @param waitSeconds - wait time in seconds
 	 * @param id - descriptive name for logging
 	 */
-	public Wait(int waitTime, @NonNull VelocityConfiguration configuration, String id) {
-		super(configuration, id);
-		this.waitTime = waitTime;
+	public Wait(double waitSeconds, String id) {
+		super(id);
+		this.waitSeconds = waitSeconds;
 	}
-
-//	/**
-//	 *
-//	 * @param waitTime - in milliseconds
-//	 */
-//	public Wait(int waitTime) {
-//		super(configuration, id);
-//		this.waitTime = waitTime;
-//	}
-
-//	@Override
-//	public void setup(int inputPort) {
-//		super.setup(inputPort);
-//	}
 
 	@Override
 	public int run() {
-		int transition = super.run();
+		final int superTransition = super.run();
+		if (superTransition != NOT_DONE) return superTransition;
 
-        if (this.getStageTimer().milliseconds() >= this.waitTime){
-            transition = 1;
-        }
-		return transition;
+		if (this.stageTimer.seconds() > this.waitSeconds) return NEXT_STATE;
+		else return NOT_DONE;
 	}
-
-//	@Override
-//	public void tearDown() {
-//		super.tearDown();
-//	}
-	
-	
-	
-
 }

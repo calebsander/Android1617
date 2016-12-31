@@ -1,80 +1,73 @@
 package org.gearticks.autonomous.generic.component;
 
 import android.util.Log;
-
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.opmodes.utility.Utils;
+import java.util.logging.Logger;
 
 /**
  * Implements the AutonomousComponent interface.
  * Adds
- * - setup() without a input port number as a convenience method 
+ * - Transition constants and a transition id generator
  * - toString()
- *
  */
-public abstract class AutonomousComponentAbstractImpl implements
-        AutonomousComponent {
+public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
+	/**
+	 * Returning this from run() means that the component is not ready to transition to the next one
+	 */
+	public static final int NOT_DONE = 0;
+	/**
+	 * The default output port.
+	 * Use if there is only one output port
+	 */
+	public static final int NEXT_STATE = 1;
+	private static int firstUnusedTransition = Math.max(NOT_DONE, NEXT_STATE) + 1;
+	/**
+	 * Gets a unique transition id
+	 * @return the lowest unused transition id
+	 */
+	public static int newTransition() {
+		return firstUnusedTransition++;
+	}
 
-	private final String id;
-	
+	protected final String id;
+
 	public AutonomousComponentAbstractImpl() {
-		super();
 		this.id = this.getClass().getSimpleName();
 	}
 
 	public AutonomousComponentAbstractImpl(String id) {
-		super();
 		this.id = id;
 	}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	@Override
-	public void initializeAtMatchStart() {
-		// Default doesn't do anything
-	}
+	public void onMatchStart() {}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	@Override
-	public void setup(int inputPort) {
-		Log.d(Utils.TAG, "Setup of " + this.getId());
-	}
-	
-	/**
-	 * Convenience method.
-	 * Calls this.setup(1);
-	 */
 	public void setup() {
-		this.setup(1);
+		Log.d(Utils.TAG, "Setup of " + this.id);
 	}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary.
-	 * Returns 0;
+	 * Returns NOT_DONE
 	 */
-	@Override
 	public int run() {
-		return 0;
+		return NOT_DONE;
 	}
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary
 	 */
-	@Override
 	public void tearDown() {
-		Log.d(Utils.TAG, "TearDown of " + this.getId());
+		Log.d(Utils.TAG, "TearDown of " + this.id);
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return this.id;
-	}
-
-
-	public String getId() {
-		return id;
 	}
 }

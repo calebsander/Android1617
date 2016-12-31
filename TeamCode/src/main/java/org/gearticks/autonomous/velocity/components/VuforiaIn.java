@@ -2,38 +2,25 @@ package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.gearticks.Vuforia.VuforiaConfiguration;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.vuforia.VuforiaConfiguration;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.vuforia.VuforiaImages;
 
-/**
- * Created by irene on 12/26/2016.
- */
-
-public class VuforiaIn extends AutonomousComponentVelocityBase {
-    private final DriveDirection direction = new DriveDirection();
+public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration> {
+    private final DriveDirection direction;
     private final float finalDistance;
     private final VuforiaConfiguration vuforiaConfiguration;
-
-
-    // Vuforia properties
     private VuforiaTrackableDefaultListener firstTargetListener;
-    private VuforiaTrackables beaconImages;
-    @NonNull
-    final String firstTargetName;
-    private boolean allianceColorIsBlue;
-
+    private final boolean isNearBeacon;
 
     /**
-     *
      * @param finalDistance - distance from picture the robot stops
      * @param isNearBeacon - what beacon it's looking for
      * @param configuration - config file
@@ -41,46 +28,35 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
      */
     public VuforiaIn(float finalDistance, boolean isNearBeacon, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
-
+        this.direction = new DriveDirection();
         this.finalDistance = finalDistance;
         this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
-
-        this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
-        if (isNearBeacon) {
-            if (this.allianceColorIsBlue) firstTargetName = "Wheels";
-            else firstTargetName = "Gears";
-        }
-        else {
-            if (this.allianceColorIsBlue) firstTargetName = "Legos";
-            else firstTargetName = "Tools";
-        }
-
-
+        this.isNearBeacon = isNearBeacon;
     }
 
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
+    public void setup() {
+        super.setup();
         this.vuforiaConfiguration.activate();
         Log.d(Utils.TAG, "running vuforia in setup : create first target listener");
-        this.firstTargetListener = Utils.assertNotNull(this.vuforiaConfiguration.getTargetListener(firstTargetName));
-
+        final boolean allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+        this.firstTargetListener = this.vuforiaConfiguration.getTargetListener(VuforiaImages.getImageName(allianceColorIsBlue, this.isNearBeacon));
     }
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
-        Utils.assertNotNull(this.firstTargetListener);
         Log.v(Utils.TAG, "get pose from listener");
         final OpenGLMatrix pose = this.firstTargetListener.getPose();
-
-
+        final int transition;
         if (pose == null) {
             Log.v(Utils.TAG, "pose == null");
 
             this.direction.drive(0.0, 0.05);
             this.direction.turn(0.0);
+            transition = NOT_DONE;
         }
         else {
             Log.v(Utils.TAG, "pose != null");
@@ -92,16 +68,16 @@ public class VuforiaIn extends AutonomousComponentVelocityBase {
             if (normalDistance < this.finalDistance) {
                 Log.v(Utils.TAG, "stop drive");
                 this.direction.stopDrive();
-                transition = 1;
+                transition = NEXT_STATE;
             }
             else {
                 Log.v(Utils.TAG, "drive and turn to beacon");
                 this.direction.drive(0.0, 0.12);
                 this.vuforiaTurn(translation, 0.0);
+                transition = NOT_DONE;
             }
         }
-
-        this.getConfiguration().move(this.direction, 0.06);
+        this.configuration.move(this.direction, 0.06);
 
         return transition;
     }

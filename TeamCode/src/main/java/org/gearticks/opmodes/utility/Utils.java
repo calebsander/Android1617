@@ -1,12 +1,7 @@
 package org.gearticks.opmodes.utility;
 
 import android.support.annotation.NonNull;
-
 import java.text.MessageFormat;
-
-/**
- * Created by irene on 12/27/2016.
- */
 
 public class Utils {
     public static final String TAG = "Gearticks"; //for use as tag in Android logging
@@ -31,16 +26,9 @@ public class Utils {
      * @param <T>
      * @return
      */
-    public static @NonNull <T> T assertNotNull(final T object, final String message){
-        if (object == null){
+    public static @NonNull <T> T assertNotNull(final T object, final String message) {
+        if (object == null) {
             throw new AssertionError(message);
-        }
-        return object;
-    }
-
-    public static @NonNull <T> T assertNotNull(T object, final String messageFormat, final Object... messageParameters){
-        if (object == null){
-            throw new AssertionError(new MessageFormat(messageFormat).format(messageParameters));
         }
         return object;
     }

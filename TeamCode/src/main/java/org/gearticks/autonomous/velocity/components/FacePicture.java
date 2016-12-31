@@ -3,92 +3,67 @@ package org.gearticks.autonomous.velocity.components;
 import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.gearticks.Vuforia.VuforiaConfiguration;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.vuforia.VuforiaConfiguration;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-
-/**
- * Created by irene on 12/26/2016.
- */
-
-public class FacePicture extends AutonomousComponentVelocityBase {
-    private final DriveDirection direction = new DriveDirection();
-    //private final float finalDistance;
-    private VuforiaConfiguration vuforiaConfiguration;
+import org.gearticks.vuforia.VuforiaImages;
 
 
-    // Vuforia properties
-    private VuforiaTrackableDefaultListener firstTargetListener;
-    @NonNull
-    final String firstTargetName;
-
-    private boolean allianceColorIsBlue;
-    final double angleMultiplier;
+public class FacePicture extends AutonomousComponentHardware<VelocityConfiguration> {
+    private final boolean isNearBeacon;
+    private final DriveDirection direction;
+    private final VuforiaConfiguration vuforiaConfiguration;
+    private double angleMultiplier;
     private ElapsedTime angleCorrectionTimer;
-
+    private VuforiaTrackableDefaultListener firstTargetListener;
 
     /**
-     *
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
-    public FacePicture(boolean isNearBeacon, VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+    public FacePicture(boolean isNearBeacon, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
+        this.isNearBeacon = isNearBeacon;
+        this.direction = new DriveDirection();
         this.vuforiaConfiguration = vuforiaConfiguration;
-
-        this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
-        if (isNearBeacon) {
-            if (this.allianceColorIsBlue) firstTargetName = "Wheels";
-            else firstTargetName = "Gears";
-        }
-        else {
-            if (this.allianceColorIsBlue) firstTargetName = "Legos";
-            else firstTargetName = "Tools";
-        }
-        if (this.allianceColorIsBlue) angleMultiplier = 1.0; //angles were calculated for blue side
-        else angleMultiplier = -1.0; //invert all angles for red side
         this.angleCorrectionTimer = new ElapsedTime();
-
     }
 
-
     @Override
-    public void setup(int inputPort) {
-        super.setup(inputPort);
+    public void setup() {
+        super.setup();
+        final boolean allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+        if (allianceColorIsBlue) this.angleMultiplier = 1.0; //angles were calculated for blue side
+        else this.angleMultiplier = -1.0; //invert all angles for red side
         this.vuforiaConfiguration.activate();
-        this.firstTargetListener = this.vuforiaConfiguration.getTargetListener(firstTargetName);
-
+        this.firstTargetListener = this.vuforiaConfiguration.getTargetListener(VuforiaImages.getImageName(allianceColorIsBlue, this.isNearBeacon));
     }
 
     @Override
     public int run() {
-        int transition = super.run();
+        final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
 
         final OpenGLMatrix firstTargetPose = this.firstTargetListener.getPose();
-
         if (firstTargetPose == null) {
-            if (this.direction.gyroCorrect(90.0 * angleMultiplier, 1.0, this.getConfiguration().imu.getRelativeYaw(), 0.08, 0.1) < 10) {
-                this.getStageTimer().reset();
+            if (this.direction.gyroCorrect(90.0 * angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.08, 0.1) < 10) {
+                this.angleCorrectionTimer.reset();
             }
         }
         else {
             if ((this.angleCorrectionTimer.seconds() % 0.3) < 0.1) { //for .1 second out of each .3 seconds, correct using Vuforia
-                if (!this.vuforiaTurn(firstTargetPose.getTranslation(), 0.05)) this.getStageTimer().reset();
+                if (!this.vuforiaTurn(firstTargetPose.getTranslation(), 0.05)) this.angleCorrectionTimer.reset();
             }
             else this.direction.stopDrive(); //then pause for .2 seconds
         }
-        if (this.getStageTimer().seconds() > 0.4) { //if we have been on target for .4 seconds in a row, take the picture
-            transition = 1; //wait until getting a frame
-        }
-
-        this.getConfiguration().move(this.direction, 0.06);
-        return transition;
+        this.configuration.move(this.direction, 0.06);
+        if (this.angleCorrectionTimer.seconds() > 0.4) return NEXT_STATE; //if we have been on target for .4 seconds in a row, take the picture
+        return NOT_DONE;
     }
 
     @Override

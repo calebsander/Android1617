@@ -1,48 +1,35 @@
 package org.gearticks.autonomous.generic.component;
 
 /**
- * Autonomous component has input and output 'ports', with numbers starting at 1.
+ * Autonomous component has output "ports," each assigned a unique nonzero integer.
  * Interface is as simple as possible to allow for easy conversion.
- * 
- * AutonomousComponent can be used in regular switch-like state-machine, but also by an automated state-machine. 
- * See samples.
  *
+ * AutonomousComponent can be used in regular switch-like state-machine, but also by an automated state-machine.
+ * See samples.
  */
 public interface AutonomousComponent {
 	/**
-	 * To be called once at start of autonomous program, e.g. to initializeAtMatchStart some sensors
+	 * To be called once at start of autonomous program, e.g. to initialize some sensors
 	 */
-    void initializeAtMatchStart();
-	
-	
+	void onMatchStart();
+
 	/**
 	 * Called each time the component state starts, can be multiple times in same autonomous program.
-	 * The inputPort argument allows the setup to be dependent on the port through which iterator is triggered.
-	 * For regular single-input-single-output components, this is not relevant.
-	 * @param inputPort - The port through which this component/state is entered
+	 * Should contain all the code for resetting the state of the component.
 	 */
-    void setup(int inputPort);
+	void setup();
 
-    /**
-     * Convenience method.
-     * Calls this.setup(1);
-     */
-    void setup();
-	
 	/**
 	 * To be called in each loop cycle.
-	 * Returns the 'transition' or  id of the 'outputPort' through which this AutonomousComponent ends.
+	 * Returns the "transition" or id of the "outputPort" through which this AutonomousComponent ends.
 	 * This allows for choice between different transitions/routes to next AutonomousComponents.
-	 * 
-	 * @return 'outputPort', 0 means not ready
+	 *
+	 * @return "outputPort," where AutonomousComponentAbstractImpl.NOT_DONE means that the component is not done
 	 */
-    int run();
-	
-	/**
-	 * Called each time the component state ends
-	 */
-    void tearDown();
-	
-//	public Logger getLogger();
+	int run();
 
+	/**
+	 * Called each time the component ends
+	 */
+	void tearDown();
 }

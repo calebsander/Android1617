@@ -1,34 +1,15 @@
 package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
-
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
-import org.gearticks.autonomous.generic.component.VelocityLinearBaseAutonomousComponent;
+import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by irene on 12/26/2016.
- * Composite component
- *      *does not complete load ball or reset snake but does wait*
- */
-
-public class CompleteBallLoad extends VelocityLinearBaseAutonomousComponent {
+public class CompleteBallLoad extends LinearStateMachine {
     public CompleteBallLoad(@NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
-    }
-
-    @NonNull
-    protected List<AutonomousComponent> createComponents(){
-        List<AutonomousComponent> components = new ArrayList<>();
-        components.add(new LoadBall(this.getConfiguration(), this.getId() + "_Load Ball"));
-        components.add(new Wait(500, this.getConfiguration(), this.getId() + "_Wait for 0.5 sec"));
-        //components.add(new DebugPause(this.gamepads, this.telemetry, this.configuration, "Wait until X is pressed"));
-
-        components.add(new ResetSnake(this.getConfiguration(), this.getId() + "_Reset Snake"));
-        return components;
+        super();
+        this.addComponent(new LoadBall(configuration, id + "_Load Ball"));
+        this.addComponent(new Wait(0.5, id + "_Wait for 0.5 sec"));
+        //this.addComponent(new DebugPause(this.gamepads, this.telemetry, configuration, "Wait until X is pressed"));
+        this.addComponent(new ResetSnake(configuration, id + "_Reset Snake"));
     }
 }

@@ -73,8 +73,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.badBoy1.setMode(Mode.INPUT);
 		this.badBoy2 = (DigitalChannel)hardwareMap.get("badBoy2");
 		this.badBoy2.setMode(Mode.INPUT);
-//		this.whiteLineSensor = (DigitalChannel)hardwareMap.get("whiteLine");
-//		this.whiteLineSensor.setMode(Mode.INPUT);
 		this.whiteLineColorSensor = new TCS34725((I2cDevice)hardwareMap.get("whiteLineColor"));
 		this.whiteLineColorLed = (LED)hardwareMap.get("whiteLineColorLed");
 	}
@@ -83,7 +81,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.rangeSensor.terminate();
 	}
 	public void stopMotion() {
-		this.intake.stop();
 		this.driveLeft.stop();
 		this.driveRight.stop();
 	}
@@ -165,38 +162,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
 	}
-	public boolean isShooterDown() {
-		return this.shooterWasDown && Math.abs(this.shooter.encoderValue() - MotorConstants.SHOOTER_TICKS_TO_DOWN) < 5;
+	public boolean isShooterAtTarget() {
+		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 10;
 	}
-
-	public static abstract class MotorConstants {
-		public static final double INTAKE_OUT = 1.0;
-		public static final double INTAKE_IN = -INTAKE_OUT;
-
-		public static final double SHOOTER_FORWARD = 1.0;
-		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
-		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
-		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
-		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
-
-		public static final double SNAKE_HOLDING = 0.9;
-		public static final double SNAKE_DUMPING = 0.7;
-
-		public static final double CLUTCH_CLUTCHED = 0.7;
-		public static final double CLUTCH_ENGAGED = 0.3;
-
-		public static final double SHOOTER_STOPPER_UP = 1.0;
-		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
+	public boolean isShooterDown() {
+		return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
 	/**
 	 *
 	 * @return true if white line detected
-     */
-	public boolean isWhiteLine(){
-		//result of sensor is inverted
-//		return !this.whiteLineSensor.getState();
+	 */
+	public boolean isWhiteLine() {
 		boolean isWhiteLine = false;
 		int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
@@ -220,4 +197,24 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.whiteLineColorLed.enable(false);
 	}
 
+	public static abstract class MotorConstants {
+		public static final double INTAKE_OUT = 1.0;
+		public static final double INTAKE_IN = -INTAKE_OUT;
+
+		public static final double SHOOTER_FORWARD = 1.0;
+		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
+		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
+		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
+		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
+
+		public static final double SNAKE_HOLDING = 0.9;
+		public static final double SNAKE_DUMPING = 0.7;
+
+		public static final double CLUTCH_CLUTCHED = 0.7;
+		public static final double CLUTCH_ENGAGED = 0.3;
+
+		public static final double SHOOTER_STOPPER_UP = 1.0;
+		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
+	}
 }

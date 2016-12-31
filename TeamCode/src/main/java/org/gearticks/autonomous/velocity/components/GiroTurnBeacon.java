@@ -1,23 +1,17 @@
 package org.gearticks.autonomous.velocity.components;
 
 import android.support.annotation.NonNull;
-
-import org.gearticks.autonomous.generic.component.AutonomousComponentVelocityBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class GiroTurnBeacon extends AutonomousComponentVelocityBase {
+public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfiguration> {
 	private final DriveDirection direction = new DriveDirection();
 	private final double targetHeading;
-	private boolean allianceColorIsBlue;
-	private final double angleMultiplier;
-	private double buttonAngle;
-
-
+	private double angleMultiplier;
 
 	/**
-	 *
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
 	 * @param configuration - config file
 	 * @param id - descriptive name for logging
@@ -25,40 +19,33 @@ public class GiroTurnBeacon extends AutonomousComponentVelocityBase {
 	public GiroTurnBeacon(double targetHeading, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.targetHeading = targetHeading;
-		this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
-		if (this.allianceColorIsBlue) angleMultiplier = 1.0; //angles were calculated for blue side
-		else angleMultiplier = -1.0; //invert all angles for red side
 	}
 
 	@Override
-	public void setup(int inputPort) {
-		super.setup(inputPort);
-		this.getConfiguration().resetEncoder();
+	public void setup() {
+		super.setup();
+		final boolean allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+		if (allianceColorIsBlue) this.angleMultiplier = 1.0; //angles were calculated for blue side
+		else this.angleMultiplier = -1.0; //invert all angles for red side
+		this.configuration.resetEncoder();
 	}
 
 	@Override
 	public int run() {
-		int transition = 0;
-		super.run();
+		final int superTransition = super.run();
+		if (superTransition != NOT_DONE) return superTransition;
 
-		this.buttonAngle = 90.0 * angleMultiplier;
-		if (this.direction.gyroCorrect(this.buttonAngle += this.targetHeading, angleMultiplier, this.getConfiguration().imu.getRelativeYaw(), 0.05, 0.1) > 10) {
-			transition = 1;
-		}
-		this.getConfiguration().move(this.direction, 0.06);
+		final boolean done = this.direction.gyroCorrect(90.0 * this.angleMultiplier + this.targetHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10;
+		this.configuration.move(this.direction, 0.06);
 
-		return transition;
+		if (done) return NEXT_STATE;
+		else return NOT_DONE;
 	}
 
 	@Override
 	public void tearDown() {
 		super.tearDown();
 		//stop motors
-		this.direction.stopDrive();
-		this.getConfiguration().move(this.direction, 0.06);
+		this.configuration.stopMotion();
 	}
-
-
-
-
 }

@@ -1,15 +1,13 @@
-package org.gearticks.Vuforia;
+package org.gearticks.vuforia;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
 import com.vuforia.HINT;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -17,29 +15,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.gearticks.opmodes.units.SideOfButton;
 import org.gearticks.opmodes.utility.Utils;
-
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * Created by irene on 12/27/2016.
- */
-
 public class VuforiaConfiguration {
-
-    private BlockingQueue<VuforiaLocalizer.CloseableFrame> frameQueue;
-    private VuforiaTrackables beaconImages;
-
-    private static final Map<String, Integer> IMAGE_IDS = new HashMap<>();
-    static {
-        IMAGE_IDS.put("Wheels", 0);
-        IMAGE_IDS.put("Tools", 1);
-        IMAGE_IDS.put("Legos", 2);
-        IMAGE_IDS.put("Gears", 3);
-    }
-
+    private final BlockingQueue<VuforiaLocalizer.CloseableFrame> frameQueue;
+    private final VuforiaTrackables beaconImages;
 
     public VuforiaConfiguration() {
         Log.d("vuforia", "vuforia configuration construction");
@@ -57,11 +37,11 @@ public class VuforiaConfiguration {
         this.frameQueue = vuforia.getFrameQueue();
     }
 
-    public VuforiaTrackableDefaultListener getTargetListener(String targetName){
-        return (VuforiaTrackableDefaultListener)this.beaconImages.get(IMAGE_IDS.get(targetName)).getListener();
+    public VuforiaTrackableDefaultListener getTargetListener(String targetName) {
+        return (VuforiaTrackableDefaultListener)this.beaconImages.get(VuforiaImages.getID(targetName)).getListener();
     }
 
-    public void activate(){
+    public void activate() {
         this.beaconImages.activate();
     }
 
@@ -70,16 +50,17 @@ public class VuforiaConfiguration {
     }
 
     /**
-     *
+     * Capture an image from Vuforia as a 720p (1280 x 720) bitmap
      * @return can be null if Vuforia didn't return a usable frame
      */
-    public @Nullable Bitmap getBitmap(){
+    public @Nullable Bitmap getBitmap() {
         Bitmap bitmap = null;
         CloseableFrame frame = null;
         try {
             frame = this.frameQueue.take();
-        } catch (InterruptedException e) {
-            System.out.println("Error: Vuforia frameQue take failed");
+        }
+        catch (InterruptedException e) {
+            System.err.println("Error: Vuforia frameQueue take failed");
         }
         if (frame != null) {
             final long images = frame.getNumImages();
@@ -96,7 +77,7 @@ public class VuforiaConfiguration {
 
         }
         else {
-            System.out.println("Error: Vuforia frameQue returned null");
+            System.err.println("Error: Vuforia frameQueue returned null");
         }
         return bitmap;
     }
