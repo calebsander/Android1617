@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.gearticks.opmodes.utility.Utils;
 
 /**
- * Wraps an FTC Gamepad object. Notable changes:
- * - Stores the gamepad state from the previous loop cycle for comparison
- * - Getter methods rather than read/write fields
+ * Wraps an FTC Gamepad object. Notable changes:<br>
+ * - Stores the gamepad state from the previous loop cycle for comparison<br>
+ * - Getter methods rather than read/write fields<br>
  * - Utility methods (like triggers as booleans, dpadNone(), etc.)
  */
 public class GamepadWrapper {

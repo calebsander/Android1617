@@ -7,6 +7,13 @@ import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.joystickoptions.JoystickOption;
 import org.gearticks.joystickoptions.JoystickOptionController;
 
+/**
+ * Adds some handy functionality on top of {@link OpMode}:<br>
+ * - Adds default empty implementations of init() and loop() so they can be omitted<br>
+ * - Wraps the gamepads and updates the last values each loop cycle<br>
+ * - Has a {@link JoystickOptionController} that is automatically updated<br>
+ * - Keeps track of the time that has passed since the start of the match
+ */
 public abstract class BaseOpMode extends OpMode {
 	protected static final int GAMEPAD_COUNT = 2;
 
@@ -20,26 +27,26 @@ public abstract class BaseOpMode extends OpMode {
 		this.gamepads = new GamepadWrapper[GAMEPAD_COUNT];
 	}
 
-	public void init() {
+	public final void init() {
 		this.addOption(AllianceOption.allianceOption);
 		this.initialize();
 	}
-	public void init_loop() {
+	public final void init_loop() {
 		this.optionController.update(this.gamepad1, this.telemetry);
 		this.loopBeforeStart();
 	}
-	public void start() {
+	public final void start() {
 		this.resetStartTime();
 		this.matchTime.reset();
 		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
 		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
 		this.matchStart();
 	}
-	public void loop() {
+	public final void loop() {
 		this.loopAfterStart();
 		for (final GamepadWrapper gamepad : this.gamepads) gamepad.updateLast();
 	}
-	public void stop() {
+	public final void stop() {
 		this.matchEnd();
 	}
 

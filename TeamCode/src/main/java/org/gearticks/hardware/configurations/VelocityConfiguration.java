@@ -1,7 +1,6 @@
 package org.gearticks.hardware.configurations;
 
 import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -20,23 +19,103 @@ import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
 import org.gearticks.opmodes.utility.Utils;
 
+/**
+ * Stores all the hardware devices on the Velocity Vortex robot.
+ * Has code for fetching them out of a {@link HardwareMap}
+ * and several utility methods for them.
+ */
 public class VelocityConfiguration implements HardwareConfiguration {
-	public final MotorWrapper intake, shooter;
-	private boolean shooterWasDown;
-	public final MotorWrapper driveLeft, driveRight;
+	/**
+	 * The color sensor clear value above which is considered on the white line
+	 */
+	private static final int WHITE_LINE_THRESHOLD = 280;
+	/**
+	 * The number of encoder ticks the shooter is allowed to be from its target
+	 * and be considered to have reached it.
+	 * This is used rather than {@link MotorWrapper#notAtTarget()} because
+	 * sometimes the shooter is not given enough power to quite reach the target.
+	 */
+	private static final int SHOOTER_ENCODER_THRESHOLD = 10;
+
+	/**
+	 * The intake motor
+	 */
+	public final MotorWrapper intake;
+	/**
+	 * The shooter motor
+	 */
+	public final MotorWrapper shooter;
+	/**
+	 * Whether the shooter has passed the sensor
+	 * since being commanded to move down
+	 */
+	private boolean shooterWasAtSensor;
+	/**
+	 * The left drive motor (attached to 2 motors)
+	 */
+	public final MotorWrapper driveLeft;
+	/**
+	 * The right drive motor (attached to 2 motors)
+	 */
+	public final MotorWrapper driveRight;
+	/**
+	 * The drive system
+	 */
 	public final TankDrive drive;
-	public final Servo clutch, snake;
+	/**
+	 * The clutch servo
+	 */
+	public final Servo clutch;
+	/**
+	 * The snake servo
+	 */
+	public final Servo snake;
+	/**
+	 * The shooter stopper CR servo.
+	 * This is private because it should always be moved with {@link #safeShooterStopper(double)}.
+	 */
 	private final CRServo shooterStopper;
+	/**
+	 * The heading sensor
+	 */
 	public final GearticksBNO055 imu;
+	/**
+	 * The range sensor pointing towards the wall
+	 */
 	public final GearticksMRRangeSensor rangeSensor;
+	/**
+	 * The IR proximity sensor on the shooter
+	 */
 	private final DigitalChannel shooterDown;
-	private final DigitalChannel shooterNear, shooterFar;
+	/**
+	 * The limit switch at the bottom of the shooter stopper
+	 */
+	private final DigitalChannel shooterNear;
+	/**
+	 * The limit switch at the top of the shooter stopper
+	 */
+	private final DigitalChannel shooterFar;
+	/**
+	 * One of the IR proximity sensors next to the snake
+	 */
 	private final DigitalChannel badBoy1, badBoy2;
-	//public final DigitalChannel whiteLineSensor;
+	/**
+	 * The color sensor used to find the white line
+	 * in front of the beacons
+	 */
 	public final TCS34725 whiteLineColorSensor;
+	/**
+	 * The LED on {@link #whiteLineColorSensor}
+	 */
 	public final LED whiteLineColorLed;
 
+	/**
+	 * Creates a new configuration from a populated hardware map.
+	 * The "Velocity Drive" configuration file must be active.
+	 * @param hardwareMap the hardware map containing all the devices
+	 */
 	public VelocityConfiguration(HardwareMap hardwareMap) {
+		//Motors
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
 		this.shooter = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
@@ -54,6 +133,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.driveLeft.setStopMode(ZeroPowerBehavior.BRAKE);
 		this.driveRight.setStopMode(ZeroPowerBehavior.BRAKE);
 
+		//Servos
 		this.clutch = (Servo)hardwareMap.get("clutch");
 		this.clutch.setPosition(MotorConstants.CLUTCH_ENGAGED);
 		this.snake = (Servo)hardwareMap.get("snake");
@@ -61,6 +141,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterStopper = (CRServo)hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 
+		//Sensors
 		this.imu = new GearticksBNO055((I2cDevice)hardwareMap.get("bno"));
 		this.rangeSensor = new GearticksMRRangeSensor((I2cDevice)hardwareMap.get("range"));
 		this.shooterDown = (DigitalChannel)hardwareMap.get("shooterDown");
@@ -76,27 +157,41 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.whiteLineColorSensor = new TCS34725((I2cDevice)hardwareMap.get("whiteLineColor"));
 		this.whiteLineColorLed = (LED)hardwareMap.get("whiteLineColorLed");
 	}
+
 	public void teardown() {
 		this.imu.terminate();
 		this.rangeSensor.terminate();
+		this.whiteLineColorSensor.terminate();
 	}
 	public void stopMotion() {
 		this.driveLeft.stop();
 		this.driveRight.stop();
 	}
-
 	public void move(DriveDirection direction, double accelLimit) {
 		this.drive.calculatePowers(direction);
 		this.drive.scaleMotorsDown();
 		this.drive.accelLimit(accelLimit);
 		this.drive.commitPowers();
 	}
+	/**
+	 * Returns whether the shooter stopper is at the top of its range
+	 * @return whether the shooter stopper is at the top of its range
+	 */
 	private boolean shooterFarTriggered() {
 		return !this.shooterFar.getState();
 	}
+	/**
+	 * Returns whether the shooter stopper is at the bottom of its range
+	 * @return whether the shooter stopper is at the bottom of its range
+	 */
 	private boolean shooterNearTriggered() {
 		return !this.shooterNear.getState();
 	}
+	/**
+	 * Moves the shooter stopper with the desired power,
+	 * stopping it if it is at the limit of its range
+	 * @param power the desired power
+	 */
 	public void safeShooterStopper(double power) {
 		if (
 			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
@@ -106,97 +201,151 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		}
 		this.shooterStopper.setPower(power);
 	}
+	/**
+	 * Returns whether the first bad boy detects a ball in the snake
+	 * @return whether the first bad boy detects a ball in the snake
+	 */
 	private boolean badBoy1Triggered() {
 		return !this.badBoy1.getState();
 	}
+	/**
+	 * Returns whether the second bad boy detects a ball in the snake
+	 * @return whether the second bad boy detects a ball in the snake
+	 */
 	private boolean badBoy2Triggered() {
 		return !this.badBoy2.getState();
 	}
+	/**
+	 * Returns whether there is a ball in the snake
+	 * @return whether either bad boy is triggered
+	 */
 	public boolean ballInSnake() {
 		return this.badBoy1Triggered() || this.badBoy2Triggered();
 	}
+	/**
+	 * Resets the encoder on the drive motor
+	 * whose encoder value is returned by {@link #encoderPositive()}
+	 */
 	public void resetEncoder() {
 		final MotorWrapper driveMotor = this.driveLeft;
 		final RunMode lastMode = driveMotor.getRunMode();
 		driveMotor.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		driveMotor.setRunMode(lastMode);
 	}
+	/**
+	 * Returns the absolute value of the encoder value
+	 * on the left drive motor (arbitrarily chosen)
+	 * @return the encoder distance traveled since the last reset
+	 */
 	public int encoderPositive() {
 		return Math.abs(this.driveLeft.encoderValue());
 	}
+	/**
+	 * Returns whether the shooter is at its proximity sensor
+	 * @return whether the shooter is at its proximity sensor
+	 */
 	public boolean isShooterAtSensor() {
 		return !this.shooterDown.getState();
 	}
+	/**
+	 * Moves the shooter at a slow constant speed
+	 */
 	public void shootSlow() {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
+	/**
+	 * Moves the shooter at a fast constant speed
+	 */
 	public void shootFast() {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 	}
+	/**
+	 * Moves the shooter from the sensor to the down position using the encoder.
+	 * Only needs to be called once to carry out the full movement.
+	 * Sets {@link #shooterWasAtSensor} to true.
+	 */
+	private void moveShooterFromSensorToDown() {
+		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+		this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+		this.shooterWasAtSensor = true;
+	}
+	/**
+	 * Slowly advances the shooter to down.
+	 * Must be called repeatedly.
+	 */
 	public void advanceShooterToDown() {
-		if (!this.shooterWasDown) {
-			if (this.isShooterAtSensor()) {
-				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
-				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
-				this.shooterWasDown = true;
-			}
+		if (!this.shooterWasAtSensor) {
+			if (this.isShooterAtSensor()) this.moveShooterFromSensorToDown();
 			else this.shootSlow();
 		}
 	}
+	/**
+	 * Quickly advances the shooter to down.
+	 * Must be called repeatedly.
+	 */
 	public void teleopAdvanceShooterToDown() {
-		if (!this.shooterWasDown) {
-			if (this.isShooterAtSensor()) {
-				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
-				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
-				this.shooterWasDown = true;
-			}
+		if (!this.shooterWasAtSensor) {
+			if (this.isShooterAtSensor()) this.moveShooterFromSensorToDown();
 			else this.shootFast();
 		}
 	}
-	public void resetAutoShooter() {
-		this.shooterWasDown = false;
-	}
-	public boolean isShooterAtTarget() {
-		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 10;
-	}
-	public boolean isShooterDown() {
-		return this.shooterWasDown && this.isShooterAtTarget();
-	}
-
 	/**
-	 *
-	 * @return true if white line detected
+	 * Resets the variable keeping storing whether the shooter has reached the sensor.
+	 * Must be called between subsequent movements of the shooter to the down position.
+	 */
+	public void resetAutoShooter() {
+		this.shooterWasAtSensor = false;
+	}
+	/**
+	 * Returns whether the shooter is pretty close to the target
+	 * @return whether the shooter encoder is within {@link #SHOOTER_ENCODER_THRESHOLD} ticks of its target
+	 */
+	public boolean isShooterAtTarget() {
+		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < SHOOTER_ENCODER_THRESHOLD;
+	}
+	/**
+	 * Returns whether the shooter has reached the down position
+	 * @return whether the shooter has reached the down position
+	 * @see #advanceShooterToDown()
+	 * @see #teleopAdvanceShooterToDown()
+	 */
+	public boolean isShooterDown() {
+		return this.shooterWasAtSensor && this.isShooterAtTarget();
+	}
+	/**
+	 * @return true iff white line detected
 	 */
 	public boolean isWhiteLine() {
-		boolean isWhiteLine = false;
-		int clear = this.whiteLineColorSensor.getClear();
+		final int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
-		int whiteLineThreshold = 280;
-
-		if (clear > whiteLineThreshold){
-			isWhiteLine = true;
-		}
-
-		return isWhiteLine;
+		return clear > WHITE_LINE_THRESHOLD;
 	}
-
-	public void activateWhiteLineColor(){
+	/**
+	 * Starts reading values from the color sensor,
+	 * turns on its LED,
+	 * and sets the integration time.
+	 */
+	public void activateWhiteLineColor() {
+		this.whiteLineColorSensor.setIntegrationTime(50.0);
 		this.whiteLineColorSensor.startReadingClear();
 		this.whiteLineColorLed.enable(true);
-		this.whiteLineColorSensor.setIntegrationTime(50);
-
 	}
-	public void deactivateWhiteLineColor(){
+	/**
+	 * Stops reading values from the color sensor
+	 * and disables its LED
+	 */
+	public void deactivateWhiteLineColor() {
 		this.whiteLineColorSensor.stopReading();
 		this.whiteLineColorLed.enable(false);
 	}
 
+	/**
+	 * Constants for motor powers and servo positions
+	 */
 	public static abstract class MotorConstants {
 		public static final double INTAKE_OUT = 1.0;
 		public static final double INTAKE_IN = -INTAKE_OUT;

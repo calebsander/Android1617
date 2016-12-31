@@ -2,10 +2,10 @@ package org.gearticks.joystickoptions;
 
 /**
  * Stores the various choices for a named setting
- * Usage:
- * -Create option
- * -Add option to controller
- * -Select option with joystick using option controller
+ * Usage:<br>
+ * -Create option<br>
+ * -Add option to controller<br>
+ * -Select option with joystick using option controller<br>
  * -Get the selected value from the option
  */
 public interface JoystickOption {

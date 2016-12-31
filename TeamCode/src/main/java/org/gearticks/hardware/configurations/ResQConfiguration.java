@@ -10,6 +10,7 @@ import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.ServoWrapper;
 import org.gearticks.hardware.drive.TankDrive;
 
+@Deprecated
 public class ResQConfiguration implements HardwareConfiguration {
 	public final MotorWrapper screw, lift;
 	public final MotorWrapper door;
@@ -74,9 +75,10 @@ public class ResQConfiguration implements HardwareConfiguration {
 		this.bl.setPower(MotorWrapper.STOPPED);
 		this.br.setPower(MotorWrapper.STOPPED);
 	}
-	public void move(DriveDirection direction) {
+	public void move(DriveDirection direction, double accelLimit) {
 		this.drive.calculatePowers(direction);
 		this.drive.scaleMotorsDown();
+		this.drive.accelLimit(accelLimit);
 		this.drive.commitPowers();
 	}
 

@@ -1,10 +1,15 @@
-//Our version of a driver for the Adafruit TCS34725 color sensor
 package org.gearticks.dimsensors.i2c;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.nio.ByteBuffer;
 
+/**
+ * Our version of a driver for the Adafruit TCS34725 color sensor.
+ * Starting up the sensor requires issuing two requests to the ENABLE register,
+ * so you must wait until it is ready to start adding read requests.
+ * The "clear" channel measures white light intensity.
+ */
 public class TCS34725 extends I2CSensor {
 	protected final I2cAddr getAddress() {
 		return I2cAddr.create7bit(0x29);
@@ -57,7 +62,7 @@ public class TCS34725 extends I2CSensor {
 	private void initialize() {
 		this.enableRequest = new SensorWriteRequest(Register.ENABLE.register, 1);
 		this.enableRequest.setWriteData(new byte[]{POWER_ON});
-		this.state = StartupState.POWER;
+		this.state = StartupState.values()[0];
 		this.clearRequest = this.makeReadRequest(Register.CLEAR_LOW.register, Register.CLEAR_HIGH.register);
 		this.colorRequest = this.makeReadRequest(Register.CLEAR_LOW.register, Register.BLUE_HIGH.register);
 		this.integrationTime = new SensorWriteRequest(Register.INTEGRATION_TIME.register, 1);
@@ -75,26 +80,39 @@ public class TCS34725 extends I2CSensor {
 				this.setIntegrationTime(DEFAULT_INTEGRATION_INTERVAL);
 		}
 	}
-	//Return whether sensor hsa been enabled
+	/**
+	 * Returns whether sensor is ready to accept read requests
+	 * @return whether the sensor has been enabled
+	 */
 	public boolean ready() {
 		return this.state == StartupState.DONE;
 	}
-	//Start reading the clear channel
+	/**
+	 * Start continuously reading the clear channel
+	 */
 	public void startReadingClear() {
 		if (!this.ready()) throw new RuntimeException("Not enabled yet");
 		this.clearRequest.startReading();
 	}
-	//Start reading all four channels
+	/**
+	 * Start continuously reading the clear, red, green, and blue channels
+	 */
 	public void startReadingColor() {
 		if (!this.ready()) throw new RuntimeException("Not enabled yet");
 		this.colorRequest.startReading();
 	}
-	//Stop reading colors
+	/**
+	 * Stop continuously reading all channels
+	 */
 	public void stopReading() {
 		this.clearRequest.stopReading();
 		this.colorRequest.stopReading();
 	}
-	//Get the value of the clear channel
+	/**
+	 * Get the value of the clear channel.
+	 * Returns a number from 0 to 65535, or -1 if no value exists.
+	 * @return the value of the clear channel, or -1 if no value exists
+	 */
 	public int getClear() {
 		synchronized (this) {
 			if (!(this.clearRequest.hasReadData() || this.colorRequest.hasReadData())) return -1;
@@ -103,40 +121,75 @@ public class TCS34725 extends I2CSensor {
 			if (this.clearRequest.nanosSinceAction() < this.colorRequest.nanosSinceAction()) data = this.clearRequest.getReadData();
 			else data = this.colorRequest.getReadData();
 			if (data.length == 0) return -1;
-			return ByteBuffer.wrap(new byte[]{data[Register.CLEAR_HIGH.register - this.clearRequest.getRegister()], data[Register.CLEAR_LOW.register - this.clearRequest.getRegister()]}).getShort() & SHORT_MASK;
+			return ByteBuffer.wrap(new byte[]{
+				data[Register.CLEAR_HIGH.register - this.clearRequest.getRegister()],
+				data[Register.CLEAR_LOW.register - this.clearRequest.getRegister()]
+			}).getShort() & SHORT_MASK;
 		}
 	}
-	//Get the value of the red channel
+	/**
+	 * Get the value of the red channel.
+	 * Returns a number from 0 to 65535, or -1 if no value exists.
+	 * @return the value of the red channel, or -1 if no value exists
+	 */
 	public int getRed() {
 		if (!this.colorRequest.hasReadData()) return -1;
 		final byte[] data = this.colorRequest.getReadData();
 		if (data.length == 0) return -1;
-		return ByteBuffer.wrap(new byte[]{data[Register.RED_HIGH.register - this.colorRequest.getRegister()], data[Register.RED_LOW.register - this.colorRequest.getRegister()]}).getShort() & SHORT_MASK;
+		return ByteBuffer.wrap(new byte[]{
+			data[Register.RED_HIGH.register - this.colorRequest.getRegister()],
+			data[Register.RED_LOW.register - this.colorRequest.getRegister()]
+		}).getShort() & SHORT_MASK;
 	}
-	//Get the value of the green channel
+	/**
+	 * Get the value of the green channel.
+	 * Returns a number from 0 to 65535, or -1 if no value exists.
+	 * @return the value of the green channel, or -1 if no value exists
+	 */
 	public int getGreen() {
 		if (!this.colorRequest.hasReadData()) return -1;
 		final byte[] data = this.colorRequest.getReadData();
 		if (data.length == 0) return -1;
-		return ByteBuffer.wrap(new byte[]{data[Register.GREEN_HIGH.register - this.colorRequest.getRegister()], data[Register.GREEN_LOW.register - this.colorRequest.getRegister()]}).getShort() & SHORT_MASK;
+		return ByteBuffer.wrap(new byte[]{
+			data[Register.GREEN_HIGH.register - this.colorRequest.getRegister()],
+			data[Register.GREEN_LOW.register - this.colorRequest.getRegister()]
+		}).getShort() & SHORT_MASK;
 	}
-	//Get the value of the blue channel
+	/**
+	 * Get the value of the blue channel.
+	 * Returns a number from 0 to 65535, or -1 if no value exists.
+	 * @return the value of the blue channel, or -1 if no value exists
+	 */
 	public int getBlue() {
 		if (!this.colorRequest.hasReadData()) return -1;
 		final byte[] data = this.colorRequest.getReadData();
 		if (data.length == 0) return -1;
-		return ByteBuffer.wrap(new byte[]{data[Register.BLUE_HIGH.register - this.colorRequest.getRegister()], data[Register.BLUE_LOW.register - this.colorRequest.getRegister()]}).getShort() & SHORT_MASK;
+		return ByteBuffer.wrap(new byte[]{
+			data[Register.BLUE_HIGH.register - this.colorRequest.getRegister()],
+			data[Register.BLUE_LOW.register - this.colorRequest.getRegister()]
+		}).getShort() & SHORT_MASK;
 	}
-	//Calculates the byte value necessary to get the closest to the desired integration time
+	/**
+	 * Calculates the byte value that will give the closest integration time to the desired time
+	 * @param integrationMillis the number of milliseconds to integrate for each time
+	 * @return a byte to send to {@link #integrationTime}
+	 */
 	private static byte getIntegrationRequestValue(double integrationMillis) {
 		final int intervals = Math.min(Math.max((int)Math.round(integrationMillis / INTEGRATION_INTERVAL), 0x01), 0x100);
 		return (byte)(0x100 - intervals);
 	}
-	//Sets the integration time
+	/**
+	 * Sets the integration time (essentially exposure time).
+	 * This is 24 by default.
+	 * @param time the number of milliseconds to integrate for
+	 */
 	public void setIntegrationTime(double time) {
 		this.integrationTime.setWriteData(new byte[]{TCS34725.getIntegrationRequestValue(time)});
 	}
-	//Enables/disabled LED on Flora models
+	/**
+	 * Enables/disables LED on Flora models (the circular ones)
+	 * @param enabled whether the LED should be enabled
+	 */
 	public void setFloraLED(boolean enabled) {
 		byte writeByte = FULL_ON;
 		if (!enabled) writeByte |= INTERRUPT_ON;

@@ -199,7 +199,7 @@ public class MotorWrapper {
 	 * If trying to stop the motor, it will stop immediately.
 	 * @param lastPower the power the last cycle
 	 * @param desiredPower the power being requested
-	 * @param maxDiff the maximum absolute value of power differences allowed
+	 * @param maxDiff the maximum absolute value of power differences allowed (or {@link #NO_ACCEL_LIMIT})
 	 * @return the acceleration-limited power
 	 */
 	public static double accelLimit(double lastPower, double desiredPower, double maxDiff) {
@@ -211,7 +211,7 @@ public class MotorWrapper {
 	/**
 	 * Sets the motor's power to an acceleration-limited value of desiredPower
 	 * @param desiredPower the power being requested
-	 * @param maxDiff the maximum absolute value of power differences allowed
+	 * @param maxDiff the maximum absolute value of power differences allowed (or {@link #NO_ACCEL_LIMIT})
 	 */
 	public void accelLimit(double desiredPower, double maxDiff) {
 		this.setPower(MotorWrapper.accelLimit(this.lastPower, desiredPower, maxDiff));
