@@ -2,21 +2,22 @@ package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.Stopped;
+import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
+import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
+import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
+import org.gearticks.autonomous.velocity.components.generic.Wait;
+import org.gearticks.autonomous.velocity.components.velocity.composite.CompleteBallLoad;
+import org.gearticks.autonomous.velocity.components.generic.Stopped;
+import org.gearticks.autonomous.velocity.components.velocity.composite.NonLinearPressBeaconButton;
+import org.gearticks.autonomous.velocity.components.velocity.single.FacePicture;
+import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
+import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
+import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
+import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
+import org.gearticks.autonomous.velocity.components.velocity.single.VuforiaIn;
+import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.velocity.components.DebugPause;
-import org.gearticks.autonomous.velocity.components.FacePicture;
-import org.gearticks.autonomous.velocity.components.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.GiroDriveToLine;
-import org.gearticks.autonomous.velocity.components.GiroTurn;
-import org.gearticks.autonomous.velocity.components.LoadBall;
-import org.gearticks.autonomous.velocity.components.MoveShooterDown;
-import org.gearticks.autonomous.velocity.components.NonLinearPressBeaconButton;
-import org.gearticks.autonomous.velocity.components.ResetSnake;
-import org.gearticks.autonomous.velocity.components.ShootBall;
-import org.gearticks.autonomous.velocity.components.VuforiaIn;
-import org.gearticks.autonomous.velocity.components.Wait;
 
 @Autonomous
 public class ComponentTest extends VelocityBaseOpMode {
@@ -62,6 +63,8 @@ public class ComponentTest extends VelocityBaseOpMode {
         sm.addComponent(new VuforiaIn(175F, false, vuforiaConfiguration, this.configuration, "Drive to far target"));
         sm.addComponent(new NonLinearPressBeaconButton(vuforiaConfiguration, this.configuration, "Press beacon button"));
         sm.addComponent(new GiroDriveEncoder(90.0, -0.5, 300, this.configuration, "Back up far"));
+
+        sm.addComponent(new CompleteBallLoad(this.configuration, "Load ball"));
 
         sm.addComponent(new Stopped(this.configuration));
 

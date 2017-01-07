@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.opmodes.utility.Utils;
 
 /**
@@ -13,7 +14,7 @@ import org.gearticks.opmodes.utility.Utils;
  *
  * Each output port emitted by each component should be connected to the component to execute next.
  * Output ports not connected to another component must cause the state machine to end.
- * You can alternatively add a {@link org.gearticks.autonomous.velocity.components.Stopped} component and connect the terminal states to it.
+ * You can alternatively add a {@link Stopped} component and connect the terminal states to it.
  *
  * Keep in mind that no state is aware of the prior states, specifically the state that transitioned to it.
  */

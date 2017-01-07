@@ -235,7 +235,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SNAKE_HOLDING = 0.9;
 		public static final double SNAKE_DUMPING = 0.7;
 
-		public static final double BEACON_PRESSER_ENGAGED = 0.3; // TODO set values
+		public static final double BEACON_PRESSER_ENGAGED = 0.3;
 		public static final double BEACON_PRESSER_DISENGAGED = 0.0;
 
 		public static final double CLUTCH_CLUTCHED = 0.7;
