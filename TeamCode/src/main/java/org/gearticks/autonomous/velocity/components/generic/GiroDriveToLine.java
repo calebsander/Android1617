@@ -25,7 +25,7 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
      * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
      * @param power - between 0 and 1, input for DriveDirection
      * @param maxEncoderTarget - maximum limit for the encoder. If the encoderPositive exceeds this target, the component transitions
-     * @param configuration
+     * @param configuration - hardware configuration
      * @param id - descriptive name for logging
      */
     public GiroDriveToLine(double targetHeading, double power, long maxEncoderTarget, @NonNull VelocityConfiguration configuration, String id) {

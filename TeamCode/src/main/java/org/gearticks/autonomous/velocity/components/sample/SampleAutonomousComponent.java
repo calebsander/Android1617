@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public abstract class SampleAutonomousComponent extends AutonomousComponentHardware<VelocityConfiguration> {
+public class SampleAutonomousComponent extends AutonomousComponentHardware<VelocityConfiguration> {
     public SampleAutonomousComponent(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }

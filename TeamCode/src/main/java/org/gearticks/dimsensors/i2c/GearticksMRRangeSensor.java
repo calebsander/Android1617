@@ -39,7 +39,7 @@ public class GearticksMRRangeSensor extends I2CSensor {
 		else return NO_DATA;
 	}
 	public double cmOptical() {
-		if (this.ultrasonicRequest.hasReadData()) {
+		if (this.opticalRequest.hasReadData()) {
 			final int opticalByte = this.opticalRequest.getReadData()[0] & 0xFF;
 			if (opticalByte < MIN_VALID_OPTICAL_READING) return NO_DATA;
 			return P_CONST * Math.log(Q_CONST * (R_CONST + opticalByte));
