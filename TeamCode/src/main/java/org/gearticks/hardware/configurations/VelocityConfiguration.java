@@ -127,14 +127,23 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public void resetEncoder() {
-		final MotorWrapper driveMotor = this.driveLeft;
-		final RunMode lastMode = driveMotor.getRunMode();
-		driveMotor.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-		driveMotor.setRunMode(lastMode);
+		final MotorWrapper driveMotorL = this.driveLeft;
+		final RunMode lastModeL = driveMotorL.getRunMode();
+		driveMotorL.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		driveMotorL.setRunMode(lastModeL);
+
+		final MotorWrapper driveMotorR = this.driveRight;
+		final RunMode lastModeR = driveMotorR.getRunMode();
+		driveMotorR.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		driveMotorR.setRunMode(lastModeR);
 	}
 
 	public int encoderPositive() {
-		return Math.abs(this.driveLeft.encoderValue());
+		return Math.abs(this.driveLeft.encoderValue()); //TODO: why abs?
+	}
+
+	public int avrgEncoderPositive() {
+		return Math.abs((this.driveLeft.encoderValue() + this.driveRight.encoderValue()) / 2);
 	}
 
 	public boolean isShooterAtSensor() {
