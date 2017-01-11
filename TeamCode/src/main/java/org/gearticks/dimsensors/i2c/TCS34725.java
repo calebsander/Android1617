@@ -75,18 +75,12 @@ public class TCS34725 extends I2CSensor {
 				this.setIntegrationTime(DEFAULT_INTEGRATION_INTERVAL);
 		}
 	}
-	//Return whether sensor hsa been enabled
-	public boolean ready() {
-		return this.state == StartupState.DONE;
-	}
 	//Start reading the clear channel
 	public void startReadingClear() {
-		if (!this.ready()) throw new RuntimeException("Not enabled yet");
 		this.clearRequest.startReading();
 	}
 	//Start reading all four channels
 	public void startReadingColor() {
-		if (!this.ready()) throw new RuntimeException("Not enabled yet");
 		this.colorRequest.startReading();
 	}
 	//Stop reading colors

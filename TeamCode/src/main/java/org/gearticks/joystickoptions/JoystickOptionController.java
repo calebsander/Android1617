@@ -18,14 +18,11 @@ public class JoystickOptionController {
 	private JoystickOption currentOption;
 	//The previous selections concatenated (so it is possible to see what has been selected before)
 	private String previousSelections;
-	//Keeps track of the current gamepad settings and the ones from the previous loop
-	private GamepadWrapper gamepad;
 
 	public JoystickOptionController() {
 		this.options = new LinkedList<>();
 		this.resetIterator();
 		this.previousSelections = null;
-		this.gamepad = null;
 	}
 
 	//Resets the iterator based on a new options list and removes the last currentOption selection
@@ -50,19 +47,12 @@ public class JoystickOptionController {
 	}
 	/*Updates the state of the option selector based on the gamepad readings and outputs the current information to telemetry
 		This should be called once in init_loop()*/
-	public void update(Gamepad inputGamepad, Telemetry telemetry) {
+	public void update(GamepadWrapper gamepad, Telemetry telemetry) {
 		//Gamepad input response
-		if (this.gamepad == null) {
-			if (inputGamepad != null) this.gamepad = new GamepadWrapper(inputGamepad);
-		}
-		else {
-			if (this.gamepad.getGamepad() != inputGamepad) this.gamepad = new GamepadWrapper(inputGamepad);
-			if (this.gamepad.getA() && !this.gamepad.getLast().getA()) this.nextOption(); //check if the next option has been requested
-			if (this.currentOption != null) {
-				if (this.gamepad.getX() && !this.gamepad.getLast().getX()) this.currentOption.decrementOption();
-				if (this.gamepad.getB() && !this.gamepad.getLast().getB()) this.currentOption.incrementOption();
-			}
-			this.gamepad.updateLast();
+		if (gamepad.getA() && !gamepad.getLast().getA()) this.nextOption(); //check if the next option has been requested
+		if (this.currentOption != null) {
+			if (gamepad.getX() && !gamepad.getLast().getX()) this.currentOption.decrementOption();
+			if (gamepad.getB() && !gamepad.getLast().getB()) this.currentOption.incrementOption();
 		}
 		//Output state information
 		if (this.previousSelections != null) telemetry.addLine("Previous choices: " + this.previousSelections);

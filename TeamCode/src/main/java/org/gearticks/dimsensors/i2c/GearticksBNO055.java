@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.nio.ByteBuffer;
 
-public class BNO055 extends I2CSensor {
+public class GearticksBNO055 extends I2CSensor {
 	private static final int DEFAULT_ADDRESS = 0x28;
 	private static final int SECOND_ADDRESS = DEFAULT_ADDRESS + 1;
 	private final int address;
@@ -282,10 +282,10 @@ public class BNO055 extends I2CSensor {
 	//The value of the yaw when it was last reset
 	private double resetYawPoint;
 
-	public BNO055(I2cDevice device) {
+	public GearticksBNO055(I2cDevice device) {
 		this(device, false);
 	}
-	public BNO055(I2cDevice device, boolean addrPin) {
+	public GearticksBNO055(I2cDevice device, boolean addrPin) {
 		super(device);
 		this.idRequest = this.makeReadRequest(Register.CHIP_ID.getRegister(), Register.BL_REV_ID.getRegister());
 		this.calibrationRequest = this.makeReadRequest(Register.CALIB_STAT.getRegister(), Register.SELF_TEST_RESULT.getRegister());

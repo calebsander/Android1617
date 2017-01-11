@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.gearticks.AutonomousDatalogger;
-import org.gearticks.VuforiaKey;
+import org.gearticks.vuforia.VuforiaKey;
 import org.gearticks.hardware.configurations.ResQConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.opmodes.BaseOpMode;

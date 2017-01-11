@@ -1,5 +1,7 @@
 package org.gearticks.hardware.configurations;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -8,11 +10,15 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.gearticks.dimsensors.i2c.BNO055;
+import org.gearticks.dimsensors.i2c.GearticksBNO055;
+import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
+import org.gearticks.dimsensors.i2c.TCS34725;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.TankDrive;
+import org.gearticks.opmodes.utility.Utils;
 
 public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper intake, shooter;
@@ -20,10 +26,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
 	public final Servo clutch, snake;
-	public final CRServo shooterStopper;
-	public final BNO055 imu;
-	public final DigitalChannel shooterDown;
-	public final DigitalChannel shooterNear, shooterFar;
+	private final CRServo shooterStopper;
+	public final GearticksBNO055 imu;
+	public final GearticksMRRangeSensor rangeSensor;
+	private final DigitalChannel shooterDown;
+	private final DigitalChannel shooterNear, shooterFar;
+	private final DigitalChannel badBoy1, badBoy2;
+	//public final DigitalChannel whiteLineSensor;
+	public final TCS34725 whiteLineColorSensor;
+	public final LED whiteLineColorLed;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
@@ -50,20 +61,26 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterStopper = (CRServo)hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 
-		this.imu = new BNO055((I2cDevice)hardwareMap.get("bno"));
+		this.imu = new GearticksBNO055((I2cDevice)hardwareMap.get("bno"));
+		this.rangeSensor = new GearticksMRRangeSensor((I2cDevice)hardwareMap.get("range"));
 		this.shooterDown = (DigitalChannel)hardwareMap.get("shooterDown");
 		this.shooterDown.setMode(Mode.INPUT);
 		this.shooterNear = (DigitalChannel)hardwareMap.get("shooterNear");
 		this.shooterNear.setMode(Mode.INPUT);
 		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
+		this.badBoy1 = (DigitalChannel)hardwareMap.get("badBoy1");
+		this.badBoy1.setMode(Mode.INPUT);
+		this.badBoy2 = (DigitalChannel)hardwareMap.get("badBoy2");
+		this.badBoy2.setMode(Mode.INPUT);
+		this.whiteLineColorSensor = new TCS34725((I2cDevice)hardwareMap.get("whiteLineColor"));
+		this.whiteLineColorLed = (LED)hardwareMap.get("whiteLineColorLed");
 	}
 	public void teardown() {
-		this.imu.eulerRequest.stopReading();
 		this.imu.terminate();
+		this.rangeSensor.terminate();
 	}
 	public void stopMotion() {
-		this.intake.stop();
 		this.driveLeft.stop();
 		this.driveRight.stop();
 	}
@@ -88,6 +105,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			power = 0.0;
 		}
 		this.shooterStopper.setPower(power);
+	}
+	private boolean badBoy1Triggered() {
+		return !this.badBoy1.getState();
+	}
+	private boolean badBoy2Triggered() {
+		return !this.badBoy2.getState();
+	}
+	public boolean ballInSnake() {
+		return this.badBoy1Triggered() || this.badBoy2Triggered();
 	}
 	public void resetEncoder() {
 		final MotorWrapper driveMotor = this.driveLeft;
@@ -136,8 +162,39 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
 	}
+	public boolean isShooterAtTarget() {
+		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 10;
+	}
 	public boolean isShooterDown() {
-		return this.shooterWasDown && !this.shooter.notAtTarget();
+		return this.shooterWasDown && this.isShooterAtTarget();
+	}
+
+	/**
+	 *
+	 * @return true if white line detected
+	 */
+	public boolean isWhiteLine() {
+		boolean isWhiteLine = false;
+		int clear = this.whiteLineColorSensor.getClear();
+		Log.v(Utils.TAG, "Clear = " + clear);
+		int whiteLineThreshold = 280;
+
+		if (clear > whiteLineThreshold){
+			isWhiteLine = true;
+		}
+
+		return isWhiteLine;
+	}
+
+	public void activateWhiteLineColor(){
+		this.whiteLineColorSensor.startReadingClear();
+		this.whiteLineColorLed.enable(true);
+		this.whiteLineColorSensor.setIntegrationTime(50);
+
+	}
+	public void deactivateWhiteLineColor(){
+		this.whiteLineColorSensor.stopReading();
+		this.whiteLineColorLed.enable(false);
 	}
 
 	public static abstract class MotorConstants {
@@ -159,10 +216,5 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
-
-		//Flips a servo to the other range
-		private static double invert(double pos) {
-			return 1.0 - pos;
-		}
 	}
 }

@@ -5,25 +5,25 @@ public class IncrementOption implements JoystickOption {
 	private static final double MIN_VALUE = 0.0;
 	private static final double DEFAULT_INCREMENT = 1.0;
 	private final String title;
-	private final double maxSeconds;
+	private final double maxValue;
 	private final double incrementAmount;
 	private double currentAmount;
 
-	public IncrementOption(String title, double maxSeconds, double incrementAmount) {
+	public IncrementOption(String title, double maxValue, double incrementAmount) {
 		this.title = title;
-		this.maxSeconds = maxSeconds;
+		this.maxValue = maxValue;
 		this.incrementAmount = incrementAmount;
 		this.currentAmount = MIN_VALUE;
 	}
-	public IncrementOption(String title, double maxSeconds) {
-		this(title, maxSeconds, DEFAULT_INCREMENT);
+	public IncrementOption(String title, double maxValue) {
+		this(title, maxValue, DEFAULT_INCREMENT);
 	}
 
 	public void decrementOption() {
 		this.currentAmount = Math.max(this.currentAmount - this.incrementAmount, MIN_VALUE);
 	}
 	public void incrementOption() {
-		this.currentAmount = Math.min(this.currentAmount + this.incrementAmount, this.maxSeconds);
+		this.currentAmount = Math.min(this.currentAmount + this.incrementAmount, this.maxValue);
 	}
 	public String getTitle() {
 		return this.title;

@@ -8,36 +8,42 @@ import org.gearticks.joystickoptions.JoystickOption;
 import org.gearticks.joystickoptions.JoystickOptionController;
 
 public abstract class BaseOpMode extends OpMode {
+	protected static final int GAMEPAD_COUNT = 2;
+
 	protected final ElapsedTime matchTime;
-	protected final JoystickOptionController optionController;
-	protected GamepadWrapper[] gamepads;
+	private final JoystickOptionController optionController;
+	protected final GamepadWrapper[] gamepads;
 
 	public BaseOpMode() {
 		this.matchTime = new ElapsedTime();
 		this.optionController = new JoystickOptionController();
+		this.gamepads = new GamepadWrapper[GAMEPAD_COUNT];
 	}
 
 	public void init() {
+		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
+		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
 		this.addOption(AllianceOption.allianceOption);
 		this.initialize();
 	}
 	public void init_loop() {
-		this.optionController.update(this.gamepad1, this.telemetry);
+		this.optionController.update(this.gamepads[0], this.telemetry);
 		this.loopBeforeStart();
+		this.updateGamepadLasts();
 	}
 	public void start() {
 		this.resetStartTime();
 		this.matchTime.reset();
-		this.gamepads = new GamepadWrapper[]{new GamepadWrapper(this.gamepad1), new GamepadWrapper(this.gamepad2)};
 		this.matchStart();
 	}
 	public void loop() {
 		this.loopAfterStart();
-		for (final GamepadWrapper gamepad : this.gamepads) gamepad.updateLast();
+		this.updateGamepadLasts();
 	}
 	public void stop() {
 		this.matchEnd();
 	}
+
 	protected void initialize() {}
 	protected void loopBeforeStart() {}
 	protected void matchStart() {}
@@ -46,5 +52,8 @@ public abstract class BaseOpMode extends OpMode {
 
 	protected void addOption(JoystickOption option) {
 		this.optionController.addOption(option);
+	}
+	private void updateGamepadLasts() {
+		for (final GamepadWrapper gamepad : this.gamepads) gamepad.updateLast();
 	}
 }
