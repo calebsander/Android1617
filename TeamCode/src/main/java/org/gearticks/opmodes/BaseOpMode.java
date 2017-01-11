@@ -27,8 +27,9 @@ public abstract class BaseOpMode extends OpMode {
 		this.initialize();
 	}
 	public void init_loop() {
-		this.optionController.update(this.gamepad1, this.telemetry);
+		this.optionController.update(this.gamepads[0], this.telemetry);
 		this.loopBeforeStart();
+		this.updateGamepadLasts();
 	}
 	public void start() {
 		this.resetStartTime();
@@ -37,7 +38,7 @@ public abstract class BaseOpMode extends OpMode {
 	}
 	public void loop() {
 		this.loopAfterStart();
-		for (final GamepadWrapper gamepad : this.gamepads) gamepad.updateLast();
+		this.updateGamepadLasts();
 	}
 	public void stop() {
 		this.matchEnd();
@@ -51,5 +52,8 @@ public abstract class BaseOpMode extends OpMode {
 
 	protected void addOption(JoystickOption option) {
 		this.optionController.addOption(option);
+	}
+	private void updateGamepadLasts() {
+		for (final GamepadWrapper gamepad : this.gamepads) gamepad.updateLast();
 	}
 }
