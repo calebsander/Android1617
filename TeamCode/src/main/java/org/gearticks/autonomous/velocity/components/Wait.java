@@ -1,8 +1,8 @@
 package org.gearticks.autonomous.velocity.components;
 
-import org.gearticks.autonomous.generic.component.AutonomousComponentBase;
+import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 
-public class Wait extends AutonomousComponentBase {
+public class Wait extends AutonomousComponentTimer {
 	private final double waitSeconds;
 
 	/**

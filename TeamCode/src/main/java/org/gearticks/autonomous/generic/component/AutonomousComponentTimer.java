@@ -1,21 +1,19 @@
 package org.gearticks.autonomous.generic.component;
 
-import android.support.annotation.NonNull;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import java.util.logging.Logger;
 
 /**
  * Adds a timer on top of AutonomousComponentAbstractImpl
  */
-public class AutonomousComponentBase extends AutonomousComponentAbstractImpl {
+public class AutonomousComponentTimer extends AutonomousComponentAbstractImpl {
 	protected final ElapsedTime stageTimer;
 
-	public AutonomousComponentBase() {
+	public AutonomousComponentTimer() {
 		super();
 		this.stageTimer = new ElapsedTime();
 	}
 
-	public AutonomousComponentBase(String id) {
+	public AutonomousComponentTimer(String id) {
 		super(id);
 		this.stageTimer = new ElapsedTime();
 	}
