@@ -1,4 +1,4 @@
-package org.gearticks.PIDcontrol;
+package org.gearticks.PIDControl;
 
 /**
  * Small, easy to use PID implementation with advanced controller capability.<br>

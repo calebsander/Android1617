@@ -3,7 +3,7 @@ package org.gearticks.autonomous.velocity.components.experimental;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.gearticks.PIDcontrol.MiniPID;
+import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
