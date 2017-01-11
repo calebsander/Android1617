@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
+import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallEncoder;
+import org.gearticks.autonomous.velocity.components.experimental.GiroDriveToRangeDistance;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
 import org.gearticks.autonomous.velocity.components.velocity.single.EngageBeaconServo;
@@ -30,28 +32,15 @@ public class SideAutonomous extends VelocityBaseOpMode {
 //        sm.addComponent(new ShootBall(this.configuration, "Shoot 2nd ball"));
 
         //Drive to beacon
-        sm.addComponent(new GiroDriveEncoder(90.0, 0.7, 1700, this.configuration, "Banana turn off wall for 1700 ticks"));
+        sm.addComponent(new GiroDriveEncoder(0.0, 0.7, 1000, this.configuration, "Drive forward for 1700 ticks"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroTurn(90.0, this.configuration, "Correct heading"));
-        sm.addComponent(new GiroDriveEncoder(0.0, 0.7, 2900, this.configuration, "Banana turn to run parallel to wall"));
+        sm.addComponent(new GiroTurn(90.0, this.configuration, "Turn right"));
+        sm.addComponent(new GiroDriveEncoder(0.0, 0.7, 5000, this.configuration, "Drive parallel to wall"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroTurn(90.0, this.configuration, "Correct heading"));
-        sm.addComponent(new GiroDriveToLine(0.0, 0.20, 5000, this.configuration, "Drive to 1st white line"));
-
-        //Go to 1st beacon
-//        sm.addComponent(new VuforiaIn(500F, true, vuforiaConfiguration, this.configuration, "Drive to near target"));
-//        sm.addComponent(new FacePicture(true, vuforiaConfiguration, this.configuration, "Face near target"));
-//        sm.addComponent(new VuforiaIn(175F, true, vuforiaConfiguration, this.configuration, "Drive closer to near target"));
-
-        // Press 1st beacon
-//        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press beacon button"));
-
-        // Drive to second beacon
-//        sm.addComponent(new GiroDriveEncoder(0.0, 0.25, 2000, this.configuration, "Drive off 1st white line"));
-//        sm.addComponent(new GiroDriveToLine(0.0, 0.20, 3000, this.configuration, "Drive to 2nd white line"));
-
-        // Press 2nd beacon
-//        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press beacon button"));
+        sm.addComponent(new GiroTurn(90.0, this.configuration, "Turn 30 deg left"));
+        sm.addComponent(new GiroDriveToRangeDistance(30, 0.0, 0.7, 2000, this.configuration, "Range sensor drive to wall"));
+        sm.addComponent(new GiroTurn(90.0, this.configuration, "Straighten out"));
+        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 
         sm.addComponent(new EngageBeaconServo(this.configuration, "Engage"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
