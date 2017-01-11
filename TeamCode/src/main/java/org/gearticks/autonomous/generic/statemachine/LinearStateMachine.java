@@ -20,6 +20,12 @@ public class LinearStateMachine extends StateMachineBase {
     public LinearStateMachine(List<AutonomousComponent> components) {
         super(components);
     }
+    public LinearStateMachine(String id) {
+        this(new ArrayList<AutonomousComponent>(), id);
+    }
+    public LinearStateMachine(List<AutonomousComponent> components, String id) {
+        super(components, id);
+    }
 
     /**
      * Adds a component to the end of the chain.

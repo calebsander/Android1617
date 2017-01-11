@@ -34,7 +34,6 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 	public AutonomousComponentAbstractImpl() {
 		this.id = this.getClass().getSimpleName();
 	}
-
 	public AutonomousComponentAbstractImpl(String id) {
 		this.id = id;
 	}
@@ -66,8 +65,12 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 		Log.d(Utils.TAG, "TearDown of " + this.id);
 	}
 
+	public String getId() {
+		return this.id;
+	}
+
 	@Override
 	public String toString() {
-		return this.id;
+		return this.getId();
 	}
 }
