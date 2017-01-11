@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallEncoder;
+import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveToRangeDistance;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
@@ -34,13 +35,15 @@ public class SideAutonomous extends VelocityBaseOpMode {
         //Drive to beacon
         sm.addComponent(new GiroDriveEncoder(0.0, 0.7, 1000, this.configuration, "Drive forward for 1700 ticks"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroTurn(90.0, this.configuration, "Turn right"));
-        sm.addComponent(new GiroDriveEncoder(0.0, 0.7, 5000, this.configuration, "Drive parallel to wall"));
+        sm.addComponent(new GiroTurn(210.0, this.configuration, "Flip direction"));
+        sm.addComponent(new GiroDriveEncoder(210.0, -0.7, 3000, this.configuration, "Drive to wall"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroTurn(90.0, this.configuration, "Turn 30 deg left"));
-        sm.addComponent(new GiroDriveToRangeDistance(30, 0.0, 0.7, 2000, this.configuration, "Range sensor drive to wall"));
-        sm.addComponent(new GiroTurn(90.0, this.configuration, "Straighten out"));
-        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
+        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+        sm.addComponent(new GiroDriveToRangeDistance(20, 210.0, -0.5, 7000, this.configuration, "Range sensor drive to wall"));
+        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
+        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+        sm.addComponent(new GiroDriveAlongWallLine(20, 180.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 
         sm.addComponent(new EngageBeaconServo(this.configuration, "Engage"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
