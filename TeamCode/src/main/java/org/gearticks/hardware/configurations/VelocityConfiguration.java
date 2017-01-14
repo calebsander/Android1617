@@ -116,10 +116,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return this.badBoy1Triggered() || this.badBoy2Triggered();
 	}
 	public void resetEncoder() {
-		final MotorWrapper driveMotor = this.driveLeft;
-		final RunMode lastMode = driveMotor.getRunMode();
-		driveMotor.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-		driveMotor.setRunMode(lastMode);
+		final RunMode leftLastMode = this.driveLeft.getRunMode();
+		this.driveLeft.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		final RunMode rightLastMode = this.driveRight.getRunMode();
+		this.driveRight.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+
+		this.driveLeft.setRunMode(leftLastMode);
+		this.driveRight.setRunMode(rightLastMode);
 	}
 	/**
 	 * Returns an encoder value from the drive motors.
@@ -127,7 +130,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	 * @return a combination of the encoder values from the two drive motors
 	 */
 	public int signedEncoder() {
-		return this.driveLeft.encoderValue();
+		return (this.driveLeft.encoderValue() - this.driveRight.encoderValue()) / 2;
 	}
 	public int encoderPositive() {
 		return Math.abs(this.signedEncoder());
