@@ -6,6 +6,7 @@ import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongW
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveToRangeDistance;
 import org.gearticks.autonomous.velocity.components.experimental.RangeSensorReadout;
+import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
@@ -14,6 +15,8 @@ import org.gearticks.autonomous.velocity.components.velocity.composite.CompleteB
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.components.velocity.composite.NonLinearPressBeaconButton;
 import org.gearticks.autonomous.velocity.components.velocity.composite.SidePressBeaconButton;
+import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
+import org.gearticks.autonomous.velocity.components.velocity.single.EngageBeaconServo;
 import org.gearticks.autonomous.velocity.components.velocity.single.FacePicture;
 import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
 import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
@@ -38,9 +41,8 @@ public class ComponentTest extends VelocityBaseOpMode {
 //        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 
         //sm.addComponent(new GiroDriveAlongWallLine(20, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
-        sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration,this.configuration, "Press Beacon Button"));
 
-        sm.addComponent(new Stopped(this.configuration));
+        sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, this.configuration, "Press Button"));
 
         return sm;
     }

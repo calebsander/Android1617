@@ -25,6 +25,7 @@ public class EngageBeaconServo extends AutonomousComponentHardware<VelocityConfi
     @Override
     public int run() {
         final int superTransition = super.run();
-        return NEXT_STATE;
+        if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
+        else return NOT_DONE;
     }
 }

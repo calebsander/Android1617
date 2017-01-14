@@ -19,22 +19,20 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
     public SidePressBeaconButton(double targetHeading, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super();
         final AutonomousComponent selectSide = new SelectBeaconSide(vuforiaConfiguration, configuration, "Select beacon side");
-        final AutonomousComponent driveForward = new GiroDriveEncoder(targetHeading, 0.25, 300, configuration, "To right button");
-        final AutonomousComponent driveBackward = new GiroDriveEncoder(targetHeading, -0.25, 300, configuration, "To left button");
-        final AutonomousComponent engageBeaconPusher = new EngageBeaconServo(configuration, "Release beacon presser");
-        final AutonomousComponent pushButton = new GiroDriveEncoder(targetHeading, 0.05, 10, configuration, "Pressing button");
+        final AutonomousComponent driveForward = new GiroDriveEncoder(targetHeading, 0.15, 300, configuration, "To right button");
+        final AutonomousComponent driveBackward = new GiroDriveEncoder(targetHeading, -0.15, 300, configuration, "To left button");
+        final AutonomousComponent engageBeaconPusherL = new EngageBeaconServo(configuration, "Release beacon presser");
+        final AutonomousComponent engageBeaconPusherR = new EngageBeaconServo(configuration, "Release beacon presser");
         final AutonomousComponent disengageBeaconPusher = new DisengageBeaconServo(configuration, "Close beacon presser");
 
-
-
         this.setInitialComponent(selectSide);
-        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, driveBackward);
-        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, driveForward);
+        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, engageBeaconPusherL);
+        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, engageBeaconPusherR);
         this.addExitConnection(selectSide, SelectBeaconSide.UNKNOWN_TRANSITION);
-        this.addConnection(driveForward, NEXT_STATE, engageBeaconPusher);
-        this.addConnection(driveBackward, NEXT_STATE, engageBeaconPusher);
-        this.addConnection(engageBeaconPusher, NEXT_STATE, pushButton);
-        this.addConnection(pushButton, NEXT_STATE, disengageBeaconPusher);
+        this.addConnection(engageBeaconPusherL, NEXT_STATE, driveBackward);
+        this.addConnection(engageBeaconPusherR, NEXT_STATE, driveForward);
+        this.addConnection(driveBackward, NEXT_STATE, disengageBeaconPusher);
+        this.addConnection(driveForward, NEXT_STATE, disengageBeaconPusher);
         this.addExitConnection(disengageBeaconPusher, NEXT_STATE);
     }
 }
