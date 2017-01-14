@@ -1,10 +1,10 @@
 package org.gearticks.autonomous.sample.opmodes;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.velocity.opmode.VelocityBaseOpMode;
+import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.GyroTurn;
-import org.gearticks.autonomous.velocity.components.GyroDriveEncoder;
+import org.gearticks.autonomous.velocity.components.deprecated.GyroTurn;
+import org.gearticks.autonomous.velocity.components.deprecated.GyroDriveEncoder;
 
 public class TestAutonomousOpMode1 extends VelocityBaseOpMode {
     private static final double NEW_TARGET = 100.0;
