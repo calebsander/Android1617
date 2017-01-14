@@ -16,10 +16,11 @@ public class EncoderMeasurer extends BaseOpMode {
 		this.direction = new DriveDirection();
 	}
 	protected void loopAfterStart() {
-		if (this.gamepads[0].getA() && !this.gamepads[0].getA()) this.configuration.resetEncoder();
+		if (this.gamepads[0].getA()) this.configuration.resetEncoder();
 		this.direction.drive(0.0, this.gamepads[0].getLeftY());
 		this.direction.turn(this.gamepads[0].getRightX());
 		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
-		this.telemetry.addData("Encoders", this.configuration.encoderPositive());
+		this.telemetry.addData("Signed encoder", this.configuration.signedEncoder());
+		this.telemetry.addData("To reset", "Press A");
 	}
 }
