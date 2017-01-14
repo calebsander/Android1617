@@ -38,7 +38,7 @@ public class ComponentTest extends VelocityBaseOpMode {
 //        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 
         //sm.addComponent(new GiroDriveAlongWallLine(20, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
-        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration,this.configuration, "Press Beacon Button"));
+        sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration,this.configuration, "Press Beacon Button"));
 
         sm.addComponent(new Stopped(this.configuration));
 

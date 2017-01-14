@@ -63,7 +63,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         double headingDeviation = this.pidController.getOutput(ultrasonicDistance, this.distanceFromWall);
         Log.v(Utils.TAG, "Heading deviation = " + headingDeviation);
 
-        this.controlledHeading = this.targetHeading + headingDeviation;
+        this.controlledHeading = this.targetHeading - headingDeviation;
 
         Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLine());
         if (this.configuration.isWhiteLine()){

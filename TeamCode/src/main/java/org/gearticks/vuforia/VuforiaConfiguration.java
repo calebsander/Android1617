@@ -2,6 +2,7 @@ package org.gearticks.vuforia;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.vuforia.HINT;
@@ -79,20 +80,21 @@ public class VuforiaConfiguration {
         else {
             System.err.println("Error: Vuforia frameQueue returned null");
         }
-        return bitmap;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(180);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),matrix,true);
     }
 
-    private static final int CROP_WIDTH = 600, CROP_HEIGHT = 350;
-    private static final int CROP_LEFT_X = 275;
+
+    private static final int IMAGE_WIDTH = 1280, IMAGE_HEIGHT = 720;
     private static final double SCALE_FACTOR = 0.4;
-    private static final int SCALED_WIDTH = (int)(CROP_WIDTH * SCALE_FACTOR), SCALED_HEIGHT = (int)(CROP_HEIGHT * SCALE_FACTOR);
+    private static final int SCALED_WIDTH = (int)(IMAGE_WIDTH * SCALE_FACTOR), SCALED_HEIGHT = (int)(IMAGE_HEIGHT * SCALE_FACTOR);
     private static final int HALF_WIDTH = SCALED_WIDTH / 2;
     public SideOfButton getBeaconBlueSide(){
         SideOfButton sideOfButton = SideOfButton.UNKNOWN;
         Bitmap bitmap = getBitmap();
 
-        if (bitmap != null){
-            bitmap = Bitmap.createBitmap(bitmap, CROP_LEFT_X, 0, CROP_WIDTH, CROP_HEIGHT); //crop to beacon
+        if (bitmap != null) {
             bitmap = Bitmap.createScaledBitmap(bitmap, SCALED_WIDTH, SCALED_HEIGHT, false); //scale down to decrease processing time
 
             int leftRed = 0, leftBlue = 0;

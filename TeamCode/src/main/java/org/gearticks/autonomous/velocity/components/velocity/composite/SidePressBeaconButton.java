@@ -16,20 +16,20 @@ import org.gearticks.vuforia.VuforiaConfiguration;
  */
 public class SidePressBeaconButton extends NetworkedStateMachine {
 
-    public SidePressBeaconButton(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+    public SidePressBeaconButton(double targetHeading, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super();
         final AutonomousComponent selectSide = new SelectBeaconSide(vuforiaConfiguration, configuration, "Select beacon side");
-        final AutonomousComponent driveForward = new GiroDriveEncoder(0.0, 0.25, 50, configuration, "To left button");
-        final AutonomousComponent driveBackward = new GiroDriveEncoder(0.0, -0.25, 50, configuration, "To right button");
+        final AutonomousComponent driveForward = new GiroDriveEncoder(targetHeading, 0.25, 150, configuration, "To left button");
+        final AutonomousComponent driveBackward = new GiroDriveEncoder(targetHeading, -0.25, 150, configuration, "To right button");
         final AutonomousComponent engageBeaconPusher = new EngageBeaconServo(configuration, "Release beacon presser");
-        final AutonomousComponent pushButton = new GiroDriveEncoder(0.0, 0.05, 10, configuration, "Pressing button");
+        final AutonomousComponent pushButton = new GiroDriveEncoder(targetHeading, 0.05, 10, configuration, "Pressing button");
         final AutonomousComponent disengageBeaconPusher = new DisengageBeaconServo(configuration, "Close beacon presser");
 
 
 
         this.setInitialComponent(selectSide);
-        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, driveForward);
-        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, driveBackward);
+        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, driveBackward);
+        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, driveForward);
         this.addExitConnection(selectSide, SelectBeaconSide.UNKNOWN_TRANSITION);
         this.addConnection(driveForward, NEXT_STATE, engageBeaconPusher);
         this.addConnection(driveBackward, NEXT_STATE, engageBeaconPusher);
