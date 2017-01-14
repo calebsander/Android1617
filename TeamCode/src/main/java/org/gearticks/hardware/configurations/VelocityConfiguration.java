@@ -121,8 +121,16 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		driveMotor.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		driveMotor.setRunMode(lastMode);
 	}
+	/**
+	 * Returns an encoder value from the drive motors.
+	 * Sign flips depending on direction of motion
+	 * @return a combination of the encoder values from the two drive motors
+	 */
+	public int signedEncoder() {
+		return this.driveLeft.encoderValue();
+	}
 	public int encoderPositive() {
-		return Math.abs(this.driveLeft.encoderValue());
+		return Math.abs(this.signedEncoder());
 	}
 	public boolean isShooterAtSensor() {
 		return !this.shooterDown.getState();
