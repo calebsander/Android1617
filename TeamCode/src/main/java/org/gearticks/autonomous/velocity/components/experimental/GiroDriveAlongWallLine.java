@@ -3,7 +3,7 @@ package org.gearticks.autonomous.velocity.components.experimental;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.gearticks.PIDcontrol.MiniPID;
+import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -42,6 +42,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         this.configuration.resetEncoder();
         this.pidController = new MiniPID(p, i, d);
         this.pidController.setOutputLimits(10);
+        this.configuration.activateWhiteLineColor();
     }
 
     @Override
@@ -79,6 +80,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
     @Override
     public void tearDown() {
         super.tearDown();
+        this.configuration.deactivateWhiteLineColor();
         //Custom code here control
     }
 
