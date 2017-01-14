@@ -41,27 +41,14 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new Wait(0.3, "Wait"));
         sm.addComponent(new GiroTurn(200.0, this.configuration, "Angle less"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroDriveToRangeDistance(10, 200.0, -0.2, 2000, this.configuration, "Range sensor drive to wall"));
+        sm.addComponent(new GiroDriveToRangeDistance(15, 200.0, -0.2, 3000, this.configuration, "Range sensor drive to wall"));
         sm.addComponent(new Wait(0.3, "Wait"));
         sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new GiroDriveAlongWallLine(10, 180.0, -0.15, 5000, this.configuration, "Range sensor drive along wall"));
+        sm.addComponent(new GiroDriveAlongWallLine(15, 180.0, -0.15, 5000, this.configuration, "Range sensor drive along wall"));
         sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
         sm.addComponent(new GiroDriveToLine(180, 0.05, 15, this.configuration, "Adjust to white line"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
         sm.addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, this.configuration, "Press Button"));
-
-
-
-        sm.addComponent(new EngageBeaconServo(this.configuration, "Engage"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new DisengageBeaconServo(this.configuration, "Disengage"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new EngageBeaconServo(this.configuration, "Engage"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new DisengageBeaconServo(this.configuration, "Disengage"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new EngageBeaconServo(this.configuration, "Engage"));
-
 
         sm.addComponent(new Stopped(this.configuration));
 

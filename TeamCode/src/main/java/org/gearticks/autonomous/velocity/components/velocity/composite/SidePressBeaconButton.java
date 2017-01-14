@@ -19,8 +19,8 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
     public SidePressBeaconButton(double targetHeading, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super();
         final AutonomousComponent selectSide = new SelectBeaconSide(vuforiaConfiguration, configuration, "Select beacon side");
-        final AutonomousComponent driveForward = new GiroDriveEncoder(targetHeading, 0.25, 150, configuration, "To left button");
-        final AutonomousComponent driveBackward = new GiroDriveEncoder(targetHeading, -0.25, 150, configuration, "To right button");
+        final AutonomousComponent driveForward = new GiroDriveEncoder(targetHeading, 0.25, 300, configuration, "To right button");
+        final AutonomousComponent driveBackward = new GiroDriveEncoder(targetHeading, -0.25, 300, configuration, "To left button");
         final AutonomousComponent engageBeaconPusher = new EngageBeaconServo(configuration, "Release beacon presser");
         final AutonomousComponent pushButton = new GiroDriveEncoder(targetHeading, 0.05, 10, configuration, "Pressing button");
         final AutonomousComponent disengageBeaconPusher = new DisengageBeaconServo(configuration, "Close beacon presser");
