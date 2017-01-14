@@ -1,5 +1,6 @@
 package org.gearticks.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LED;
@@ -7,6 +8,7 @@ import org.gearticks.dimsensors.i2c.TCS34725;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
+@Disabled
 public class TCS34725Test extends BaseOpMode {
 	private TCS34725 colorSensor;
 	private LED led;

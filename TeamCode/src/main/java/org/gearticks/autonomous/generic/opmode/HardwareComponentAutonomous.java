@@ -5,6 +5,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
 import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 
 /**
  * An OpMode that instantiates a configuration
@@ -13,6 +14,7 @@ import org.gearticks.opmodes.utility.Utils;
 public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends HardwareConfiguration> extends BaseOpMode {
 	protected HARDWARE_TYPE configuration;
 	private AutonomousComponent component;
+	private boolean done;
 
 	protected void initialize() {
 		Log.d(Utils.TAG, "Start OpMode initialize");
@@ -24,13 +26,20 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 		this.telemetry.clear();
 		this.component.onMatchStart();
 		this.component.setup();
+		this.done = false;
 	}
 	protected void loopAfterStart() {
-		this.component.run();
+		if (!this.done) {
+			final int transition = this.component.run();
+			if (transition != AutonomousComponentAbstractImpl.NOT_DONE) {
+				this.done = true;
+				this.component.tearDown();
+			}
+		}
 	}
 	protected void matchEnd() {
 		Log.d(Utils.TAG, "Starting OpMode matchEnd");
-		this.component.tearDown();
+		if (!this.done) this.component.tearDown();
 		this.configuration.teardown();
 	}
 
