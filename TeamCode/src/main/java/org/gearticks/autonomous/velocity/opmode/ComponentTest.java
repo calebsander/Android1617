@@ -13,6 +13,7 @@ import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.composite.CompleteBallLoad;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.components.velocity.composite.NonLinearPressBeaconButton;
+import org.gearticks.autonomous.velocity.components.velocity.composite.SidePressBeaconButton;
 import org.gearticks.autonomous.velocity.components.velocity.single.FacePicture;
 import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
 import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
@@ -36,7 +37,8 @@ public class ComponentTest extends VelocityBaseOpMode {
 //        sm.addComponent(new GiroTurn(0.0, this.configuration, "Straighten out"));
 //        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 
-        sm.addComponent(new GiroDriveAlongWallLine(20, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
+        //sm.addComponent(new GiroDriveAlongWallLine(20, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
+        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration,this.configuration, "Press Beacon Button"));
 
         sm.addComponent(new Stopped(this.configuration));
 

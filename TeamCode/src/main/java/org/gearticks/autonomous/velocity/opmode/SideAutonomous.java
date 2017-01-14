@@ -39,11 +39,12 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new GiroDriveEncoder(210.0, -0.7, 3000, this.configuration, "Drive to wall"));
         sm.addComponent(new Wait(0.3, "Wait"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroDriveToRangeDistance(20, 210.0, -0.5, 7000, this.configuration, "Range sensor drive to wall"));
+        sm.addComponent(new GiroDriveToRangeDistance(10, 210.0, -0.5, 7000, this.configuration, "Range sensor drive to wall"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
         sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
         sm.addComponent(new GiroDriveAlongWallLine(20, 180.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
+
 
         sm.addComponent(new EngageBeaconServo(this.configuration, "Engage"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
