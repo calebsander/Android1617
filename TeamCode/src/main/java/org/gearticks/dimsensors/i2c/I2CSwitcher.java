@@ -6,37 +6,55 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 
-/*
-General implementation:
-Attached (child) sensors use mostly the normal I2CSensor interface.
-The switcher and all child sensors use the same I2cDevice, however
-only the switcher listens to the I2C port-ready callbacks.
-When switching to a different port, the switch request is added to the switcher's queue
-and the target child's requests are copied into the switcher's queue.
-A dummy request is added to the queue to mark the end of the child's communication.
-When the children's requests are sent or read into, they automatically work
-as though they were issued straight to the child without the switcher as intermediary.
-*/
+/**
+ * An I2C device that switches which subdevices are connected to the main bus.
+ * General implementation:<br>
+ * - Attached (child) sensors use mostly the normal {@link I2CSensor} interface.<br>
+ * - The switcher and all child sensors use the same {@link I2cDevice}, however
+ * only the switcher listens to the I2C port-ready callbacks.<br>
+ * - When switching to a different port, the switch request is added to the switcher's queue
+ * and the target child's requests are copied into the switcher's queue.<br>
+ * - A dummy request is added to the queue to mark the end of the child's communication.<br>
+ * - When the children's requests are sent or read into, they automatically work
+ * as though they were issued straight to the child without the switcher as intermediary.
+ */
 public class I2CSwitcher extends I2CSensor {
-	//The number of ports that a device can be attached to
+	/**
+	 * The number of ports that can be independently activated
+	 */
 	private final static int PORTS = 8;
 
 	protected I2cAddr getAddress() {
 		return I2cAddr.create7bit(0x70);
 	}
 
-	//Queues for each child sensor to add their requests to
+	/**
+	 * Queues for each child sensor to add their requests to
+	 */
 	protected final Queue<SensorRequest>[] portRequests;
-	//Contains a request for each of the PORTS ports that will connect it and no others to the main bus
+	/**
+	 * Contains a request for each of the PORTS ports
+	 * that will connect it and no others to the main bus
+	 */
 	private final SensorWriteRequest[] switchRequests;
-	//The child sensors attached to the switcher
+	/**
+	 * The child sensors attached to the switcher
+	 */
 	private final I2CSensor[] sensors;
-	//Queue of ports to use; ports are cycled to the back once selected
+	/**
+	 * Queue of ports to use; ports are cycled to the back once selected
+	 */
 	private final Deque<Integer> portsInUse;
-	//Whether the DIM has responded that the switcher has switched
+	/**
+	 * Whether the DIM has responded that the switcher has switched
+	 * since the switch request was last sent
+	 */
 	private boolean hasSentSwitchRequest;
-	//An object put in the requests queue to represent the end of requests for the current port
-	//Never actually sent as a request
+
+	/**
+	 * An object put in the requests queue to represent the end of requests for the current port.
+	 * Never actually sent as a request.
+	 */
 	private final SensorRequest END_OF_PORT_REQUESTS;
 
 	@SuppressWarnings("unchecked")
@@ -57,8 +75,10 @@ public class I2CSwitcher extends I2CSensor {
 		this.END_OF_PORT_REQUESTS = new SensorReadRequest(-1, 1); //no real significance
 	}
 
-	//Switch to the next requested port
-	//Add the switch request and all the child sensor's requests to the main queue
+	/**
+	 * Switches to the next requested port.
+	 * Adds the switch request and all the child sensor's requests to the main queue.
+	 */
 	private synchronized void switchPort() {
 		final int port = this.portsInUse.poll();
 		this.portsInUse.add(port); //add port back to end of queue so it will get switched to eventually
@@ -70,7 +90,11 @@ public class I2CSwitcher extends I2CSensor {
 		this.requests.add(END_OF_PORT_REQUESTS); //marks the end of the commands for this port
 		this.hasSentSwitchRequest = false; //switch has not yet been issued
 	}
-	//Register a new attached device so it will get switched to periodically
+	/**
+	 * Registers a new attached device so it will get switched to periodically
+	 * @param port the port to which it is attached (between 0 and PORTS - 1)
+	 * @param sensor the sensor to attach
+	 */
 	protected synchronized void addDevice(int port, I2CSensor sensor) {
 		this.sensors[port] = sensor;
 		this.portsInUse.add(port);

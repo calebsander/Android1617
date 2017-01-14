@@ -1,4 +1,3 @@
-//Manages the camera to simplify using it
 package org.gearticks;
 
 import android.graphics.Bitmap;
@@ -14,6 +13,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Manages the camera to simplify using it
+ * @deprecated use Vuforia frames instead since it hogs the camera
+ */
+@Deprecated
 public class InternalCamera implements Camera.PreviewCallback {
 	//Stores an image at a given time
 	public class Image {

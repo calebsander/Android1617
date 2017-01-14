@@ -1,20 +1,24 @@
-/*Uses the I2CSensor interface to control a BNO055 Sensor
-	Desired read/write commands must be told to occur; read values can then be pulled whenever desired
-*/
 package org.gearticks.dimsensors.i2c;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.nio.ByteBuffer;
 
+/**
+ * An I2CSensor implementation of the BNO055 sensor.
+ * Repeated reads of registers must be requested in advance.
+ * The last read values can then be polled at any time.
+ */
 public class GearticksBNO055 extends I2CSensor {
-	private static final int DEFAULT_ADDRESS = 0x28;
-	private static final int SECOND_ADDRESS = DEFAULT_ADDRESS + 1;
-	private final int address;
+	private static final int DEFAULT_ADDRESS = 0x28; //7-bit
+	private static final int SECOND_ADDRESS = DEFAULT_ADDRESS + 1; //7-bit
+	private final I2cAddr address;
 	protected final I2cAddr getAddress() {
-		return I2cAddr.create7bit(this.address);
+		return this.address;
 	}
-	//I2C Registers
+	/**
+	 * Every I2C register (some are not in use)
+	 */
 	private enum Register {
 		//PAGE0 REGISTER DEFINITION START
 		CHIP_ID(0x00),
@@ -161,15 +165,14 @@ public class GearticksBNO055 extends I2CSensor {
 		MAG_RADIUS_LSB(0x69),
 		MAG_RADIUS_MSB(0x6A);
 
-		private final int register;
+		public final int register;
 		Register(int register) {
 			this.register = register;
 		}
-		public int getRegister() {
-			return this.register;
-		}
 	}
-	//Values for the operation mode register
+	/**
+	 * Values for the operation mode register
+	 */
 	private enum BNO055OperationMode {
 		CONFIG(0x00),
 		ACCONLY(0x01),
@@ -185,30 +188,29 @@ public class GearticksBNO055 extends I2CSensor {
 		NDOF_FMC_OFF(0x0B),
 		NDOF(0x0C);
 
-		private final byte mode;
+		public final byte mode;
 		BNO055OperationMode(int mode) {
 			this.mode = (byte)mode;
 		}
-		public byte getMode() {
-			return this.mode;
-		}
 	}
-	//Values for the power register
+	/**
+	 * Values for the power register
+	 */
 	private enum BNO055PowerMode {
 		NORMAL(0x00),
 		LOW_POWER(0x01),
 		SUSPEND(0x02);
 
-		private final byte mode;
+		public final byte mode;
 		BNO055PowerMode(int mode) {
 			this.mode = (byte)mode;
 		}
-		public byte getMode() {
-			return this.mode;
-		}
 	}
-	//A yaw, pitch, roll angle returned from the sensor
-	//Objects of this class are immutable, so the fields are public instead of using a getter method
+	/**
+	 * A yaw, pitch, roll angle returned from the sensor.
+	 * Objects of this class are immutable, so the fields are public instead of using a getter method.
+	 * Angles are in degrees.
+	 */
 	public static class EulerAngle {
 		public final double yaw, pitch, roll;
 
@@ -221,15 +223,26 @@ public class GearticksBNO055 extends I2CSensor {
 		public String toString() { //useful for logging to Telemetry
 			return String.format("%.2f, %.2f, %.2f", this.yaw, this.pitch, this.roll);
 		}
-		//Returns whether all the have a weird value - indicative of a sensor connection issue
+		/**
+		 * Returns whether all angles have a weird value.
+		 * This is usually indicative of a sensor connection issue.
+		 * You can try reconstructing the BNO055 object to get heading values again.
+		 * @return whether every angle has an unlikely value (all 0s or all 1s)
+		 */
 		public boolean seemsInvalid() {
 			//0.0 occurs if all registers have the value 0x00 and -0.0625 occurs when they are all 0xFF
-			return (this.yaw == 0.0 || this.yaw == -0.0625) && (this.pitch == 0.0 || this.pitch == -0.0625) && (this.roll == 0.0 || this.roll == -0.0625);
+			return
+				(this.yaw == 0.0 || this.yaw == -0.0625) &&
+				(this.pitch == 0.0 || this.pitch == -0.0625) &&
+				(this.roll == 0.0 || this.roll == -0.0625);
 		}
 	}
-	//Values for the register that contains information about errors that have occurred
+	/**
+	 * Values for the register that contains information about errors that have occurred.
+	 * For a fuller description,
+	 * see <a href="https://github.com/adafruit/Adafruit_BNO055/blob/78cc710f84f9428dace135cad7b9e04a5bc6d2ca/Adafruit_BNO055.cpp#L193">Adafruit's driver</a>.
+	 */
 	public enum BNO055Error {
-		//See https://github.com/adafruit/Adafruit_BNO055/blob/master/Adafruit_BNO055.cpp#L180 for a fuller description
 		NONE(0),
 		PERIPHERAL(1),
 		INIT(2),
@@ -242,16 +255,15 @@ public class GearticksBNO055 extends I2CSensor {
 		FUSION(9),
 		CONFIG(10);
 
-		private final byte errorCode;
+		public final byte errorCode;
 		BNO055Error(int errorCode) {
 			this.errorCode = (byte)errorCode;
 		}
-		public byte getErrorCode() {
-			return this.errorCode;
-		}
 	}
-	//ID fields returned by the sensor
-	//Objects of this class are immutable, so the fields are public instead of using a getter method
+	/**
+	 * Sensor information value fields.
+	 * Objects of this class are immutable, so the fields are public instead of using a getter method.
+	 */
 	public static class SensorIDs {
 		public final byte chipID;
 		public final byte accelID, magID, gyroID;
@@ -272,14 +284,16 @@ public class GearticksBNO055 extends I2CSensor {
 		}
 	}
 
-	//The important read and write requests (stores registers and read/write data)
+	//The read and write requests we are using (stores registers and read/write data)
 	public final SensorReadRequest idRequest;
 	public final SensorReadRequest calibrationRequest;
 	public final SensorReadRequest eulerRequest;
 	public final SensorReadRequest errorRequest;
 	public final SensorWriteRequest modeRequest;
 	public final SensorWriteRequest powerModeRequest;
-	//The value of the yaw when it was last reset
+	/**
+	 * The value of the yaw when it was last reset
+	 */
 	private double resetYawPoint;
 
 	public GearticksBNO055(I2cDevice device) {
@@ -287,68 +301,86 @@ public class GearticksBNO055 extends I2CSensor {
 	}
 	public GearticksBNO055(I2cDevice device, boolean addrPin) {
 		super(device);
-		this.idRequest = this.makeReadRequest(Register.CHIP_ID.getRegister(), Register.BL_REV_ID.getRegister());
-		this.calibrationRequest = this.makeReadRequest(Register.CALIB_STAT.getRegister(), Register.SELF_TEST_RESULT.getRegister());
-		this.eulerRequest = this.makeReadRequest(Register.EULER_H_LSB.getRegister(), Register.EULER_P_MSB.getRegister());
-		this.errorRequest = new SensorReadRequest(Register.SYS_ERR.getRegister(), 1);
-		this.modeRequest = new SensorWriteRequest(Register.OPR_MODE.getRegister(), 1);
-		this.powerModeRequest = new SensorWriteRequest(Register.PWR_MODE.getRegister(), 1);
+		this.idRequest = this.makeReadRequest(Register.CHIP_ID.register, Register.BL_REV_ID.register);
+		this.calibrationRequest = this.makeReadRequest(Register.CALIB_STAT.register, Register.SELF_TEST_RESULT.register);
+		this.eulerRequest = this.makeReadRequest(Register.EULER_H_LSB.register, Register.EULER_P_MSB.register);
+		this.errorRequest = new SensorReadRequest(Register.SYS_ERR.register, 1);
+		this.modeRequest = new SensorWriteRequest(Register.OPR_MODE.register, 1);
+		this.powerModeRequest = new SensorWriteRequest(Register.PWR_MODE.register, 1);
 		this.resetYawPoint = 0.0;
-		if (addrPin) this.address = SECOND_ADDRESS;
-		else this.address = DEFAULT_ADDRESS;
+		if (addrPin) this.address = I2cAddr.create7bit(SECOND_ADDRESS);
+		else this.address = I2cAddr.create7bit(DEFAULT_ADDRESS);
 
 		//This mode will run fusion on the accelerometer and gyro data but not use the compass (for fear of interference)
 		this.setMode(BNO055OperationMode.IMU);
 	}
 
-	//Queues a request to set the operation mode
+	/**
+	 * Queues a request to set the operation mode
+	 * @param mode the new operation mode
+	 */
 	public void setMode(BNO055OperationMode mode) {
-		this.modeRequest.setWriteData(new byte[]{mode.getMode()});
+		this.modeRequest.setWriteData(new byte[]{mode.mode});
 	}
-	//Queues a request to set the power mode
+	/**
+	 * Queues a request to set the power mode
+	 * @param mode the new power mode
+	 */
 	public void setPowerMode(BNO055PowerMode mode) {
-		this.powerModeRequest.setWriteData(new byte[]{mode.getMode()});
+		this.powerModeRequest.setWriteData(new byte[]{mode.mode});
 	}
 
 	//READ REQUEST METHODS - methods to extract data from most recent read
 
-	//For IDs/version numbers of the components
+	/**
+	 * Gets IDs/version numbers of the components
+	 * @return an object containing all the IDs, or null
+	 */
 	public SensorIDs getIDs() {
 		if (this.idRequest.hasReadData()) {
 			final byte[] DATA = this.idRequest.getReadData();
-			final byte chipID = DATA[Register.CHIP_ID.getRegister() - this.idRequest.getRegister()];
-			final byte accelID = DATA[Register.ACCEL_REV_ID.getRegister() - this.idRequest.getRegister()];
-			final byte magID = DATA[Register.MAG_REV_ID.getRegister() - this.idRequest.getRegister()];
-			final byte gyroID = DATA[Register.GYRO_REV_ID.getRegister() - this.idRequest.getRegister()];
-			final ByteBuffer softwareID = ByteBuffer.wrap(new byte[]{DATA[Register.SW_REV_ID_MSB.getRegister() - this.idRequest.getRegister()], DATA[Register.SW_REV_ID_LSB.getRegister() - this.idRequest.getRegister()]});
-			final byte bootloaderID = DATA[Register.BL_REV_ID.getRegister() - this.idRequest.getRegister()];
-			return new SensorIDs(chipID, accelID, magID, gyroID, softwareID.getShort(), bootloaderID);
+			final byte chipID = DATA[Register.CHIP_ID.register - this.idRequest.getRegister()];
+			final byte accelID = DATA[Register.ACCEL_REV_ID.register - this.idRequest.getRegister()];
+			final byte magID = DATA[Register.MAG_REV_ID.register - this.idRequest.getRegister()];
+			final byte gyroID = DATA[Register.GYRO_REV_ID.register - this.idRequest.getRegister()];
+			final short softwareID = ByteBuffer.wrap(new byte[]{
+				DATA[Register.SW_REV_ID_MSB.register - this.idRequest.getRegister()],
+				DATA[Register.SW_REV_ID_LSB.register - this.idRequest.getRegister()]
+			}).getShort();
+			final byte bootloaderID = DATA[Register.BL_REV_ID.register - this.idRequest.getRegister()];
+			return new SensorIDs(chipID, accelID, magID, gyroID, softwareID, bootloaderID);
 		}
 		else return null;
 	}
 
-	//For whether the sensor has calibrated
-	//Returns whether or not the gyro reports being calibrated
-	//Can be used to determine whether the sensor as a whole is calibrated
+	/**
+	 * Returns whether or not the gyro reports being calibrated.
+	 * Can be used to determine whether the sensor as a whole is calibrated.
+	 * @return whether the gyro has been calibrated
+	 */
 	public boolean gyroCalibrated() {
 		return this.calibrationRequest.hasReadData() &&
-			((this.calibrationRequest.getReadData()[Register.CALIB_STAT.getRegister() - this.calibrationRequest.getRegister()] >> 4) & 0x03) == 0x03;
+			((this.calibrationRequest.getReadData()[Register.CALIB_STAT.register - this.calibrationRequest.getRegister()] >> 4) & 0x03) == 0x03;
 	}
 	public boolean selfTestResult() {
 		return this.calibrationRequest.hasReadData() &&
-			(this.calibrationRequest.getReadData()[Register.SELF_TEST_RESULT.getRegister() - this.calibrationRequest.getRegister()] & 0x0F) == 0x0F;
+			(this.calibrationRequest.getReadData()[Register.SELF_TEST_RESULT.register - this.calibrationRequest.getRegister()] & 0x0F) == 0x0F;
 	}
 
-	//For the heading reported by the sensor - make sure heading data has been read, or you risk a NullPointerException
+	/**
+	 * Gets the heading reported by the sensor in yaw-pitch-roll.
+	 * If no heading information is available, returns null.
+	 * @return the three angles, or null
+	 */
 	public EulerAngle getHeading() {
 		if (this.eulerRequest.hasReadData()) {
 			final int REGISTER_OFFSET = this.eulerRequest.getRegister();
-			final int Y_L = Register.EULER_H_LSB.getRegister() - REGISTER_OFFSET;
-			final int Y_M = Register.EULER_H_MSB.getRegister() - REGISTER_OFFSET;
-			final int P_L = Register.EULER_P_LSB.getRegister() - REGISTER_OFFSET;
-			final int P_M = Register.EULER_P_MSB.getRegister() - REGISTER_OFFSET;
-			final int R_L = Register.EULER_R_LSB.getRegister() - REGISTER_OFFSET;
-			final int R_M = Register.EULER_R_MSB.getRegister() - REGISTER_OFFSET;
+			final int Y_L = Register.EULER_H_LSB.register - REGISTER_OFFSET;
+			final int Y_M = Register.EULER_H_MSB.register - REGISTER_OFFSET;
+			final int P_L = Register.EULER_P_LSB.register - REGISTER_OFFSET;
+			final int P_M = Register.EULER_P_MSB.register - REGISTER_OFFSET;
+			final int R_L = Register.EULER_R_LSB.register - REGISTER_OFFSET;
+			final int R_M = Register.EULER_R_MSB.register - REGISTER_OFFSET;
 			final byte[] data = this.eulerRequest.getReadData();
 			if (data.length == 0) return new EulerAngle(0.0, 0.0, 0.0);
 			else {
@@ -364,32 +396,50 @@ public class GearticksBNO055 extends I2CSensor {
 		}
 		else return null;
 	}
-	//Returns the yaw relative to the reset point
+	/**
+	 * Returns the yaw relative to the angle at which it was reset.
+	 * If no heading is available, returns 0.0.
+	 * @return the yaw value minus the reset yaw value
+	 * @see #resetHeading()
+	 */
 	public double getRelativeYaw() {
 		final EulerAngle heading = this.getHeading();
 		if (heading == null) return 0.0;
 		else return (heading.yaw - this.resetYawPoint + 360.0) % 360.0;
 	}
-	//Resets the 0 yaw point to the current heading
-	//Will throw a NullPointerException if this.eulerRequest.hasReadData() == false
+	/**
+	 * Resets the 0 yaw point to the current heading.
+	 * Will throw a NullPointerException if this.eulerRequest.hasReadData() == false.
+	 */
 	public void resetHeading() {
-		this.resetYawPoint = this.getHeading().yaw;
+		this.setResetYawPoint(this.getHeading().yaw);
 	}
-	//Returns which (if any) error has occurred on the sensor
-	//Having an error doesn't seem to prevent it from continuing to work fine
+	/**
+	 * Returns which (if any) error has occurred on the sensor.
+	 * Having an error doesn't seem to prevent it from continuing to return angles.
+	 * @return the error that occurred, or NONE.
+	 */
 	public BNO055Error getError() {
 		final byte code;
 		if (this.errorRequest.hasReadData()) code = this.errorRequest.getReadData()[0];
 		else code = 0x00;
-		for (BNO055Error error : BNO055Error.values()) {
-			if (error.getErrorCode() == code) return error;
+		for (final BNO055Error error : BNO055Error.values()) {
+			if (error.errorCode == code) return error;
 		}
 		return BNO055Error.NONE;
 	}
-	//Gets the value of the yaw reset point
+	/**
+	 * Gets the value of the yaw reset point,
+	 * measured absolutely
+	 * @return the yaw value that all relative yaws are measured relative to
+	 */
 	public double getResetYawPoint() {
 		return this.resetYawPoint;
 	}
+	/**
+	 * Sets the value of the yaw reset point
+	 * @param resetYawPoint the yaw value that all relative yaws will be measured relative to
+	 */
 	public void setResetYawPoint(double resetYawPoint) {
 		this.resetYawPoint = resetYawPoint;
 	}

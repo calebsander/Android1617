@@ -11,14 +11,23 @@ import org.gearticks.joystickoptions.JoystickOptionController;
  * Adds some handy functionality on top of {@link OpMode}:<br>
  * - Adds default empty implementations of init() and loop() so they can be omitted<br>
  * - Wraps the gamepads and updates the last values each loop cycle<br>
- * - Has a {@link JoystickOptionController} that is automatically updated<br>
+ * - Has a {@link JoystickOptionController} that is automatically updated
+ * and contains the alliance selector at the beginning<br>
  * - Keeps track of the time that has passed since the start of the match
  */
 public abstract class BaseOpMode extends OpMode {
 	protected static final int GAMEPAD_COUNT = 2;
 
+	/**
+	 * The amount of time that has passed in the match.
+	 * Values should not be used before the match starts.
+	 */
 	protected final ElapsedTime matchTime;
 	private final JoystickOptionController optionController;
+	/**
+	 * The two gamepads, wrapped.
+	 * Index 0 is Calvin's, index 1 is Jack's.
+	 */
 	protected final GamepadWrapper[] gamepads;
 
 	public BaseOpMode() {
@@ -50,12 +59,37 @@ public abstract class BaseOpMode extends OpMode {
 		this.matchEnd();
 	}
 
+	/**
+	 * What to do when OpMode is initialized.
+	 * Can be left empty.
+	 */
 	protected void initialize() {}
+	/**
+	 * What to do repeatedly before match starts.
+	 * Can be left empty.
+	 */
 	protected void loopBeforeStart() {}
+	/**
+	 * What to do when match starts.
+	 * Can be left empty.
+	 */
 	protected void matchStart() {}
+	/**
+	 * What to do repeatedly after match starts,
+	 * but before match ends.
+	 * Can be left empty.
+	 */
 	protected void loopAfterStart() {}
+	/**
+	 * What to do when match ends.
+	 * Can be left empty.
+	 */
 	protected void matchEnd() {}
 
+	/**
+	 * Add an option to end of the option controller
+	 * @param option the option to add
+	 */
 	protected void addOption(JoystickOption option) {
 		this.optionController.addOption(option);
 	}
