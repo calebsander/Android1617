@@ -31,8 +31,10 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
         this.addExitConnection(selectSide, SelectBeaconSide.UNKNOWN_TRANSITION);
         this.addConnection(engageBeaconPusherL, NEXT_STATE, driveBackward);
         this.addConnection(engageBeaconPusherR, NEXT_STATE, driveForward);
-        this.addConnection(driveBackward, NEXT_STATE, disengageBeaconPusher);
-        this.addConnection(driveForward, NEXT_STATE, disengageBeaconPusher);
-        this.addExitConnection(disengageBeaconPusher, NEXT_STATE);
+//        this.addConnection(driveBackward, NEXT_STATE, disengageBeaconPusher);
+//        this.addConnection(driveForward, NEXT_STATE, disengageBeaconPusher);
+//        this.addExitConnection(disengageBeaconPusher, NEXT_STATE);
+        this.addExitConnection(driveBackward, NEXT_STATE);
+        this.addExitConnection(driveForward, NEXT_STATE);
     }
 }
