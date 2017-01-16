@@ -33,16 +33,16 @@ public class ComponentTest extends VelocityBaseOpMode {
         final VuforiaConfiguration vuforiaConfiguration = new VuforiaConfiguration();
         final LinearStateMachine sm = new LinearStateMachine();
 
-//        sm.addComponent(new RangeSensorReadout(1.0, this.configuration, "Show range sensor val"));
+        sm.addComponent(new RangeSensorReadout(1.0, this.configuration, "Show range sensor val"));
+
+        sm.addComponent(new GiroTurn(-30.0, this.configuration, "Turn to wall"));
+        sm.addComponent(new GiroDriveToRangeDistance(50, -30.0, 0.15, 2000, this.configuration, "Range sensor drive to wall"));
+        sm.addComponent(new GiroTurn(0.0, this.configuration, "Straighten out"));
+        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
+
+//        sm.addComponent(new GiroDriveAlongWallLine(20, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 //
-//        sm.addComponent(new GiroTurn(-30.0, this.configuration, "Turn to wall"));
-//        sm.addComponent(new GiroDriveToRangeDistance(50, -30.0, 0.15, 2000, this.configuration, "Range sensor drive to wall"));
-//        sm.addComponent(new GiroTurn(0.0, this.configuration, "Straighten out"));
-//        sm.addComponent(new GiroDriveAlongWallEncoder(50, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
-
-        //sm.addComponent(new GiroDriveAlongWallLine(20, 0.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
-
-        sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, this.configuration, "Press Button"));
+//        sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, this.configuration, "Press Button"));
 
         return sm;
     }
