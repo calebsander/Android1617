@@ -87,7 +87,8 @@ public class VuforiaConfiguration {
 
 
     //private static final int IMAGE_WIDTH = 1280, IMAGE_HEIGHT = 720;
-    private static final int IMAGE_WIDTH = 320, IMAGE_HEIGHT = 180;
+    //private static final int IMAGE_WIDTH = 320, IMAGE_HEIGHT = 180;
+    private static final int IMAGE_WIDTH = 32, IMAGE_HEIGHT = 18;
     private static final double SCALE_FACTOR = 0.4;
     private static final int SCALED_WIDTH = (int)(IMAGE_WIDTH * SCALE_FACTOR), SCALED_HEIGHT = (int)(IMAGE_HEIGHT * SCALE_FACTOR);
     private static final int HALF_WIDTH = SCALED_WIDTH / 2;
