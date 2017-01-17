@@ -62,7 +62,15 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         double headingDeviation = this.pidController.getOutput(ultrasonicDistance, this.distanceFromWall);
         Log.v(Utils.TAG, "Heading deviation = " + headingDeviation);
 
+        if (this.power > 0){
+            this.controlledHeading = this.targetHeading + headingDeviation;
+        } else{
+            this.controlledHeading = this.targetHeading - headingDeviation;
+        }
+
         this.controlledHeading = this.targetHeading + headingDeviation;
+
+        Log.d(Utils.TAG, "Encoder val = " + this.configuration.encoderPositive());
 
         if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
         else return NOT_DONE;

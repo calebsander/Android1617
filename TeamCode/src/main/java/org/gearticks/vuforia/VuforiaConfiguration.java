@@ -86,17 +86,20 @@ public class VuforiaConfiguration {
     }
 
 
-    private static final int IMAGE_WIDTH = 1280, IMAGE_HEIGHT = 720;
+    //private static final int IMAGE_WIDTH = 1280, IMAGE_HEIGHT = 720;
+    private static final int IMAGE_WIDTH = 320, IMAGE_HEIGHT = 180;
     private static final double SCALE_FACTOR = 0.4;
     private static final int SCALED_WIDTH = (int)(IMAGE_WIDTH * SCALE_FACTOR), SCALED_HEIGHT = (int)(IMAGE_HEIGHT * SCALE_FACTOR);
     private static final int HALF_WIDTH = SCALED_WIDTH / 2;
     public SideOfButton getBeaconBlueSide(){
         SideOfButton sideOfButton = SideOfButton.UNKNOWN;
+        Log.d(Utils.TAG, "Get bitmap");
         Bitmap bitmap = getBitmap();
-
+        Log.d(Utils.TAG, "Scale Image");
         if (bitmap != null) {
             bitmap = Bitmap.createScaledBitmap(bitmap, SCALED_WIDTH, SCALED_HEIGHT, false); //scale down to decrease processing time
 
+            Log.d(Utils.TAG, "Process Image");
             int leftRed = 0, leftBlue = 0;
             int rightRed = 0, rightBlue = 0;
             for (int y = 0; y < SCALED_HEIGHT; y++) {
@@ -111,6 +114,8 @@ public class VuforiaConfiguration {
                     rightBlue += Color.blue(pixel);
                 }
             }
+            Log.d(Utils.TAG, "Image Processed");
+
             Log.d(Utils.TAG, "leftRed: " + leftRed);
             Log.d(Utils.TAG, "rightRed: " + rightRed);
             Log.d(Utils.TAG,"leftBlue: " + leftBlue);

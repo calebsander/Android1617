@@ -46,8 +46,14 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
         Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance);
 
 
-        if(ultrasonicDistance < this.distanceFromWall) return NEXT_STATE;
-        if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
+        if(ultrasonicDistance < this.distanceFromWall) {
+            Log.d(Utils.TAG, "Transitioning because distance limit reached = " + this.configuration.encoderPositive());
+            return NEXT_STATE;
+        }
+        if (this.configuration.encoderPositive() > this.encoderTarget) {
+            Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
+            return NEXT_STATE;
+        }
         else return NOT_DONE;
     }
 

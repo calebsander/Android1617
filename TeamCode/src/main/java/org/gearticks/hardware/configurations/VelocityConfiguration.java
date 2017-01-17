@@ -216,7 +216,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		boolean isWhiteLine = false;
 		int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
-		int whiteLineThreshold = 260;
+		int whiteLineThreshold = 295;
 
 		if (clear > whiteLineThreshold){
 			isWhiteLine = true;
