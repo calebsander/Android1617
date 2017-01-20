@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.HINT;
@@ -31,6 +32,7 @@ import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
 @Autonomous
+@Disabled
 public class CantonBeaconAutonomous extends BaseOpMode {
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;

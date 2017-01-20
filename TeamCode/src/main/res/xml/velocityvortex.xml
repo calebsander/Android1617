@@ -24,5 +24,6 @@
         <ContinuousRotationServo name="shooterStopper" port="1" />
         <Servo name="snake" port="2" />
         <Servo name="clutch" port="3" />
+        <Servo name="beacon" port="4" />
     </ServoController>
 </Robot>

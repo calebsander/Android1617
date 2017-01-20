@@ -2,30 +2,41 @@ package org.gearticks.opmodes.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.LED;
-import org.gearticks.dimsensors.i2c.TCS34725;
+import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.hardware.drive.DriveDirection;
+import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
-@Disabled
+//@Disabled
 public class TCS34725Test extends BaseOpMode {
-	private TCS34725 colorSensor;
-	private LED led;
+	private VelocityConfiguration configuration;
+	private DriveDirection direction;
 
-	public void initialize() {
-		this.colorSensor = new TCS34725((I2cDevice)this.hardwareMap.get("whiteLineColor"));
-		this.colorSensor.startReadingColor();
-		this.led = (LED)this.hardwareMap.get("whiteLineColorLed");
+	protected void initialize() {
+		this.configuration = new VelocityConfiguration(this.hardwareMap);
+		this.direction = new DriveDirection();
 	}
-	public void loopAfterStart() {
-		this.led.enable(this.gamepad1.a);
-		this.telemetry.addData("Clear", this.colorSensor.getClear());
-		this.telemetry.addData("Red", this.colorSensor.getRed());
-		this.telemetry.addData("Green", this.colorSensor.getGreen());
-		this.telemetry.addData("Blue", this.colorSensor.getBlue());
+	protected void matchStart() {
+		this.configuration.activateWhiteLineColor();
+		//Switch to reading color rather than clear
+		this.configuration.whiteLineColorSensor.stopReading();
+		this.configuration.whiteLineColorSensor.startReadingColor();
 	}
-	public void matchEnd() {
-		this.colorSensor.stopReading();
+	protected void loopAfterStart() {
+		this.telemetry.addData("Enable LED", "Press A");
+		this.telemetry.addData("Calibrate", "Pres B");
+		this.configuration.whiteLineColorLed.enable(this.gamepads[0].getA());
+		if (this.gamepads[0].getB()) this.configuration.whiteLineColorSensor.calibrate();
+		this.telemetry.addData("Clear", this.configuration.whiteLineColorSensor.getRelativeClear());
+		this.telemetry.addData("Red", this.configuration.whiteLineColorSensor.getRelativeRed());
+		this.telemetry.addData("Green", this.configuration.whiteLineColorSensor.getRelativeGreen());
+		this.telemetry.addData("Blue", this.configuration.whiteLineColorSensor.getRelativeBlue());
+		this.direction.drive(0.0, this.gamepads[0].getLeftY());
+		this.direction.turn(this.gamepads[0].getRightX());
+		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
+	}
+	protected void matchEnd() {
+		this.configuration.deactivateWhiteLineColor();
 	}
 }

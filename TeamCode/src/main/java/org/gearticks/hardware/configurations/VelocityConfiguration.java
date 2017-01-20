@@ -25,7 +25,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private boolean shooterWasDown;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
-	public final Servo clutch, snake;
+	public final Servo clutch, snake, beaconPresser;
 	private final CRServo shooterStopper;
 	public final GearticksBNO055 imu;
 	public final GearticksMRRangeSensor rangeSensor;
@@ -37,13 +37,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final LED whiteLineColorLed;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
-		this.intake = new MotorWrapper((DcMotor)hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
-		this.shooter = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
+		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
+		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.resetAutoShooter();
-		this.driveLeft = new MotorWrapper((DcMotor)hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
-		this.driveRight = new MotorWrapper((DcMotor)hardwareMap.get("right"), MotorWrapper.MotorType.NEVEREST_20, true);
+		this.driveLeft = new MotorWrapper((DcMotor) hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
+		this.driveRight = new MotorWrapper((DcMotor) hardwareMap.get("right"), MotorWrapper.MotorType.NEVEREST_20, true);
 		this.drive = new TankDrive();
 		this.drive.addLeftMotor(this.driveLeft);
 		this.drive.addRightMotor(this.driveRight);
@@ -54,32 +54,36 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.driveLeft.setStopMode(ZeroPowerBehavior.BRAKE);
 		this.driveRight.setStopMode(ZeroPowerBehavior.BRAKE);
 
-		this.clutch = (Servo)hardwareMap.get("clutch");
+		this.clutch = (Servo) hardwareMap.get("clutch");
 		this.clutch.setPosition(MotorConstants.CLUTCH_ENGAGED);
-		this.snake = (Servo)hardwareMap.get("snake");
+		this.beaconPresser = (Servo) hardwareMap.get("beacon");
+		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_DISENGAGED);
+		this.snake = (Servo) hardwareMap.get("snake");
 		this.snake.setPosition(MotorConstants.SNAKE_HOLDING);
-		this.shooterStopper = (CRServo)hardwareMap.get("shooterStopper");
+		this.shooterStopper = (CRServo) hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 
-		this.imu = new GearticksBNO055((I2cDevice)hardwareMap.get("bno"));
-		this.rangeSensor = new GearticksMRRangeSensor((I2cDevice)hardwareMap.get("range"));
-		this.shooterDown = (DigitalChannel)hardwareMap.get("shooterDown");
+		this.imu = new GearticksBNO055((I2cDevice) hardwareMap.get("bno"));
+		this.rangeSensor = new GearticksMRRangeSensor((I2cDevice) hardwareMap.get("range"));
+		this.shooterDown = (DigitalChannel) hardwareMap.get("shooterDown");
 		this.shooterDown.setMode(Mode.INPUT);
-		this.shooterNear = (DigitalChannel)hardwareMap.get("shooterNear");
+		this.shooterNear = (DigitalChannel) hardwareMap.get("shooterNear");
 		this.shooterNear.setMode(Mode.INPUT);
-		this.shooterFar = (DigitalChannel)hardwareMap.get("shooterFar");
+		this.shooterFar = (DigitalChannel) hardwareMap.get("shooterFar");
 		this.shooterFar.setMode(Mode.INPUT);
-		this.badBoy1 = (DigitalChannel)hardwareMap.get("badBoy1");
+		this.badBoy1 = (DigitalChannel) hardwareMap.get("badBoy1");
 		this.badBoy1.setMode(Mode.INPUT);
-		this.badBoy2 = (DigitalChannel)hardwareMap.get("badBoy2");
+		this.badBoy2 = (DigitalChannel) hardwareMap.get("badBoy2");
 		this.badBoy2.setMode(Mode.INPUT);
-		this.whiteLineColorSensor = new TCS34725((I2cDevice)hardwareMap.get("whiteLineColor"));
-		this.whiteLineColorLed = (LED)hardwareMap.get("whiteLineColorLed");
+		this.whiteLineColorSensor = new TCS34725((I2cDevice) hardwareMap.get("whiteLineColor"));
+		this.whiteLineColorLed = (LED) hardwareMap.get("whiteLineColorLed");
 	}
+
 	public void teardown() {
 		this.imu.terminate();
 		this.rangeSensor.terminate();
 	}
+
 	public void stopMotion() {
 		this.driveLeft.stop();
 		this.driveRight.stop();
@@ -91,30 +95,37 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.drive.accelLimit(accelLimit);
 		this.drive.commitPowers();
 	}
+
 	private boolean shooterFarTriggered() {
 		return !this.shooterFar.getState();
 	}
+
 	private boolean shooterNearTriggered() {
 		return !this.shooterNear.getState();
 	}
+
 	public void safeShooterStopper(double power) {
 		if (
-			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
-			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNearTriggered())
-		) {
+				(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
+						(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNearTriggered())
+				) {
 			power = 0.0;
 		}
 		this.shooterStopper.setPower(power);
 	}
+
 	private boolean badBoy1Triggered() {
 		return !this.badBoy1.getState();
 	}
+
 	private boolean badBoy2Triggered() {
 		return !this.badBoy2.getState();
 	}
+
 	public boolean ballInSnake() {
 		return this.badBoy1Triggered() || this.badBoy2Triggered();
 	}
+
 	public void resetEncoder() {
 		final RunMode leftLastMode = this.driveLeft.getRunMode();
 		this.driveLeft.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
@@ -135,17 +146,24 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public int encoderPositive() {
 		return Math.abs(this.signedEncoder());
 	}
+	public int avrgEncoderPositive() {
+		return Math.abs((this.driveLeft.encoderValue() + this.driveRight.encoderValue()) / 2);
+	}
+
 	public boolean isShooterAtSensor() {
 		return !this.shooterDown.getState();
 	}
+
 	public void shootSlow() {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
+
 	public void shootFast() {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 	}
+
 	public void advanceShooterToDown() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
@@ -154,10 +172,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
 				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 				this.shooterWasDown = true;
-			}
-			else this.shootSlow();
+			} else this.shootSlow();
 		}
 	}
+
 	public void teleopAdvanceShooterToDown() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
@@ -166,20 +184,28 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
 				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 				this.shooterWasDown = true;
-			}
-			else this.shootFast();
+			} else this.shootFast();
 		}
 	}
+
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
 	}
+
 	public boolean isShooterAtTarget() {
 		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 10;
 	}
+
 	public boolean isShooterDown() {
 		return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
+	public void beaconPresserEngage() {
+		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_ENGAGED);
+	}
+	public void beaconPresserDisengage() {
+		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_DISENGAGED);
+	}
 	/**
 	 *
 	 * @return true if white line detected
@@ -188,7 +214,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		boolean isWhiteLine = false;
 		int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
-		int whiteLineThreshold = 280;
+		int whiteLineThreshold = 295;
 
 		if (clear > whiteLineThreshold){
 			isWhiteLine = true;
@@ -221,6 +247,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SNAKE_HOLDING = 0.9;
 		public static final double SNAKE_DUMPING = 0.7;
+
+		public static final double BEACON_PRESSER_ENGAGED = 0.31;
+		public static final double BEACON_PRESSER_DISENGAGED = 0.0;
 
 		public static final double CLUTCH_CLUTCHED = 0.7;
 		public static final double CLUTCH_ENGAGED = 0.3;

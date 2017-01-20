@@ -46,6 +46,9 @@ public class TCS34725 extends I2CSensor {
 	private SensorReadRequest colorRequest;
 	private SensorWriteRequest integrationTime;
 
+	private static final int NO_DATA = -1;
+	private int redReset, greenReset, blueReset, clearReset;
+
 	public TCS34725(I2cDevice device) {
 		super(device);
 		this.initialize();
@@ -61,6 +64,7 @@ public class TCS34725 extends I2CSensor {
 		this.clearRequest = this.makeReadRequest(Register.CLEAR_LOW.register, Register.CLEAR_HIGH.register);
 		this.colorRequest = this.makeReadRequest(Register.CLEAR_LOW.register, Register.BLUE_HIGH.register);
 		this.integrationTime = new SensorWriteRequest(Register.INTEGRATION_TIME.register, 1);
+		this.redReset = this.greenReset = this.blueReset = this.clearReset = 0;
 	}
 
 	protected void readyCallback() {
@@ -91,35 +95,90 @@ public class TCS34725 extends I2CSensor {
 	//Get the value of the clear channel
 	public int getClear() {
 		synchronized (this) {
-			if (!(this.clearRequest.hasReadData() || this.colorRequest.hasReadData())) return -1;
+			if (!(this.clearRequest.hasReadData() || this.colorRequest.hasReadData())) return NO_DATA;
 			final byte[] data;
 			//Use the most recent data available
 			if (this.clearRequest.nanosSinceAction() < this.colorRequest.nanosSinceAction()) data = this.clearRequest.getReadData();
 			else data = this.colorRequest.getReadData();
-			if (data.length == 0) return -1;
+			if (data.length == 0) return NO_DATA;
 			return ByteBuffer.wrap(new byte[]{data[Register.CLEAR_HIGH.register - this.clearRequest.getRegister()], data[Register.CLEAR_LOW.register - this.clearRequest.getRegister()]}).getShort() & SHORT_MASK;
 		}
 	}
+	/**
+	 * Get the value of the clear channel, relative to the reset point.
+	 * Returns a number from -65535 to 65535, or NO_DATA if no value exists.
+	 * @return the relative value of the clear channel, or NO_DATA if no value exists
+	 */
+	public int getRelativeClear() {
+		final int absoluteClear = this.getClear();
+		if (absoluteClear == NO_DATA) return NO_DATA;
+		return absoluteClear - this.clearReset;
+	}
 	//Get the value of the red channel
 	public int getRed() {
-		if (!this.colorRequest.hasReadData()) return -1;
+		if (!this.colorRequest.hasReadData()) return NO_DATA;
 		final byte[] data = this.colorRequest.getReadData();
-		if (data.length == 0) return -1;
+		if (data.length == 0) return NO_DATA;
 		return ByteBuffer.wrap(new byte[]{data[Register.RED_HIGH.register - this.colorRequest.getRegister()], data[Register.RED_LOW.register - this.colorRequest.getRegister()]}).getShort() & SHORT_MASK;
+	}
+	/**
+	 * Get the value of the red channel, relative to the reset point.
+	 * Returns a number from -65535 to 65535, or NO_DATA if no value exists.
+	 * @return the relative value of the red channel, or NO_DATA if no value exists
+	 */
+	public int getRelativeRed() {
+		final int absoluteRed = this.getRed();
+		if (absoluteRed == NO_DATA) return NO_DATA;
+		return absoluteRed - this.redReset;
 	}
 	//Get the value of the green channel
 	public int getGreen() {
-		if (!this.colorRequest.hasReadData()) return -1;
+		if (!this.colorRequest.hasReadData()) return NO_DATA;
 		final byte[] data = this.colorRequest.getReadData();
-		if (data.length == 0) return -1;
+		if (data.length == 0) return NO_DATA;
 		return ByteBuffer.wrap(new byte[]{data[Register.GREEN_HIGH.register - this.colorRequest.getRegister()], data[Register.GREEN_LOW.register - this.colorRequest.getRegister()]}).getShort() & SHORT_MASK;
+	}
+	/**
+	 * Get the value of the green channel, relative to the reset point.
+	 * Returns a number from -65535 to 65535, or NO_DATA if no value exists.
+	 * @return the relative value of the green channel, or NO_DATA if no value exists
+	 */
+	public int getRelativeGreen() {
+		final int absoluteGreen = this.getGreen();
+		if (absoluteGreen == NO_DATA) return NO_DATA;
+		return absoluteGreen - this.greenReset;
 	}
 	//Get the value of the blue channel
 	public int getBlue() {
-		if (!this.colorRequest.hasReadData()) return -1;
+		if (!this.colorRequest.hasReadData()) return NO_DATA;
 		final byte[] data = this.colorRequest.getReadData();
-		if (data.length == 0) return -1;
+		if (data.length == 0) return NO_DATA;
 		return ByteBuffer.wrap(new byte[]{data[Register.BLUE_HIGH.register - this.colorRequest.getRegister()], data[Register.BLUE_LOW.register - this.colorRequest.getRegister()]}).getShort() & SHORT_MASK;
+	}
+	/**
+	 * Get the value of the blue channel, relative to the reset point.
+	 * Returns a number from -65535 to 65535, or NO_DATA if no value exists.
+	 * @return the relative value of the blue channel, or NO_DATA if no value exists
+	 */
+	public int getRelativeBlue() {
+		final int absoluteBlue = this.getBlue();
+		if (absoluteBlue == NO_DATA) return NO_DATA;
+		return absoluteBlue - this.blueReset;
+	}
+	/**
+	 * Calibrates the sensor so the relative methods
+	 * will return values relative to the current values.
+	 * If no data has been read on a channel, it won't get calibrated.
+	 */
+	public void calibrate() {
+		final int absoluteClear = this.getClear();
+		if (absoluteClear != NO_DATA) this.clearReset = absoluteClear;
+		final int absoluteRed = this.getRed();
+		if (absoluteRed != NO_DATA) this.redReset = absoluteRed;
+		final int absoluteGreen = this.getGreen();
+		if (absoluteGreen != NO_DATA) this.greenReset = absoluteGreen;
+		final int absoluteBlue = this.getBlue();
+		if (absoluteBlue != NO_DATA) this.blueReset = absoluteBlue;
 	}
 	//Calculates the byte value necessary to get the closest to the desired integration time
 	private static byte getIntegrationRequestValue(double integrationMillis) {
