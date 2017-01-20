@@ -7,6 +7,7 @@ import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
+import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.opmodes.BaseOpMode;
 import org.gearticks.vuforia.VuforiaConfiguration;
@@ -22,6 +23,7 @@ public class TicksToCentimeters extends VelocityBaseOpMode {
 
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
         sm.addComponent(new GiroDriveEncoder(0.0, 0.4, 2000, this.configuration, "Drive Forward"));
+        sm.addComponent(new Wait(3.0, "Wait"));
 
         sm.addComponent(new Stopped(this.configuration));
 
