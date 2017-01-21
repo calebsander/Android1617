@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.dimsensors.i2c.GearticksBNO055;
 import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
 import org.gearticks.dimsensors.i2c.TCS34725;
@@ -106,9 +107,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 	public void safeShooterStopper(double power) {
 		if (
-				(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
-						(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNearTriggered())
-				) {
+			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
+			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNearTriggered())
+		) {
 			power = 0.0;
 		}
 		this.shooterStopper.setPower(power);
@@ -145,9 +146,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 	public int encoderPositive() {
 		return Math.abs(this.signedEncoder());
-	}
-	public int avrgEncoderPositive() {
-		return Math.abs((this.driveLeft.encoderValue() + this.driveRight.encoderValue()) / 2);
 	}
 
 	public boolean isShooterAtSensor() {

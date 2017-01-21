@@ -17,12 +17,12 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	private boolean done;
 
 	protected void initialize() {
-		Log.d(Utils.TAG, "Start OpMode initialize");
+		Log.i(Utils.TAG, "Start OpMode initialize");
 		this.configuration = this.newConfiguration();
 		this.component = this.getComponent();
 	}
 	protected void matchStart() {
-		Log.d(Utils.TAG, "Starting OpMode matchStart");
+		Log.i(Utils.TAG, "Starting OpMode matchStart");
 		this.telemetry.clear();
 		this.component.onMatchStart();
 		this.component.setup();
@@ -32,13 +32,14 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 		if (!this.done) {
 			final int transition = this.component.run();
 			if (transition != AutonomousComponentAbstractImpl.NOT_DONE) {
+				Log.i(Utils.TAG, "Component finished");
 				this.done = true;
 				this.component.tearDown();
 			}
 		}
 	}
 	protected void matchEnd() {
-		Log.d(Utils.TAG, "Starting OpMode matchEnd");
+		Log.i(Utils.TAG, "Starting OpMode matchEnd");
 		if (!this.done) this.component.tearDown();
 		this.configuration.teardown();
 	}
