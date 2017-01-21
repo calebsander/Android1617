@@ -39,17 +39,17 @@ public class SideAutonomous extends VelocityBaseOpMode {
         //Drive to wall
         sm.addComponent(new GiroDriveEncoder(0.0, 0.7, 1000, this.configuration, "Drive forward for 1700 ticks"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroTurn(220.0, this.configuration, "Flip direction"));
-        sm.addComponent(new GiroDriveEncoder(220.0, -0.7, 6500, this.configuration, "Drive to wall"));
+        sm.addComponent(new GiroTurn(200.0, this.configuration, "Flip direction"));
+        sm.addComponent(new GiroDriveEncoder(200.0, -0.7, 7000, this.configuration, "Drive to wall"));
         sm.addComponent(new Wait(0.3, "Wait"));
-        sm.addComponent(new GiroTurn(200.0, this.configuration, "Reduce attack angle"));
+        //sm.addComponent(new GiroTurn(200.0, this.configuration, "Reduce attack angle"));
         sm.addComponent(new Wait(0.3, "Wait"));
 
         //Drive to beacon
         sm.addComponent(new GiroDriveToRangeDistance(distanceFromWall, 200.0, -0.2, 4000, this.configuration, "Range sensor drive to wall"));
         sm.addComponent(new Wait(0.3, "Wait"));
         sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.15, 5000, this.configuration, "Range sensor drive along wall"));
+        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, 0.15, 5000, this.configuration, "Range sensor drive along wall"));
 
         //Press beacon
         sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));

@@ -9,6 +9,8 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.opmodes.utility.Utils;
 
+import java.text.MessageFormat;
+
 /**
  * drives with gyro and range sensor along the wall at a set distance for encoder ticks
  */
@@ -19,10 +21,12 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
     private final double targetHeading;
     private double controlledHeading;
     private final long encoderTarget;
-    private final double p = 0.3;
+    private final double p = 1.5;
     private final double i = 0;
     private final double d = 0;
     private MiniPID pidController;
+
+    MessageFormat mf = new MessageFormat("test {0}, test {1}");
 
 
     public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, @NonNull VelocityConfiguration configuration, String id) {
@@ -41,7 +45,7 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         this.configuration.rangeSensor.ultrasonicRequest.startReading();
         this.configuration.resetEncoder();
         this.pidController = new MiniPID(p, i, d);
-        this.pidController.setOutputLimits(10);
+        this.pidController.setOutputLimits(20);
     }
 
     @Override
@@ -54,13 +58,13 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         this.configuration.move(this.direction, 0.06);
 
         double ultrasonicDistance = this.configuration.rangeSensor.cmUltrasonic();
-        Log.v(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance);
+        //Log.v(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance);
 
         double distanceError = this.distanceFromWall - ultrasonicDistance;
-        Log.v(Utils.TAG, "Distance error = " + distanceError);
+        //Log.v(Utils.TAG, "Distance error = " + distanceError);
 
         double headingDeviation = this.pidController.getOutput(ultrasonicDistance, this.distanceFromWall);
-        Log.v(Utils.TAG, "Heading deviation = " + headingDeviation);
+        //Log.v(Utils.TAG, "Heading deviation = " + headingDeviation);
 
         if (this.power > 0){
             this.controlledHeading = this.targetHeading + headingDeviation;
@@ -68,10 +72,10 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
             this.controlledHeading = this.targetHeading - headingDeviation;
         }
 
-        this.controlledHeading = this.targetHeading + headingDeviation;
+        //this.controlledHeading = this.targetHeading + headingDeviation;
 
-        Log.d(Utils.TAG, "Encoder val = " + this.configuration.encoderPositive());
-
+        Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
+//        Log.d(Utils.TAG, this.mf.format(ultrasonicDistance, distanceError));
         if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
         else return NOT_DONE;
     }
