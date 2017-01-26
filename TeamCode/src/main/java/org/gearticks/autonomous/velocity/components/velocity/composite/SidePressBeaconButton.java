@@ -7,9 +7,8 @@ import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
-import org.gearticks.autonomous.velocity.components.velocity.single.EngageBeaconServo;
-import org.gearticks.autonomous.velocity.components.velocity.single.GiroDriveEncoderBeacon;
-import org.gearticks.autonomous.velocity.components.velocity.single.GiroTurnBeacon;
+import org.gearticks.autonomous.velocity.components.velocity.single.LeftPressBeaconServo;
+import org.gearticks.autonomous.velocity.components.velocity.single.RightPressBeaconServo;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration;
@@ -22,17 +21,16 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
     public SidePressBeaconButton(double targetHeading, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super();
         final AutonomousComponent selectSide = new SelectBeaconSide(vuforiaConfiguration, configuration, "Select beacon side");
-        final AutonomousComponent driveForward = new GiroDriveEncoder(targetHeading, -0.15, 150, configuration, "To right button");
-        final AutonomousComponent driveBackward = new GiroDriveEncoder(targetHeading, -0.15, 700, configuration, "To left button");
-        final AutonomousComponent bumpBeacon = new GiroTurn(targetHeading - 18, configuration, "Press button");
-        final AutonomousComponent squareUp = new GiroTurn(targetHeading, configuration, "Square up");
+        final AutonomousComponent leftButton = new LeftPressBeaconServo(configuration, "Left press beacon");
+        final AutonomousComponent rightButton = new RightPressBeaconServo(configuration, "Right press beacon");
+        final AutonomousComponent resetButton = new DisengageBeaconServo(configuration, "Disengage beacon presser");
+
 
         this.setInitialComponent(selectSide);
-        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, driveBackward);
-        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, driveForward);
-        this.addConnection(driveBackward, NEXT_STATE, bumpBeacon);
-        this.addConnection(driveForward, NEXT_STATE, bumpBeacon);
-        this.addConnection(bumpBeacon, NEXT_STATE, squareUp);
-        this.addExitConnection(squareUp, NEXT_STATE);
+        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, leftButton);
+        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, rightButton);
+        this.addConnection(leftButton, NEXT_STATE, resetButton);
+        this.addConnection(rightButton, NEXT_STATE, resetButton);
+        this.addExitConnection(resetButton, NEXT_STATE);
     }
 }

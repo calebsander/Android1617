@@ -200,8 +200,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
-	public void beaconPresserEngage() {
-		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_ENGAGED);
+	public void beaconPresserEngageLeft() {
+		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_LEFT_ENGAGED);
+	}
+	public void beaconPresserEngageRight() {
+		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_RIGHT_ENGAGED);
 	}
 	public void beaconPresserDisengage() {
 		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_DISENGAGED);
@@ -214,7 +217,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		boolean isWhiteLine = false;
 		int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
-		int whiteLineThreshold = 295;
+		int whiteLineThreshold = 275;
 
 		if (clear > whiteLineThreshold){
 			isWhiteLine = true;
@@ -245,14 +248,12 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 
-		public static final double BEACON_MOTOR_RIGHT = 0.2;
-		public static final double BEACON_MOTOR_LEFT = -BEACON_MOTOR_RIGHT;
-
 		public static final double SNAKE_HOLDING = 0.9;
 		public static final double SNAKE_DUMPING = 0.7;
 
-		public static final double BEACON_PRESSER_ENGAGED = 0.31;
-		public static final double BEACON_PRESSER_DISENGAGED = 0.0;
+		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 0.89; //TODO: fix value
+		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.30;
+		public static final double BEACON_PRESSER_DISENGAGED = 0.69;
 
 		public static final double CLUTCH_CLUTCHED = 0.7;
 		public static final double CLUTCH_ENGAGED = 0.3;

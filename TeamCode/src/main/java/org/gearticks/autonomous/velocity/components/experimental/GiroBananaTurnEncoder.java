@@ -97,7 +97,7 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 			return this.endHeading;
 		}
 		else {
-			return this.startHeading + distance * this.headingSlope;
+			return this.startHeading + distance * this.headingSlope; //TODO: fix banana turn
 		}
 	}
 }
