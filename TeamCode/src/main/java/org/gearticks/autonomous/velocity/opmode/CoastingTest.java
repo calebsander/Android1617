@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -16,6 +17,7 @@ import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.vuforia.VuforiaConfiguration;
 
 @Autonomous
+@Disabled
 public class CoastingTest extends VelocityBaseOpMode {
     protected AutonomousComponent getComponent() {
         final VuforiaConfiguration vuforiaConfiguration = new VuforiaConfiguration();

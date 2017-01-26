@@ -11,6 +11,7 @@ import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
 @Disabled
+@Deprecated
 public class BeaconPresserMotorTest extends BaseOpMode {
 	private static final double PRESS_SECONDS = 0.4;
 
