@@ -58,7 +58,7 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 
 		int transition = NOT_DONE;
 
-		final double distance = this.configuration.encoderPositive();
+		final double distance = this.configuration.signedEncoder();
 
 		final double targetHeading = getHeading(distance);
 

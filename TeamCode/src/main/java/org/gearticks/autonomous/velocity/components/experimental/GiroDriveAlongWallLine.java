@@ -19,7 +19,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
     private final double targetHeading;
     private double controlledHeading;
     private final long encoderLimit;
-    private final double p = 0.3;
+    private final double p = 1.5;
     private final double i = 0.0;
     private final double d = 0.0;
     private MiniPID pidController;
@@ -55,19 +55,22 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         this.configuration.move(this.direction, 0.06);
 
         double ultrasonicDistance = this.configuration.rangeSensor.cmUltrasonic();
-        Log.v(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance);
+        //Log.v(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance);
 
         double distanceError = this.distanceFromWall - ultrasonicDistance;
-        Log.v(Utils.TAG, "Distance error = " + distanceError);
+        //Log.v(Utils.TAG, "Distance error = " + distanceError);
 
         double headingDeviation = this.pidController.getOutput(ultrasonicDistance, this.distanceFromWall);
-        Log.v(Utils.TAG, "Heading deviation = " + headingDeviation);
+        //Log.v(Utils.TAG, "Heading deviation = " + headingDeviation);
 
         if (this.power > 0){
             this.controlledHeading = this.targetHeading + headingDeviation;
         } else{
             this.controlledHeading = this.targetHeading - headingDeviation;
         }
+
+        Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
+
 
         Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLine());
         if (this.configuration.isWhiteLine()){

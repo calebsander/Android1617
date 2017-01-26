@@ -12,17 +12,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.dimsensors.i2c.GearticksBNO055;
 import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
 import org.gearticks.dimsensors.i2c.TCS34725;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
+import org.gearticks.hardware.drive.MotorWrapper.MotorType;
 import org.gearticks.hardware.drive.TankDrive;
 import org.gearticks.opmodes.utility.Utils;
 
 public class VelocityConfiguration implements HardwareConfiguration {
-	public final MotorWrapper intake, shooter;
+	public final MotorWrapper intake, shooter, beaconBumpers;
 	private boolean shooterWasDown;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
@@ -33,18 +33,20 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel shooterDown;
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
-	//public final DigitalChannel whiteLineSensor;
 	public final TCS34725 whiteLineColorSensor;
 	public final LED whiteLineColorLed;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
-		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorWrapper.MotorType.NEVEREST_20);
-		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorWrapper.MotorType.NEVEREST_40);
+		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorType.NEVEREST_20);
+		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.resetAutoShooter();
-		this.driveLeft = new MotorWrapper((DcMotor) hardwareMap.get("left"), MotorWrapper.MotorType.NEVEREST_20, true);
-		this.driveRight = new MotorWrapper((DcMotor) hardwareMap.get("right"), MotorWrapper.MotorType.NEVEREST_20, true);
+		this.beaconBumpers = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorType.NEVEREST_40);
+		this.beaconBumpers.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		this.beaconBumpers.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+		this.driveLeft = new MotorWrapper((DcMotor) hardwareMap.get("left"), MotorType.NEVEREST_20, true);
+		this.driveRight = new MotorWrapper((DcMotor) hardwareMap.get("right"), MotorType.NEVEREST_20, true);
 		this.drive = new TankDrive();
 		this.drive.addLeftMotor(this.driveLeft);
 		this.drive.addRightMotor(this.driveRight);
@@ -242,6 +244,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
+
+		public static final double BEACON_MOTOR_RIGHT = 0.2;
+		public static final double BEACON_MOTOR_LEFT = -BEACON_MOTOR_RIGHT;
 
 		public static final double SNAKE_HOLDING = 0.9;
 		public static final double SNAKE_DUMPING = 0.7;

@@ -1,5 +1,6 @@
 package org.gearticks.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -7,6 +8,7 @@ import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
+@Disabled
 public class WhiteLineIRTest extends BaseOpMode {
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
