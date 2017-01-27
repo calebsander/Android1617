@@ -28,13 +28,13 @@ public class ComponentTest extends VelocityBaseOpMode {
 
 //        sm.addComponent(new GiroDriveToLine(0.0, -0.15, 5000, this.configuration, "Range sensor drive along wall"));
 //
-        sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, this.configuration, "Press Button"));
+        //sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, this.configuration, "Press Button"));
 
 //        sm.addComponent(new GiroBananaTurnEncoder(0.0, 180.0, 0.15, 3000, this.configuration, "Banana Turn"));
 
         //sm.addComponent(new GiroTurn(400.0, this.configuration, "Straighten out"));
 
-        //sm.addComponent(new GiroDriveToLine(0.0, -0.15, 5000, this.configuration, "drive to white line"));
+        sm.addComponent(new GiroDriveToLine(0.0, -0.15, 5000, this.configuration, "drive to white line"));
 
 
         return sm;

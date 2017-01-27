@@ -43,11 +43,12 @@ public class SideAutonomous extends VelocityBaseOpMode {
         //Drive to wall
         //sm.addComponent(new GiroDriveEncoder(0.0, 0.25, 500, this.configuration, "Drive forward for 500 ticks"));
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroBananaTurnEncoder(0.0, 90.0, 0.25, 3000, this.configuration, "Banana Turn right"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroDriveEncoder(0.0, 0.5, 500, this.configuration, "Drive forward for 500 ticks"));
+        sm.addComponent(new GiroBananaTurnEncoder(0.0, 20.0, 0.25, 1000, this.configuration, "Banana Turn right"));
+        sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
+        sm.addComponent(new GiroBananaTurnEncoder(20.0, 90.0, 0.5, 4000, this.configuration, "Banana Turn right"));
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroBananaTurnEncoder(90.0, 180.0, 0.15, 1000, this.configuration, "Banana Turn left"));
+        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
+        //sm.addComponent(new GiroBananaTurnEncoder(90.0, 180.0, 0.15, 1000, this.configuration, "Banana Turn left"));
 
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
@@ -64,15 +65,12 @@ public class SideAutonomous extends VelocityBaseOpMode {
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
         //Go to second beacon
-        sm.addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.15, 1000, this.configuration, "Range sensor drive along wall"));
-        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.15, 7000, this.configuration, "Range sensor drive along wall to line"));
+        sm.addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, 0.15, 1000, this.configuration, "Range sensor drive along wall"));
+        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, 0.15, 7000, this.configuration, "Range sensor drive along wall to line"));
         //sm.addComponent(new GiroDriveToLine(180, 0.7, 8000, this.configuration, "Drive to white line"));
 
-
         //Press beacon
-        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroDriveToLine(180, -0.05, 50, this.configuration, "Adjust to white line"));
+        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180, -0.05, 100, this.configuration, "Adjust to white line"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
         sm.addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, this.configuration, "Press Button"));
