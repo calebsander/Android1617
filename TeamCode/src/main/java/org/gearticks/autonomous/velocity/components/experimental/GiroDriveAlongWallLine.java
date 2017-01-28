@@ -42,7 +42,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         this.configuration.resetEncoder();
         this.pidController = new MiniPID(p, i, d);
         this.pidController.setOutputLimits(10);
-        this.configuration.activateWhiteLineColor();
+//        this.configuration.activateWhiteLineColor();
     }
 
     @Override
@@ -72,12 +72,14 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
 
 
-        Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLine());
-        if (this.configuration.isWhiteLine()){
+        Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLineIR());
+        if (this.configuration.isWhiteLineIR()){
+            Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             Log.d(Utils.TAG, "Transitioning because found white line");
             return NEXT_STATE; //TODO returning LINE_FOUND
         }
         if (this.configuration.encoderPositive() > this.encoderLimit) {
+            Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
             return NEXT_STATE; //TODO returning LIMIT_REACHED
         }
@@ -87,7 +89,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
     @Override
     public void tearDown() {
         super.tearDown();
-        this.configuration.deactivateWhiteLineColor();
+//        this.configuration.deactivateWhiteLineColor();
         //Custom code here control
     }
 

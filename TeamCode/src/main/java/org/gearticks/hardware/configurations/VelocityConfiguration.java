@@ -33,6 +33,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel shooterDown;
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
+	private final DigitalChannel whiteLineSensor;
 	public final TCS34725 whiteLineColorSensor;
 	public final LED whiteLineColorLed;
 
@@ -78,6 +79,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.badBoy1.setMode(Mode.INPUT);
 		this.badBoy2 = (DigitalChannel) hardwareMap.get("badBoy2");
 		this.badBoy2.setMode(Mode.INPUT);
+		this.whiteLineSensor = (DigitalChannel) hardwareMap.get("whiteLine");
 		this.whiteLineColorSensor = new TCS34725((I2cDevice) hardwareMap.get("whiteLineColor"));
 		this.whiteLineColorLed = (LED) hardwareMap.get("whiteLineColorLed");
 	}
@@ -213,7 +215,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	 *
 	 * @return true if white line detected
 	 */
-	public boolean isWhiteLine() {
+	public boolean isWhiteLineColor() {
 		boolean isWhiteLine = false;
 		int clear = this.whiteLineColorSensor.getClear();
 		Log.v(Utils.TAG, "Clear = " + clear);
@@ -235,6 +237,14 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void deactivateWhiteLineColor(){
 		this.whiteLineColorSensor.stopReading();
 		this.whiteLineColorLed.enable(false);
+	}
+
+	/**
+	 *
+	 * @return true if white line detected
+	 */
+	public boolean isWhiteLineIR() {
+		return !this.whiteLineSensor.getState();
 	}
 
 	public static abstract class MotorConstants {
