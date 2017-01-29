@@ -7,6 +7,7 @@ import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.AllianceOption;
+import org.gearticks.opencv.OpenCvConfiguration;
 import org.gearticks.opmodes.units.SideOfButton;
 import org.gearticks.opmodes.utility.Utils;
 import org.gearticks.vuforia.VuforiaConfiguration;
@@ -16,15 +17,17 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
 	public static final int LEFT_TRANSITION = newTransition(), RIGHT_TRANSITION = newTransition(), UNKNOWN_TRANSITION = newTransition();
 
 	private final VuforiaConfiguration vuforiaConfiguration;
+    private final OpenCvConfiguration openCvConfiguration;
 	private boolean allianceColorIsBlue;
 
 	/**
 	 * @param configuration
 	 * @param id - descriptive name for logging
 	 */
-	public OpenCVBeacon(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+	public OpenCVBeacon(@NonNull OpenCvConfiguration openCvConfiguration, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
+        this.openCvConfiguration = openCvConfiguration;
 
 	}
 
