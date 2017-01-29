@@ -16,6 +16,10 @@ import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
+import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
+import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
+import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
+import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.vuforia.VuforiaConfiguration;
 
@@ -30,13 +34,13 @@ public class SideAutonomous extends VelocityBaseOpMode {
 
 
         //Shoot 2 balls
-//        sm.addComponent(new MoveShooterDown(this.configuration, "MoveShooterDown"));
-//        sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
-//        sm.addComponent(new ShootBall(this.configuration, "Shoot 1st ball"));
-//        sm.addComponent(new MoveShooterDown(this.configuration, "Move Shooter Down"));
-//        sm.addComponent(new LoadBall(this.configuration, "Load 2nd ball"));
-//        sm.addComponent(new ResetSnake(this.configuration, "Reset Snake"));
-//        sm.addComponent(new ShootBall(this.configuration, "Shoot 2nd ball"));
+        sm.addComponent(new MoveShooterDown(this.configuration, "MoveShooterDown"));
+        sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
+        sm.addComponent(new ShootBall(this.configuration, "Shoot 1st ball"));
+        sm.addComponent(new MoveShooterDown(this.configuration, "Move Shooter Down"));
+        sm.addComponent(new LoadBall(this.configuration, "Load 2nd ball"));
+        sm.addComponent(new ResetSnake(this.configuration, "Reset Snake"));
+        sm.addComponent(new ShootBall(this.configuration, "Shoot 2nd ball"));
 
         //Blue side
 
