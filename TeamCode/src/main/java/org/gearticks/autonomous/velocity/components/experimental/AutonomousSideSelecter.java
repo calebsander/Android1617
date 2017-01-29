@@ -12,20 +12,18 @@ import org.gearticks.opmodes.utility.Utils;
 
 public class AutonomousSideSelecter extends AutonomousComponentHardware<VelocityConfiguration> {
 	public static final int BLUE = newTransition(), RED = newTransition();
-	public final boolean allianceColorIsBlue;
+	public boolean allianceColorIsBlue;
 	/**
 	 *
 	 * @param configuration
-	 * @param id - descriptive name for logging
 	 */
 	public AutonomousSideSelecter(@NonNull VelocityConfiguration configuration) {
 		super(configuration);
-		allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
 	}
 
 	@Override
-	public void setup() {
-		super.setup();
+	public void onMatchStart() {
+		this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
 	}
 
 	@Override
@@ -41,10 +39,5 @@ public class AutonomousSideSelecter extends AutonomousComponentHardware<Velocity
 			Log.d(Utils.TAG, "Red Side");
 			return RED;
 		}
-	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
 	}
 }
