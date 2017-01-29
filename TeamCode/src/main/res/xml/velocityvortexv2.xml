@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC" name="Velocity Drive">
+    <MotorController name="Drive" serialNumber="AI049N7Y">
+        <Motor name="right" port="1" />
+        <Motor name="left" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="DIM" serialNumber="AI02RKCT">
+        <I2cDevice name="bno" port="0" />
+        <I2cDevice name="range" port="1" />
+        <DigitalDevice name="shooterNear" port="0" />
+        <DigitalDevice name="shooterFar" port="1" />
+        <DigitalDevice name="shooterDown" port="2" />
+        <DigitalDevice name="badBoy1" port="3" />
+        <DigitalDevice name="badBoy2" port="4" />
+        <DigitalDevice name="whiteLine" port="5" />
+    </DeviceInterfaceModule>
+    <MotorController name="Intake and Shoot" serialNumber="AL00VWWM">
+        <Motor name="intake" port="1" />
+        <Motor name="shooter" port="2" />
+    </MotorController>
+    <ServoController name="Servos" serialNumber="AI02QTFM">
+        <ContinuousRotationServo name="shooterStopper" port="1" />
+        <Servo name="snake" port="2" />
+        <Servo name="clutch" port="3" />
+        <Servo name="beacon" port="4" />
+    </ServoController>
+    <MotorController name="Cap Ball" serialNumber="AI049N89">
+        <Motor name="capBall" port="1" />
+    </MotorController>
+</Robot>

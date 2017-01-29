@@ -41,15 +41,15 @@ public class ComponentTest extends VelocityBaseOpMode {
 //        sm.addComponent(new GiroDriveToLine(0.0, 0.1, 1000, this.configuration, "Adjust to white line"));
 
 
-        sm.addComponent(new GiroDriveAlongWallEncoder(10, 0.0, 0.25, 3000, this.configuration, "Range sensor drive along wall"));
-        sm.addComponent(new GiroDriveToLine(0.0, 0.25, 4000, this.configuration, "Range sensor drive along wall to line"));
-        //sm.addComponent(new GiroDriveToLine(180, 0.7, 8000, this.configuration, "Drive to white line"));
-
-        //Press beacon
-        sm.addComponent(new GiroDriveToLine(0, -0.05, 500, this.configuration, "Adjust to white line"));
-        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+//        sm.addComponent(new GiroDriveAlongWallEncoder(10, 0.0, 0.25, 3000, this.configuration, "Range sensor drive along wall"));
+//        sm.addComponent(new GiroDriveToLine(0.0, 0.25, 4000, this.configuration, "Range sensor drive along wall to line"));
+//        //sm.addComponent(new GiroDriveToLine(180, 0.7, 8000, this.configuration, "Drive to white line"));
+//
+//        //Press beacon
+//        sm.addComponent(new GiroDriveToLine(0, -0.05, 500, this.configuration, "Adjust to white line"));
+//        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
+//
+//        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
         sm.addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, this.configuration, "Press Button"));
 
