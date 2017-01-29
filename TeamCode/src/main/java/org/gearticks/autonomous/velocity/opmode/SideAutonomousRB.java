@@ -79,8 +79,8 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
 
         //Shoot balls
         sm.setInitialComponent(disengageBeaconServo);
-        sm.addConnection(disengageBeaconServo, NEXT_STATE, shoot2Balls);
-        sm.addConnection(shoot2Balls, NEXT_STATE, sideSelecter);
+        sm.addConnection(disengageBeaconServo, NEXT_STATE, sideSelecter);
+        //sm.addConnection(shoot2Balls, NEXT_STATE, sideSelecter);
 
 //        sm.addConnection(moveShooterDown1, NEXT_STATE, wait1);
 //        sm.addConnection(wait1, NEXT_STATE, shootBall1);

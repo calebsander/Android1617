@@ -24,7 +24,7 @@ public class BlueSideAutonomous extends LinearStateMachine {
         //Drive to wall
         addComponent(new GiroBananaTurnEncoder(0.0, 20.0, 0.25, 1000, configuration, "BTR 20 - 1000"));
         addComponent(new Wait(0.3, "Wait for 0.5 sec"));
-        addComponent(new GiroBananaTurnEncoder(20.0, 90.0, 0.5, 5000, configuration, "BTR 90 - 4000"));
+        addComponent(new GiroBananaTurnEncoder(20.0, 90.0, 0.5, 5000, configuration, "BTR 90 - 5000"));
         addComponent(new GiroTurn(180.0, configuration, "Straighten out"));
         addComponent(new DebugPause(gamepads, telemetry ,configuration, "Press A to continue"));
         addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.20, 6000, configuration, "Range sensor drive along wall"));
