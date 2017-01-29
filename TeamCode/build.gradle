@@ -16,9 +16,10 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    compile 'com.google.guava:guava:19.0'
     //compile files('libs/guava-17.0.jar')
     compile 'com.android.support:support-annotations:23.0.1'
+    compile project(':openCVLibrary2411')
 }
 // Include common definitions from above.
 apply from: '../build.common.gradle'
