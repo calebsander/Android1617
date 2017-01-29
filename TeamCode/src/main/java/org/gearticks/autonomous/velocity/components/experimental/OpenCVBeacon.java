@@ -39,6 +39,7 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
 	@Override
 	public void setup() {
 		super.setup();
+        this.openCvConfiguration.activate();
 		Mat m = new Mat();
 
 	}
@@ -71,5 +72,11 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
 			return sideOfBlue.getInverse();
 		}
 	}
+
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        this.openCvConfiguration.deactivate();
+    }
 
 }
