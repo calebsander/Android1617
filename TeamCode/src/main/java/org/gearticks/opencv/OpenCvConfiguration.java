@@ -37,8 +37,8 @@ public class OpenCvConfiguration implements CameraBridgeViewBase.CvCameraViewLis
         this.activity = (FtcRobotControllerActivity)hardwareMap.appContext;
 
 //        cameraView = (CameraBridgeViewBase)activity.findViewById(R.id.ImageView01);
-//        cameraView = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
-//        cameraView.setCameraIndex(1);   //use front camera
+        cameraView = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
+        cameraView.setCameraIndex(1);   //use front camera
         if (cameraEnabled)
         {
             cameraView.setCvCameraViewListener(this);
@@ -63,7 +63,7 @@ public class OpenCvConfiguration implements CameraBridgeViewBase.CvCameraViewLis
                     switch (status) {
                         case LoaderCallbackInterface.SUCCESS:
                             Log.i(TAG, "OpenCV Init succes");
-//                            cameraView.enableView();
+                            cameraView.enableView();
                             break;
                         case LoaderCallbackInterface.INIT_FAILED:
                             Log.i(TAG, "OpenCV Init Failed");
