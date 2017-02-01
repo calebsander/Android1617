@@ -25,6 +25,8 @@
         <Servo name="snake" port="2" />
         <Servo name="clutch" port="3" />
         <Servo name="beacon" port="4" />
+        <Servo name="frontRoller" port="5" />
+        <Servo name="rearRoller" port="6" />
     </ServoController>
     <MotorController name="Capball" serialNumber="AI049N89">
         <Motor name="capball" port="1" />
