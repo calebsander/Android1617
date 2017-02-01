@@ -1,6 +1,10 @@
-package org.gearticks.opencv.vision.remove;
+package org.gearticks.opencv.imageprocessors;
 
 
+import org.gearticks.opencv.vision.BeaconColorResult;
+import org.gearticks.opencv.vision.ImageProcessor;
+import org.gearticks.opencv.vision.ImageProcessorResult;
+import org.gearticks.opencv.vision.ImageUtil;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -16,8 +20,8 @@ import java.util.List;
  * Created by vandejd1 on 8/29/16.
  * FTC Team EV 7393
  */
-public class BeaconProcessor implements ImageProcessor<BeaconColorResult> {
-    private static final String TAG = "BeaconProcessor";
+public class EvBeaconProcessor implements ImageProcessor<BeaconColorResult> {
+    private static final String TAG = "EvBeaconProcessor";
     private static final double MIN_MASS = 6;
 
     @Override
@@ -124,8 +128,10 @@ public class BeaconProcessor implements ImageProcessor<BeaconColorResult> {
 
         //draw the color result bars
         int barHeight = hsv.height()/30;
-        Imgproc.rectangle(rgbaFrame, new Point(0, 0), new Point(hsv.width()/2, barHeight), left.color, barHeight);
-        Imgproc.rectangle(rgbaFrame, new Point(hsv.width()/2, 0), new Point(hsv.width(), barHeight), right.color, barHeight);
+//        Imgproc.rectangle(rgbaFrame, new Point(0, 0), new Point(hsv.width()/2, barHeight), left.color, barHeight);
+//        Imgproc.rectangle(rgbaFrame, new Point(hsv.width()/2, 0), new Point(hsv.width(), barHeight), right.color, barHeight);
+        Core.rectangle(rgbaFrame, new Point(0, 0), new Point(hsv.width()/2, barHeight), left.color, barHeight);
+        Core.rectangle(rgbaFrame, new Point(hsv.width()/2, 0), new Point(hsv.width(), barHeight), right.color, barHeight);
 
         if (saveImages) {
             ImageUtil.saveImage(TAG, rgbaFrame, Imgproc.COLOR_RGBA2BGR, "1_binary", startTime);

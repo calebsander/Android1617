@@ -92,6 +92,7 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import org.firstinspires.ftc.ftccommon.external.SoundPlayingRobotMonitor;
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 import org.firstinspires.inspection.RcInspectionActivity;
+import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
 import org.gearticks.opencv.vision.FrameGrabber;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -121,7 +122,7 @@ public class FtcRobotControllerActivity extends Activity {
 
     cameraBridgeViewBase = (JavaCameraView) findViewById(R.id.show_camera_activity_java_surface_view);
     frameGrabber = new FrameGrabber(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
-    frameGrabber.setImageProcessor(new BeaconProcessor());
+    frameGrabber.setImageProcessor(new EvBeaconProcessor());
     frameGrabber.setSaveImages(true);
   }
 
@@ -156,7 +157,7 @@ public class FtcRobotControllerActivity extends Activity {
   void myOnResume(){
     if (!OpenCVLoader.initDebug()) {
       Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-      OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
+      OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, this, mLoaderCallback);
     } else {
       Log.d(TAG, "OpenCV library found inside package. Using it!");
       mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);

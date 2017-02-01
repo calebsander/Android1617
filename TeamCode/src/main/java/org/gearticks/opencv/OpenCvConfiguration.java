@@ -1,24 +1,19 @@
 package org.gearticks.opencv;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.R;
+import org.gearticks.opencv.vision.FrameGrabber;
+import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
-import org.opencv.objdetect.CascadeClassifier;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import static org.gearticks.opmodes.utility.Utils.TAG;
 
@@ -26,22 +21,46 @@ import static org.gearticks.opmodes.utility.Utils.TAG;
  * Created by vterpstra on 1/29/2017.
  */
 
-public class OpenCvConfiguration implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class OpenCvConfiguration {
     private FtcRobotControllerActivity activity;
-    private CameraBridgeViewBase cameraView;
+    private CameraBridgeViewBase cameraBridgeViewBase;
+    static final int FRAME_WIDTH_REQUEST = 176;
+    static final int FRAME_HEIGHT_REQUEST = 144;
+
     private Mat image;
 
     private static final boolean cameraEnabled = false; //Camera is not working yet!
 
+    //manages getting one frame at a time
+    public static FrameGrabber frameGrabber = null;
+
     public OpenCvConfiguration(HardwareMap hardwareMap){
         this.activity = (FtcRobotControllerActivity)hardwareMap.appContext;
 
-//        cameraView = (CameraBridgeViewBase)activity.findViewById(R.id.ImageView01);
-        cameraView = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
-        cameraView.setCameraIndex(1);   //use front camera
-        if (cameraEnabled)
+        this.initOpenCv(); //does this needs to be done before configuring the camera and listener?
+
+//        cameraBridgeViewBase = (CameraBridgeViewBase)activity.findViewById(R.id.ImageView01);
+        cameraBridgeViewBase = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
+        cameraBridgeViewBase.setCameraIndex(1);   //use front camera
+
+
+        frameGrabber = new FrameGrabber(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
+        frameGrabber.setImageProcessor(new EvBeaconProcessor());
+        frameGrabber.setSaveImages(true);
+
+
+    }
+
+    private void initOpenCv(){
+        if (!OpenCVLoader.initDebug())
         {
-            cameraView.setCvCameraViewListener(this);
+            Log.i(TAG, "Internal OpenCV library not found, using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, activity, loaderCallback);
+        }
+        else
+        {
+            Log.i(TAG, "OpenCV library found inside package, use it!");
+            loaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
     }
 
@@ -63,7 +82,7 @@ public class OpenCvConfiguration implements CameraBridgeViewBase.CvCameraViewLis
                     switch (status) {
                         case LoaderCallbackInterface.SUCCESS:
                             Log.i(TAG, "OpenCV Init succes");
-                            cameraView.enableView();
+                            cameraBridgeViewBase.enableView();
                             break;
                         case LoaderCallbackInterface.INIT_FAILED:
                             Log.i(TAG, "OpenCV Init Failed");
@@ -85,80 +104,48 @@ public class OpenCvConfiguration implements CameraBridgeViewBase.CvCameraViewLis
                 }   //onManagerConnected
             };
 
-    /**
-     * This method is called on every captured camera frame. It will do face detection on the
-     * captured frame.
-     *
-     * @param inputFrame specifies the captured frame object.
-     */
-    @Override //required by CameraBridgeViewBase.CvCameraViewListener2
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
-        image = inputFrame.rgba();
 
-        //DO stuff ????
-        Log.d(TAG, "OpenCV onCameraFrame");
-        Mat m = new Mat();
-
-        return image;
-    }
-
-    /**
-     * This method is called when the camera view is started. It will allocate and initialize
-     * some global resources.
-     *
-     * @param width specifies the width of the camera view.
-     * @param height specifies the height of the camera view.
-     */
-    @Override //required by CameraBridgeViewBase.CvCameraViewListener2
-    public void onCameraViewStarted(int width, int height) {
-        //Do something?
-    }
-
-    /**
-     * This method is called when the camera view is stopped. It will clean up the allocated
-     * global resources.
-     */
-    @Override //required by CameraBridgeViewBase.CvCameraViewListener2
-    public void onCameraViewStopped() {
-        if (image != null) image.release();
-    }
 
     //-------------------------------------------------------------------------------------------
 
     public void activate() {
-        this.startCamera();
+//        this.startCamera();
     }
 
-    public void deactivate(){ this.stopCamera(); }
-
-
-    /**
-     * Do this at OpMode initialization?
-     * Or each time when a AutComponents wants to use OpenCV?
-     */
-    private void startCamera() {
-        if (cameraEnabled)
-        {
-            if (!OpenCVLoader.initDebug())
-            {
-                Log.i(TAG, "Internal OpenCV library not found, using OpenCV Manager for initialization");
-                OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, activity, loaderCallback);
-            }
-            else
-            {
-                Log.i(TAG, "OpenCV library found inside package, use it!");
-                loaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-            }
-        }
-    }   //startCamera
-
-    private void stopCamera() {
-
-        if (cameraEnabled)
-        {
-            cameraView.disableView();
-            Log.i(TAG, "Stopping camera!");
-        }
+    public void deactivate(){
+//        this.stopCamera();
     }
+
+
+//    /**
+//     * Do this at OpMode initialization?
+//     * Or each time when a AutComponents wants to use OpenCV?
+//     */
+//    private void startCamera() {
+//        if (cameraEnabled)
+//        {
+//            if (!OpenCVLoader.initDebug())
+//            {
+//                Log.i(TAG, "Internal OpenCV library not found, using OpenCV Manager for initialization");
+//                OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, activity, loaderCallback);
+//            }
+//            else
+//            {
+//                Log.i(TAG, "OpenCV library found inside package, use it!");
+//                loaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+//            }
+//        }
+//    }   //startCamera
+//
+//
+//
+//    private void stopCamera() {
+//
+//        if (cameraEnabled)
+//        {
+//            cameraBridgeViewBase.disableView();
+//            Log.i(TAG, "Stopping camera!");
+//        }
+//    }
 
 }

@@ -14,7 +14,7 @@ public class ImageProcessorResult<ResultType> {
   private final ResultType result;
   private final Mat frame;
 
-  ImageProcessorResult(long startTime, Mat frame, ResultType result) {
+  public ImageProcessorResult(long startTime, Mat frame, ResultType result) {
     this.startTime = startTime;
     this.result = result;
     this.frame = frame;
