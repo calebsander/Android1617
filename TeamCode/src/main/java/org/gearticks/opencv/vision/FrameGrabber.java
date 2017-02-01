@@ -1,8 +1,10 @@
 package org.gearticks.opencv.vision;
 
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Core;
@@ -63,13 +65,16 @@ public class FrameGrabber implements CameraBridgeViewBase.CvCameraViewListener2 
   }
 
   public FrameGrabber(CameraBridgeViewBase cameraBridgeViewBase, int frameWidthRequest, int frameHeightRequest) {
-    cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
-
-    cameraBridgeViewBase.setMinimumWidth(frameWidthRequest);
-    cameraBridgeViewBase.setMinimumHeight(frameHeightRequest);
-    cameraBridgeViewBase.setMaxFrameSize(frameWidthRequest, frameHeightRequest);
+//    cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
+//
+//    cameraBridgeViewBase.setMinimumWidth(frameWidthRequest);
+//    cameraBridgeViewBase.setMinimumHeight(frameHeightRequest);
+//    cameraBridgeViewBase.setMaxFrameSize(frameWidthRequest, frameHeightRequest);
     cameraBridgeViewBase.setCvCameraViewListener(this);
+      Log.d(TAG, "FrameGrabber set as cameraBridgeViewBase listener");
   }
+
+
 
   private boolean isImageProcessorNull(){
     if(imageProcessor == null) {
@@ -147,6 +152,7 @@ public class FrameGrabber implements CameraBridgeViewBase.CvCameraViewListener2 
 
   @Override
   public void onCameraViewStarted(int width, int height) {
+      Log.v(TAG, "FrameGrabber.onCameraViewStarted");
     //create the frame and tmp images
     frame = new Mat(height, width, CvType.CV_8UC4, new Scalar(0,0,0));
     blank = new Mat(height, width, CvType.CV_8UC4, new Scalar(0,0,0));
@@ -156,11 +162,13 @@ public class FrameGrabber implements CameraBridgeViewBase.CvCameraViewListener2 
 
   @Override
   public void onCameraViewStopped() {
+      Log.v(TAG, "FrameGrabber.onCameraViewStopped");
 
   }
 
   @Override
   public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+      Log.v(TAG, "FrameGrabber.onCameraFrame");
     if(mode == FrameGrabberMode.SINGLE){ //if a single frame was requested
       processFrame(inputFrame); //process it
       stopFrameGrabber(); //and stop grabbing

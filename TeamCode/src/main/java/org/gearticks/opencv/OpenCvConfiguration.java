@@ -1,6 +1,7 @@
 package org.gearticks.opencv;
 
 import android.util.Log;
+import android.view.SurfaceView;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -37,18 +38,34 @@ public class OpenCvConfiguration {
     public OpenCvConfiguration(HardwareMap hardwareMap){
         this.activity = (FtcRobotControllerActivity)hardwareMap.appContext;
 
-        this.initOpenCv(); //does this needs to be done before configuring the camera and listener?
+
 
 //        cameraBridgeViewBase = (CameraBridgeViewBase)activity.findViewById(R.id.ImageView01);
         cameraBridgeViewBase = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
         cameraBridgeViewBase.setCameraIndex(1);   //use front camera
-
+        this.initializeCameraBridgeViewBase(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
+        Log.d(TAG, "Found cameraBridgeViewBase" + cameraBridgeViewBase.toString());
 
         frameGrabber = new FrameGrabber(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
         frameGrabber.setImageProcessor(new EvBeaconProcessor());
         frameGrabber.setSaveImages(true);
 
+        this.initOpenCv(); //does this needs to be done at least after the cameraBridgeViewBase has a non-null value
+    }
 
+    private void initializeCameraBridgeViewBase(final CameraBridgeViewBase camera, final int frameWidthRequest, final int frameHeightRequest){
+        this.activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                //stuff that updates ui
+                camera.setVisibility(SurfaceView.VISIBLE);
+                camera.setMinimumWidth(frameWidthRequest);
+                camera.setMinimumHeight(frameHeightRequest);
+                camera.setMaxFrameSize(frameWidthRequest, frameHeightRequest);
+
+            }
+        });
     }
 
     /**
@@ -88,7 +105,7 @@ public class OpenCvConfiguration {
 
                     switch (status) {
                         case LoaderCallbackInterface.SUCCESS:
-                            Log.i(TAG, "OpenCV Init succes");
+                            Log.i(TAG, "OpenCV Init success");
                             cameraBridgeViewBase.enableView();
                             break;
                         case LoaderCallbackInterface.INIT_FAILED:
