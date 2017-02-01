@@ -43,7 +43,7 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
         if (allianceColorIsBlue) this.angleMultiplier = 1.0; //angles were calculated for blue side
         else this.angleMultiplier = -1.0; //invert all angles for red side
         this.configuration.resetEncoder();
-        this.configuration.activateWhiteLineColor();
+//        this.configuration.activateWhiteLineColor();
     }
 
     @Override
@@ -56,13 +56,15 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
         this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
         this.configuration.move(this.direction, 0.06);
 
-        Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLine());
-        if (this.configuration.isWhiteLine()){
+        Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLineIR());
+        if (this.configuration.isWhiteLineIR()){
             Log.d(Utils.TAG, "Transitioning because found white line");
+            Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             return LINE_FOUND;
         }
         if (this.configuration.encoderPositive() > this.maxEncoderTarget) {
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
+            Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             return ENCODER_TIMEOUT;
         }
         return NOT_DONE;
@@ -71,7 +73,7 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
     @Override
     public void tearDown() {
         super.tearDown();
-        this.configuration.deactivateWhiteLineColor();
+//        this.configuration.deactivateWhiteLineColor();
         //stop motors
         this.configuration.stopMotion();
     }

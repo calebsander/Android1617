@@ -23,7 +23,7 @@ public class LeftPressBeaconServo extends AutonomousComponentHardware<VelocityCo
     @Override
     public int run() {
         final int superTransition = super.run();
-        if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
+        if (this.stageTimer.seconds() > 1) return NEXT_STATE;
         else return NOT_DONE;
     }
 }

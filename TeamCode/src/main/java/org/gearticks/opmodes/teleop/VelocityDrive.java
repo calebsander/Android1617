@@ -31,7 +31,7 @@ public class VelocityDrive extends BaseOpMode {
 	private boolean shotBall;
 
 	protected void initialize() {
-		this.configuration = new VelocityConfiguration(this.hardwareMap);
+		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.direction = new DriveDirection();
 		this.ballState = BallState.values()[0];
 		this.ballStateTimer = new ElapsedTime();
@@ -63,11 +63,11 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.intake.setPower(intakePower);
 
-		double snakePosition  = MotorConstants.SNAKE_HOLDING,
-		       clutchPosition = MotorConstants.CLUTCH_CLUTCHED;
+		double snakePosition  = MotorConstants.SNAKE_V2_HOLDING,
+		       clutchPosition = MotorConstants.CLUTCH_V2_CLUTCHED;
 		switch (this.ballState) {
 			case INTAKING:
-				clutchPosition = MotorConstants.CLUTCH_ENGAGED; //this is the only state when it is safe to load a ball into the snake
+				clutchPosition = MotorConstants.CLUTCH_V2_ENGAGED; //this is the only state when it is safe to load a ball into the snake
 				this.autoShooterUnlessBumper();
 				//Wait for snake to return to holding because it triggers the sensors on the way down
 				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE && this.configuration.ballInSnake()) this.nextBallState();
@@ -78,7 +78,7 @@ public class VelocityDrive extends BaseOpMode {
 				break;
 			case LOADING:
 				this.configuration.teleopAdvanceShooterToDown(); //hold shooter down
-				snakePosition = MotorConstants.SNAKE_DUMPING; //this is the only state when the snake should be up
+				snakePosition = MotorConstants.SNAKE_V2_DUMPING; //this is the only state when the snake should be up
 				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) {
 					this.shotBall = false;
 					this.nextBallState();

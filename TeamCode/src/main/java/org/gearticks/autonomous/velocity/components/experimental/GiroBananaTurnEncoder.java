@@ -65,12 +65,13 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 
 		this.direction.drive(0.0, this.power);
 		double currentHeading = this.configuration.imu.getRelativeYaw();
-		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1); // * this.angleMultiplier
 		this.configuration.move(this.direction, 0.06);
+		double delta = currentHeading - ((360 + this.endHeading * this.angleMultiplier)%360);
 
 		if (distance > this.encoderTarget) {
 			this.direction.drive(0.0, 0);
-			if (Math.abs(currentHeading - this.endHeading) < 10){
+			if (Math.abs(delta) < 10){
 				transition = NEXT_STATE;
 			}
 			else{
@@ -81,7 +82,7 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		else transition = NOT_DONE;
 		this.configuration.move(this.direction, 0.06);
 
-		Log.v(Utils.TAG, "Target heading = " + targetHeading + " Distance = " + distance + " Current Heading = " + currentHeading);
+		Log.v(Utils.TAG, "Target heading = " + targetHeading + " Distance = " + distance + " Current Heading = " + currentHeading + " Delta = " + delta);
 		return transition;
 	}
 

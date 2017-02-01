@@ -40,6 +40,7 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 
 		final int transition;
 		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10) {
+			Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
 			transition = NEXT_STATE;
 		}
 		else transition = NOT_DONE;
