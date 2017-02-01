@@ -1,6 +1,8 @@
 package org.gearticks.opencv.imageprocessors;
 
 
+import android.util.Log;
+
 import org.gearticks.opencv.vision.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessor;
 import org.gearticks.opencv.vision.ImageProcessorResult;
@@ -26,6 +28,7 @@ public class EvBeaconProcessor implements ImageProcessor<BeaconColorResult> {
 
     @Override
     public ImageProcessorResult<BeaconColorResult> process(long startTime, Mat rgbaFrame, boolean saveImages) {
+        Log.v(TAG, "Starting the EvBeaconProcessor");
         //save the image in the Pictures directory
         if (saveImages) {
             ImageUtil.saveImage(TAG, rgbaFrame, Imgproc.COLOR_RGBA2BGR, "0_camera", startTime);

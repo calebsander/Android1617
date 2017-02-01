@@ -51,6 +51,11 @@ public class OpenCvConfiguration {
 
     }
 
+    /**
+     * Initializes OpenCV.
+     * Based on @see <a href="http://docs.opencv.org/2.4/doc/tutorials/introduction/android_binary_package/dev_with_OCV_on_Android.html"</a>
+     * Once successful, calls the loaderCallback, which will enable the camera, which will enable the camera listener
+     */
     private void initOpenCv(){
         if (!OpenCVLoader.initDebug())
         {
@@ -66,6 +71,8 @@ public class OpenCvConfiguration {
 
     /**
      * Implements the OpenCV manager loader callback methods.
+     * Is called when OpenCV async is ready (?)
+     * If so, enables the cameraBridgeViewBase, which in turn will start the listener (?)
      */
     private BaseLoaderCallback loaderCallback =
             new BaseLoaderCallback(activity) {
