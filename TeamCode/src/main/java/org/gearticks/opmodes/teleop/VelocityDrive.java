@@ -52,10 +52,10 @@ public class VelocityDrive extends BaseOpMode {
 		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 
 		final double intakePower;
-		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
+		if (this.gamepads[CALVIN].getRightBumper() /*|| this.gamepads[JACK].getRightBumper()*/) {
 			intakePower = MotorConstants.INTAKE_IN;
 		}
-		else if (this.gamepads[CALVIN].getRightTrigger() || this.gamepads[JACK].getRightTrigger()) {
+		else if (this.gamepads[CALVIN].getRightTrigger() /*|| this.gamepads[JACK].getRightTrigger()*/) {
 			intakePower = MotorConstants.INTAKE_OUT;
 		}
 		else {
@@ -98,6 +98,18 @@ public class VelocityDrive extends BaseOpMode {
 			shooterStopperPower = MotorWrapper.STOPPED;
 		}
 		this.configuration.safeShooterStopper(shooterStopperPower);
+
+		final double capBallPower;
+		if (this.gamepads[JACK].getRightBumper()) {
+			capBallPower = MotorConstants.CAPBALL_UP;
+		}
+		else if (this.gamepads[JACK].getRightTrigger()) {
+			capBallPower = MotorConstants.CAPBALL_DOWN;
+		}
+		else {
+			capBallPower = MotorWrapper.STOPPED;
+		}
+		this.configuration.capball.setPower(capBallPower);
 	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball

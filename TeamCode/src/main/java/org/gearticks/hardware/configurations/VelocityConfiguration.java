@@ -22,7 +22,7 @@ import org.gearticks.hardware.drive.TankDrive;
 import org.gearticks.opmodes.utility.Utils;
 
 public class VelocityConfiguration implements HardwareConfiguration {
-	public final MotorWrapper intake, shooter, beaconBumpers;
+	public final MotorWrapper intake, shooter, beaconBumpers, capball;
 	private boolean shooterWasDown;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
@@ -42,6 +42,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+		this.capball = new MotorWrapper((DcMotor) hardwareMap.get("capball"), MotorType.NEVEREST_40);
 		this.resetAutoShooter();
 		this.beaconBumpers = new MotorWrapper((DcMotor)hardwareMap.get("shooter"), MotorType.NEVEREST_40);
 		this.beaconBumpers.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
@@ -211,6 +212,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void beaconPresserDisengage() {
 		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_DISENGAGED);
 	}
+
 	/**
 	 *
 	 * @return true if white line detected
@@ -251,6 +253,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double INTAKE_OUT = 1.0;
 		public static final double INTAKE_IN = -INTAKE_OUT;
 
+		public static final double CAPBALL_UP = 1.0;
+		public static final double CAPBALL_DOWN = -CAPBALL_UP;
+
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
@@ -258,15 +263,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 
-		public static final double SNAKE_HOLDING = 0.9;
-		public static final double SNAKE_DUMPING = 0.7;
+		public static final double SNAKE_HOLDING = 0.25;
+		public static final double SNAKE_DUMPING = 0.61;
+
+		public static final double ROLLERS_DOWN = 0.0;
+		public static final double ROLLERS_UP = 1.0;
 
 		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0; //TODO: fix value
-		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
+		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.0;
+		public static final double BEACON_PRESSER_DISENGAGED = 0.25;
 
-		public static final double CLUTCH_CLUTCHED = 0.7;
-		public static final double CLUTCH_ENGAGED = 0.3;
+		public static final double CLUTCH_CLUTCHED = 1.0;
+		public static final double CLUTCH_ENGAGED = 0.5;
 
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
