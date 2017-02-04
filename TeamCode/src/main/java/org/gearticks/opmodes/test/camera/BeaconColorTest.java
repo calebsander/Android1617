@@ -1,4 +1,4 @@
-package org.gearticks.opmodes.test;
+package org.gearticks.opmodes.test.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

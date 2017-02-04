@@ -1,4 +1,4 @@
-package org.gearticks.opmodes.test;
+package org.gearticks.opmodes.test.camera;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;

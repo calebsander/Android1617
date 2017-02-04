@@ -1,4 +1,4 @@
-package org.gearticks.opmodes.test;
+package org.gearticks.opmodes.test.sensors;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;

@@ -1,4 +1,4 @@
-package org.gearticks.opmodes.test;
+package org.gearticks.opmodes.test.sensors;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
