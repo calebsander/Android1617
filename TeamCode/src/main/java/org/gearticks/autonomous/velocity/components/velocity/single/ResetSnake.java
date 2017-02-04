@@ -18,7 +18,7 @@ public class ResetSnake extends AutonomousComponentHardware<VelocityConfiguratio
     @Override
     public void setup() {
         super.setup();
-        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_HOLDING);
+        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_V2_HOLDING);
     }
 
     @Override

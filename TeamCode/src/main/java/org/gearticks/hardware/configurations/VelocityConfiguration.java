@@ -220,13 +220,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public void beaconPresserEngageLeft() {
-		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_LEFT_ENGAGED);
+		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_LEFT);
 	}
 	public void beaconPresserEngageRight() {
-		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_RIGHT_ENGAGED);
+		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_RIGHT);
 	}
 	public void beaconPresserDisengage() {
-		this.beaconPresser.setPosition(MotorConstants.BEACON_PRESSER_DISENGAGED);
+		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_NEUTRAL);
 	}
 	/**
 	 *
@@ -263,6 +263,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public boolean isWhiteLineIR() {
 		return !this.whiteLineSensor.getState();
 	}
+
 	public void rollersUp() {
 		this.frontRoller.setPosition(MotorConstants.FRONT_ROLLER_V2_UP);
 		this.rearRoller.setPosition(MotorConstants.REAR_ROLLER_V2_UP);
@@ -299,10 +300,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_LEFT = 0.41;
+		public static final double PRESSER_V2_LEFT = 0.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
-		public static final double PRESSER_V2_NEUTRAL = 0.77;
+		public static final double PRESSER_V2_NEUTRAL = 0.5;
 
 		@Deprecated
 		public static final double CLUTCH_CLUTCHED = 0.7;

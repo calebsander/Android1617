@@ -1,33 +1,29 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
+
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.opmodes.utility.Utils;
 
-public class LoadBall extends AutonomousComponentHardware<VelocityConfiguration> {
+public class DeploySideRollers extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
-    public LoadBall(@NonNull VelocityConfiguration configuration, String id) {
+    public DeploySideRollers(@NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
     }
 
     @Override
     public void setup() {
         super.setup();
-        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_V2_DUMPING);
+        configuration.rollersDown();
     }
 
     @Override
     public int run() {
         final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
-
-        //Log.d(Utils.TAG, "LoadBall - timer = " + this.stageTimer.seconds());
-        if (this.stageTimer.seconds() > 0.7) return NEXT_STATE;
+        if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
         else return NOT_DONE;
     }
 }

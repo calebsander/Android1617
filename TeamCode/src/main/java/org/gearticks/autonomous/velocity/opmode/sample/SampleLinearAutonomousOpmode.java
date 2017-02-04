@@ -16,7 +16,7 @@ public class SampleLinearAutonomousOpmode extends VelocityBaseOpMode {
         final LinearStateMachine sm = new LinearStateMachine();
         //Shoot 2 balls
 
-        sm.addComponent(new Shoot2Balls(this.configuration, "Load ball"));
+        sm.addComponent(new Shoot2Balls(gamepads, telemetry, this.configuration, "Load ball"));
 
         sm.addComponent(new Stopped(this.configuration));
 

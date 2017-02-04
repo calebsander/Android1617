@@ -24,7 +24,7 @@ public class RedSideAutonomous extends LinearStateMachine {
         //addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         addComponent(new GiroBananaTurnEncoder(70.0, 0.0, 0.5, 6000, configuration, "BTL 90 - 4000"));
         addComponent(new GiroTurn(0.0, configuration, "Straighten out"));
-        addComponent(new DebugPause(gamepads, telemetry ,configuration, "Press A to continue"));
+        //addComponent(new DebugPause(gamepads, telemetry ,configuration, "Press A to continue"));
         addComponent(new GiroDriveAlongWallLine(distanceFromWall, 0.0, 0.20, 6000, configuration, "Range sensor drive along wall"));
 
         //Press beacon
@@ -43,5 +43,7 @@ public class RedSideAutonomous extends LinearStateMachine {
         addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         addComponent(new GiroTurn(0.0, configuration, "Straighten out"));
         addComponent(new SidePressBeaconButton(0.0, vuforiaConfiguration, configuration, "Press Button"));
+
+
     }
 }
