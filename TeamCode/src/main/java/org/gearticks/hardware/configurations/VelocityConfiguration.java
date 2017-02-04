@@ -211,6 +211,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterWasDown = false;
 	}
 
+	public void advanceShooterToShooting() {
+		this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+		final int ticksToShooting;
+		if (this.v2) ticksToShooting = MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING;
+		else ticksToShooting = MotorConstants.SHOOTER_TICKS_TO_SHOOTING;
+		this.shooter.setTarget(ticksToShooting);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+	}
+
 	public boolean isShooterAtTarget() {
 		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 10;
 	}
@@ -279,14 +288,14 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.3;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 		public static final int SHOOTER_V2_TICKS_TO_DOWN = 0;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
-		public static final int SHOOTER_V2_TICKS_TO_SHOOTING = -152;
+		public static final int SHOOTER_V2_TICKS_TO_SHOOTING = -150;
 
 		@Deprecated
 		public static final double SNAKE_HOLDING = 0.9;
@@ -294,6 +303,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		@Deprecated
 		public static final double SNAKE_DUMPING = 0.7;
 		public static final double SNAKE_V2_DUMPING = 0.53;
+		public static final double SNAKE_V2_TIME_TO_MOVE = 0.4; //seconds for snake to switch positions
 
 		@Deprecated
 		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0; //TODO: fix value
@@ -307,10 +317,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		@Deprecated
 		public static final double CLUTCH_CLUTCHED = 0.7;
-		public static final double CLUTCH_V2_CLUTCHED = 1.0;
+		public static final double CLUTCH_V2_CLUTCHED = 0.94;
 		@Deprecated
 		public static final double CLUTCH_ENGAGED = 0.3;
-		public static final double CLUTCH_V2_ENGAGED = 0.67;
+		public static final double CLUTCH_V2_ENGAGED = 0.3;
 
 		public static final double FRONT_ROLLER_V2_UP = 0.48;
 		public static final double FRONT_ROLLER_V2_DOWN = 0.95;

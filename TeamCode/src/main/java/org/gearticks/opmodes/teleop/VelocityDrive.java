@@ -11,7 +11,6 @@ import org.gearticks.opmodes.BaseOpMode;
 @TeleOp
 public class VelocityDrive extends BaseOpMode {
 	private static final int CALVIN = 0, JACK = 1;
-	private static final double TIME_TO_MOVE_SNAKE = 0.4; //seconds for snake to switch positions
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
 
@@ -25,17 +24,26 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	//The current state of the ball loader
 	private BallState ballState;
+	private enum ShooterState {
+		//Going to down position
+		ADVANCING_TO_DOWN,
+		//Going to shooting position
+		ADVANCING_TO_SHOOTING
+	}
+	//The current state of the shooter control
+	private ShooterState shooterState;
 	//Keeps track of the amount of time elapsed since the switch to the current BallState
 	private ElapsedTime ballStateTimer;
-	//Whether ball has been shot since it was last loaded
-	private boolean shotBall;
+	//Whether we think there is a ball in the shooter
+	private boolean ballInShooter;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.direction = new DriveDirection();
 		this.ballState = BallState.values()[0];
+		this.shooterState = ShooterState.values()[0];
 		this.ballStateTimer = new ElapsedTime();
-		this.shotBall = true;
+		this.ballInShooter = false;
 	}
 	protected void loopAfterStart() {
 		final int driveGamepad = CALVIN;
@@ -70,17 +78,18 @@ public class VelocityDrive extends BaseOpMode {
 				clutchPosition = MotorConstants.CLUTCH_V2_ENGAGED; //this is the only state when it is safe to load a ball into the snake
 				this.autoShooterUnlessBumper();
 				//Wait for snake to return to holding because it triggers the sensors on the way down
-				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE && this.configuration.ballInSnake()) this.nextBallState();
+				final boolean snakeReturnedToHolding = this.ballStateTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE;
+				if (snakeReturnedToHolding && this.configuration.ballInSnake()) this.nextBallState();
 				break;
 			case HOLDING:
 				this.autoShooterUnlessBumper();
-				if (this.configuration.isShooterDown() && this.shotBall) this.nextBallState();
+				if (this.configuration.isShooterDown() && !this.ballInShooter) this.nextBallState();
 				break;
 			case LOADING:
 				this.configuration.advanceShooterToDown(); //hold shooter down
 				snakePosition = MotorConstants.SNAKE_V2_DUMPING; //this is the only state when the snake should be up
-				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) {
-					this.shotBall = false;
+				if (this.ballStateTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) {
+					this.ballInShooter = true;
 					this.nextBallState();
 				}
 		}
@@ -103,18 +112,30 @@ public class VelocityDrive extends BaseOpMode {
 		if (this.gamepads[JACK].getY()) capBallPower = MotorConstants.CAP_BALL_UP;
 		else if (this.gamepads[JACK].getA()) capBallPower = MotorConstants.CAP_BALL_DOWN;
 		else capBallPower = MotorWrapper.STOPPED;
-		this.configuration.capBall.setPower(capBallPower);
+		final double capBallScaling;
+		if (this.gamepads[JACK].getBack()) capBallScaling = MotorConstants.CAP_BALL_SLOW_SCALE;
+		else capBallScaling = 1.0;
+		this.configuration.capBall.setPower(capBallPower * capBallScaling);
 	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
 	private void autoShooterUnlessBumper() {
-		if (this.gamepads[JACK].getLeftBumper()) {
-			this.configuration.resetAutoShooter();
-			this.configuration.shootFast();
-			this.shotBall = true;
-		}
-		else {
-			this.configuration.advanceShooterToDown();
+		switch (this.shooterState) {
+			case ADVANCING_TO_DOWN:
+				this.configuration.advanceShooterToDown();
+				//Require ball to be newly loaded (unless overridden)
+				final boolean shotRequested = this.gamepads[JACK].getLeftBumper() && (this.ballInShooter || this.gamepads[JACK].getX());
+				if (this.configuration.isShooterDown() && shotRequested) {
+					this.shooterState = ShooterState.ADVANCING_TO_SHOOTING;
+				}
+				break;
+			case ADVANCING_TO_SHOOTING:
+				this.configuration.advanceShooterToShooting();
+				if (this.configuration.isShooterAtTarget()) {
+					this.ballInShooter = false;
+					this.configuration.resetAutoShooter();
+					this.shooterState = ShooterState.ADVANCING_TO_DOWN;
+				}
 		}
 	}
 	//Advance to next BallState (wrapping around) and reset state timer
