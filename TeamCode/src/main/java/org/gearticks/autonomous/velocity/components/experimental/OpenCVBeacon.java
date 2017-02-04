@@ -24,6 +24,9 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
     private final OpenCvConfiguration openCvConfiguration;
 	private boolean allianceColorIsBlue;
 
+    private final int maxNumFrames = 3;
+    private int numFramesProcessed = 0;
+
 	/**
 	 * @param configuration
 	 * @param id - descriptive name for logging
@@ -54,10 +57,17 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
 		if (superTransition != NOT_DONE) return superTransition;
 
         if (this.openCvConfiguration.frameGrabber.isResultReady()){
-            Log.v(TAG, "New Frame is ready. Requesting next frame.");
+            Log.v(TAG, "New Frame is ready. Requesting next frame. NumFrames = " + this.numFramesProcessed);
             ImageProcessorResult<BeaconColorResult> result =  this.openCvConfiguration.frameGrabber.getResult();
             Log.v(TAG, "Result: Left color =  "+ result.getResult().getLeftColor() + ", right color = " +  result.getResult().getRightColor());
-            this.openCvConfiguration.frameGrabber.grabSingleFrame();
+            this.numFramesProcessed++;
+            if (this.numFramesProcessed > this.maxNumFrames){
+                return NEXT_STATE;
+            }
+            else {
+                this.openCvConfiguration.frameGrabber.grabSingleFrame();
+            }
+
         }
         else {
             Log.v(TAG, "New Frame is not ready. Waiting for next cycle.");
