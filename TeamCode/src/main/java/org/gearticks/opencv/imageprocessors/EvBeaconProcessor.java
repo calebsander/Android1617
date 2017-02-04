@@ -28,7 +28,7 @@ public class EvBeaconProcessor implements ImageProcessor<BeaconColorResult> {
 
     @Override
     public ImageProcessorResult<BeaconColorResult> process(long startTime, Mat rgbaFrame, boolean saveImages) {
-        Log.v(TAG, "Starting the EvBeaconProcessor");
+        Log.v(TAG, "Starting the EvBeaconProcessor. SaveImages = "+saveImages);
         //save the image in the Pictures directory
         if (saveImages) {
             ImageUtil.saveImage(TAG, rgbaFrame, Imgproc.COLOR_RGBA2BGR, "0_camera", startTime);
