@@ -186,11 +186,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
 
-	public void shootFast() {
-		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
-		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
-	}
-
 	public void advanceShooterToDown() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
@@ -200,7 +195,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				if (this.v2) ticksToDown = MotorConstants.SHOOTER_V2_TICKS_TO_DOWN;
 				else ticksToDown = MotorConstants.SHOOTER_TICKS_TO_DOWN;
 				this.shooter.setTarget(ticksToDown);
-				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 				this.shooterWasDown = true;
 			}
 			else this.shootSlow();
@@ -221,7 +216,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public boolean isShooterAtTarget() {
-		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 10;
+		return Math.abs(this.shooter.encoderValue() - this.shooter.getTarget()) < 20;
 	}
 
 	public boolean isShooterDown() {
@@ -288,7 +283,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.3;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
@@ -306,7 +301,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SNAKE_V2_TIME_TO_MOVE = 0.4; //seconds for snake to switch positions
 
 		@Deprecated
-		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0; //TODO: fix value
+		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0;
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;

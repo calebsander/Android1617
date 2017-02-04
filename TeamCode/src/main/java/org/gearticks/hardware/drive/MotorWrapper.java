@@ -112,7 +112,10 @@ public class MotorWrapper {
 	}
 	//Gets the last set target
 	public int getTarget() {
-		return this.lastTarget;
+		final int relativeTarget = this.lastTarget - this.encoderResetPoint;
+		final int scaledTarget = (int)(relativeTarget * this.type.scaling);
+		if (this.reversed) return -scaledTarget;
+		else return scaledTarget;
 	}
 	//Returns whether or not the motor is still trying to reach the target position (wrapper for DcMotor)
 	public boolean notAtTarget() {

@@ -36,6 +36,8 @@ public class VelocityDrive extends BaseOpMode {
 	private ElapsedTime ballStateTimer;
 	//Whether we think there is a ball in the shooter
 	private boolean ballInShooter;
+	//Whether rollers are deployed
+	private boolean rollersDeployed;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
@@ -44,6 +46,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.shooterState = ShooterState.values()[0];
 		this.ballStateTimer = new ElapsedTime();
 		this.ballInShooter = false;
+		this.rollersDeployed = false;
 	}
 	protected void loopAfterStart() {
 		final int driveGamepad = CALVIN;
@@ -116,6 +119,12 @@ public class VelocityDrive extends BaseOpMode {
 		if (this.gamepads[JACK].getBack()) capBallScaling = MotorConstants.CAP_BALL_SLOW_SCALE;
 		else capBallScaling = 1.0;
 		this.configuration.capBall.setPower(capBallPower * capBallScaling);
+
+		if (this.gamepads[CALVIN].getX() && !this.gamepads[CALVIN].getLast().getX()) {
+			this.rollersDeployed = !this.rollersDeployed;
+			if (this.rollersDeployed) this.configuration.rollersDown();
+			else this.configuration.rollersUp();
+		}
 	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
