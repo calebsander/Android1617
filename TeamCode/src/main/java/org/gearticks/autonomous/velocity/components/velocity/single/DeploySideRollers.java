@@ -23,6 +23,8 @@ public class DeploySideRollers extends AutonomousComponentHardware<VelocityConfi
     @Override
     public int run() {
         final int superTransition = super.run();
+        if (superTransition != NOT_DONE) return superTransition;
+
         if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
         else return NOT_DONE;
     }
