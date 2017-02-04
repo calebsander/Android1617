@@ -12,7 +12,7 @@ public class AutoShooterTest extends BaseOpMode {
 	private VelocityConfiguration configuration;
 
 	protected void initialize() {
-		this.configuration = new VelocityConfiguration(this.hardwareMap);
+		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.configuration.shooter.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 	}
 	protected void loopAfterStart() {

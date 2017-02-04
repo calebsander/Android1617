@@ -22,7 +22,9 @@ import org.gearticks.hardware.drive.TankDrive;
 import org.gearticks.opmodes.utility.Utils;
 
 public class VelocityConfiguration implements HardwareConfiguration {
+	private final boolean v2;
 	public final MotorWrapper intake, shooter;
+	public final MotorWrapper capBall;
 	private boolean shooterWasDown;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
@@ -42,11 +44,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this(hardwareMap, false);
 	}
 	public VelocityConfiguration(HardwareMap hardwareMap, boolean v2) {
+		this.v2 = v2;
 		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorType.NEVEREST_20);
 		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.resetAutoShooter();
+		if (v2) {
+			this.capBall = new MotorWrapper((DcMotor) hardwareMap.get("capBall"), MotorType.NEVEREST_20);
+			this.capBall.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+			this.capBall.setRunMode(RunMode.RUN_USING_ENCODER);
+		}
+		else this.capBall = null;
 		this.driveLeft = new MotorWrapper((DcMotor) hardwareMap.get("left"), MotorType.NEVEREST_20, true);
 		this.driveRight = new MotorWrapper((DcMotor) hardwareMap.get("right"), MotorType.NEVEREST_20, true);
 		this.drive = new TankDrive();
@@ -130,7 +139,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_UP) && this.shooterFarTriggered()) ||
 			(Math.signum(power) == Math.signum(MotorConstants.SHOOTER_STOPPER_DOWN) && this.shooterNearTriggered())
 		) {
-			power = 0.0;
+			power = MotorWrapper.STOPPED;
 		}
 		this.shooterStopper.setPower(power);
 	}
@@ -187,22 +196,14 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			if (this.isShooterAtSensor()) {
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+				final int ticksToDown;
+				if (this.v2) ticksToDown = MotorConstants.SHOOTER_V2_TICKS_TO_DOWN;
+				else ticksToDown = MotorConstants.SHOOTER_TICKS_TO_DOWN;
+				this.shooter.setTarget(ticksToDown);
 				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 				this.shooterWasDown = true;
-			} else this.shootSlow();
-		}
-	}
-
-	public void teleopAdvanceShooterToDown() {
-		if (!this.shooterWasDown) {
-			if (this.isShooterAtSensor()) {
-				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
-				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
-				this.shooterWasDown = true;
-			} else this.shootFast();
+			}
+			else this.shootSlow();
 		}
 	}
 
@@ -277,17 +278,21 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.3;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
+		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
+		public static final int SHOOTER_V2_TICKS_TO_DOWN = 0;
+		@Deprecated
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
+		public static final int SHOOTER_V2_TICKS_TO_SHOOTING = -152;
 
 		@Deprecated
 		public static final double SNAKE_HOLDING = 0.9;
-		public static final double SNAKE_V2_HOLDING = 0.0;
+		public static final double SNAKE_V2_HOLDING = 0.25;
 		@Deprecated
 		public static final double SNAKE_DUMPING = 0.7;
-		public static final double SNAKE_V2_DUMPING = 0.28;
+		public static final double SNAKE_V2_DUMPING = 0.53;
 
 		@Deprecated
 		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0; //TODO: fix value
@@ -313,5 +318,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
+
+		public static final double CAP_BALL_UP = -1.0;
+		public static final double CAP_BALL_DOWN = CAP_BALL_UP * -0.5;
+		public static final double CAP_BALL_SLOW_SCALE = 0.5;
+		public static final int CAP_BALL_TOP = -6800;
+		public static final int CAP_BALL_BOTTOM = 0;
 	}
 }

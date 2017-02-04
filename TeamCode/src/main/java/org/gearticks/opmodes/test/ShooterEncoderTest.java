@@ -13,7 +13,7 @@ public class ShooterEncoderTest extends BaseOpMode {
 	private VelocityConfiguration configuration;
 
 	protected void initialize() {
-		this.configuration = new VelocityConfiguration(this.hardwareMap);
+		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 	}
 	protected void loopAfterStart() {
 		if (this.gamepads[0].getA()) this.configuration.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);

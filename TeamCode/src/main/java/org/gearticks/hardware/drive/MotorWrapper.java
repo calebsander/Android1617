@@ -145,6 +145,11 @@ public class MotorWrapper {
 		if (this.reversed) return -scaled;
 		else return scaled;
 	}
+	public void stopAndReset() {
+		final RunMode lastMode = this.getRunMode();
+		this.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+		this.setRunMode(lastMode);
+	}
 	public boolean equals(Object o) {
 		if (!(o instanceof MotorWrapper)) return false;
 		MotorWrapper otherMotor = (MotorWrapper)o;

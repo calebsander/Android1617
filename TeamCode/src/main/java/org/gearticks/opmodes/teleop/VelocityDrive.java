@@ -77,7 +77,7 @@ public class VelocityDrive extends BaseOpMode {
 				if (this.configuration.isShooterDown() && this.shotBall) this.nextBallState();
 				break;
 			case LOADING:
-				this.configuration.teleopAdvanceShooterToDown(); //hold shooter down
+				this.configuration.advanceShooterToDown(); //hold shooter down
 				snakePosition = MotorConstants.SNAKE_V2_DUMPING; //this is the only state when the snake should be up
 				if (this.ballStateTimer.seconds() > TIME_TO_MOVE_SNAKE) {
 					this.shotBall = false;
@@ -98,6 +98,12 @@ public class VelocityDrive extends BaseOpMode {
 			shooterStopperPower = MotorWrapper.STOPPED;
 		}
 		this.configuration.safeShooterStopper(shooterStopperPower);
+
+		final double capBallPower;
+		if (this.gamepads[JACK].getY()) capBallPower = MotorConstants.CAP_BALL_UP;
+		else if (this.gamepads[JACK].getA()) capBallPower = MotorConstants.CAP_BALL_DOWN;
+		else capBallPower = MotorWrapper.STOPPED;
+		this.configuration.capBall.setPower(capBallPower);
 	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
@@ -108,7 +114,7 @@ public class VelocityDrive extends BaseOpMode {
 			this.shotBall = true;
 		}
 		else {
-			this.configuration.teleopAdvanceShooterToDown();
+			this.configuration.advanceShooterToDown();
 		}
 	}
 	//Advance to next BallState (wrapping around) and reset state timer
