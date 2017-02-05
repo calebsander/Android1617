@@ -8,7 +8,7 @@ import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
-//@Disabled
+@Disabled
 public class TCS34725Test extends BaseOpMode {
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
