@@ -8,6 +8,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opencv.OpenCvConfiguration;
+import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
 import org.gearticks.opencv.vision.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.gearticks.opmodes.units.SideOfButton;
@@ -46,6 +47,11 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
 	@Override
 	public void setup() {
 		super.setup();
+        /*
+        Beware that the frameGrabber is a static class and can only support one ImageProcessor at the time.
+        Need to set image processor here so that other components can crete and use other ImageProcessors
+         */
+        this.openCvConfiguration.frameGrabber.setImageProcessor(new EvBeaconProcessor());
         this.openCvConfiguration.frameGrabber.grabSingleFrame();
 		Mat m = new Mat();
 
@@ -101,7 +107,7 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
     @Override
     public void tearDown() {
         super.tearDown();
-        this.openCvConfiguration.deactivate();
+        this.openCvConfiguration.frameGrabber.stopFrameGrabber();
     }
 
 }

@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import org.firstinspires.ftc.teamcode.R;
 import org.gearticks.opencv.vision.FrameGrabber;
 import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
+import org.gearticks.opencv.vision.ImageProcessor;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -46,8 +47,11 @@ public class OpenCvConfiguration {
         this.initializeCameraBridgeViewBase(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
         Log.d(TAG, "Found cameraBridgeViewBase" + cameraBridgeViewBase.toString());
 
+        /*
+        The constructor of the FrameGrabber registers itself as the listener to the camera
+         */
         frameGrabber = new FrameGrabber(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
-        frameGrabber.setImageProcessor(new EvBeaconProcessor());
+        //frameGrabber.setImageProcessor(new EvBeaconProcessor());//being set by autonomous component
         frameGrabber.setSaveImages(true);
 
         this.initOpenCv(); //does this needs to be done at least after the cameraBridgeViewBase has a non-null value
@@ -131,15 +135,6 @@ public class OpenCvConfiguration {
 
 
     //-------------------------------------------------------------------------------------------
-
-    public void activate() {
-//        this.startCamera();
-    }
-
-    public void deactivate(){
-//        this.stopCamera();
-    }
-
 
 //    /**
 //     * Do this at OpMode initialization?
