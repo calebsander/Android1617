@@ -1,6 +1,7 @@
-package org.gearticks.opencv.vision;
+package org.gearticks.opencv.imageprocessors.evbeacon;
 
 
+import org.gearticks.opencv.vision.ImageUtil;
 import org.opencv.core.Scalar;
 
 /**

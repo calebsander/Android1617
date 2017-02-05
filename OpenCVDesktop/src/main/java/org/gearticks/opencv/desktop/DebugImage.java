@@ -89,15 +89,15 @@ public class DebugImage {
 //			contours.add(co.getContour());
 //			
 //			//Draw a contour
-//			Imgproc.drawContours(image, contours, -1, co.beaconColor.getColor());
+//			Imgproc.drawContours(image, contours, -1, co.beaconColor.getBgrColor());
 //			//Draw a circle in the center
-//			//Imgproc.circle(image, co.getCenterPoint(), radius, co.beaconColor.getColor(), -1);
-//			Core.circle(image, co.getCenterPoint(), radius, co.beaconColor.getColor(), -1);
+//			//Imgproc.circle(image, co.getCenterPoint(), radius, co.beaconColor.getBgrColor(), -1);
+//			Core.circle(image, co.getCenterPoint(), radius, co.beaconColor.getBgrColor(), -1);
 //			//Draw rectange
 //			Point pt1 = co.getRectangle().br();
 //			Point pt2 = co.getRectangle().tl();
-//			//Imgproc.rectangle(image, pt1, pt2, co.beaconColor.getColor());
-//			Core.rectangle(image, pt1, pt2, co.beaconColor.getColor());
+//			//Imgproc.rectangle(image, pt1, pt2, co.beaconColor.getBgrColor());
+//			Core.rectangle(image, pt1, pt2, co.beaconColor.getBgrColor());
 //		}
 //	}
 //

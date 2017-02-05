@@ -3,19 +3,15 @@ package org.gearticks.opencv.desktop;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
-import org.gearticks.opencv.vision.BeaconColorResult;
+import org.gearticks.opencv.imageprocessors.beaconposition.CenterOnBeaconProcessor;
+import org.gearticks.opencv.imageprocessors.evbeacon.EvBeaconProcessor;
 import org.gearticks.opencv.vision.ImageProcessor;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.TermCriteria;
 import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
 //import org.opencv.imgcodecs.Imgcodecs;
 
 public class ImageProcessorMain {
@@ -29,7 +25,8 @@ public class ImageProcessorMain {
         System.out.println("Start detect color");
         System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
 
-        ImageProcessor<?> processor = new EvBeaconProcessor();
+        //ImageProcessor<?> processor = new EvBeaconProcessor();
+        ImageProcessor<?> processor = new CenterOnBeaconProcessor();
 
         runImageProcessorOnDirectory(processor, inputPath, outputPath);
 
@@ -45,9 +42,20 @@ public class ImageProcessorMain {
         for (File file : getImageFilesInPath(inputPath, "jpg")){
             final String fileName = file.getName();
             final String imageName = fileName.substring(0, fileName.length() - 4);
-            DebugImage di = new DebugImage(inputPath, outputPath, imageName);
-            ImageProcessorResult<?> result = processor.process(System.currentTimeMillis(), di.originalImage, true);
-            di.writeImageFile(result.getFrame(), "_final");
+            //DebugImage di = new DebugImage(inputPath, outputPath, imageName);
+
+            /*
+            The jpg image is a BGR image, as where the image from the Android camera is RGB.
+            Thus convert to RGB to match Android camera.
+             */
+            Mat bgrFrame = readImageFile(inputPath, imageName, inputExtension);
+            Mat rgbFrame = new Mat();
+            Imgproc.cvtColor(bgrFrame, rgbFrame, Imgproc.COLOR_BGR2RGB);
+            //rgbFrame = di.originalImage;
+            ImageProcessorResult<?> result = processor.process(System.currentTimeMillis(), rgbFrame, true);
+            //di.writeImageFile(result.getFrame(), "_final");
+            System.out.println(result.toString());
+
         }
 
     }
@@ -78,5 +86,10 @@ public class ImageProcessorMain {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    public static Mat readImageFile(String inputPath, String imageName, String inputExtension){
+        //return Imgcodecs.imread(inputPath + imageName + "." + inputExtension);
+        return Highgui.imread(inputPath + imageName + "." + inputExtension);
     }
 }

@@ -1,9 +1,9 @@
-package org.gearticks.opencv.imageprocessors;
+package org.gearticks.opencv.imageprocessors.evbeacon;
 
 
 import android.util.Log;
 
-import org.gearticks.opencv.vision.BeaconColorResult;
+import org.gearticks.opencv.imageprocessors.evbeacon.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessor;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.gearticks.opencv.vision.ImageUtil;

@@ -1,6 +1,8 @@
-package org.gearticks.opencv.vision;
+package org.gearticks.opencv.imageprocessors.evbeacon;
 
 
+import org.gearticks.opencv.vision.ImageProcessor;
+import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.opencv.core.Mat;
 
 /**

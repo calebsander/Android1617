@@ -185,7 +185,7 @@ public class ImageUtil {
 
 //    if (Imgcodecs.imwrite(file.toString(), bgrMat)){ //OpenCV v3
       if (Highgui.imwrite(file.toString(), bgrMat)){ //OpenCV v2
-          Log.e(tag, "SUCCESS writing image to external storage: "+ file.toString());
+          Log.i(tag, "SUCCESS writing image to external storage: "+ file.toString());
         return true;
       } else {
         Log.e(tag, "FAILED writing image to external storage");

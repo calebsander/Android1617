@@ -3,7 +3,6 @@ package org.gearticks.opencv.imageprocessors.beaconposition;
 
 import android.util.Log;
 
-import org.gearticks.opencv.imageprocessors.evbeacon.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessor;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.gearticks.opencv.vision.ImageUtil;
@@ -11,6 +10,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
@@ -58,7 +58,7 @@ public class CenterOnBeaconProcessor implements ImageProcessor<BeaconPositionRes
         this.morphOps(dstBlue);
         this.morphOps(dstRed);
 
-        //Debug: write morphed images
+         //Debug: write morphed images
         if (saveImages) {
             ImageUtil.saveImage(TAG, dstBlue, Imgproc.COLOR_GRAY2BGR, "2_blue_morph", startTime);
             ImageUtil.saveImage(TAG, dstRed, Imgproc.COLOR_GRAY2BGR, "3_red_morph", startTime);
@@ -198,7 +198,7 @@ public class CenterOnBeaconProcessor implements ImageProcessor<BeaconPositionRes
             //Draw text
             Core.putText(rgbaFrame, co.beaconColor.name(),  co.getCenterPoint(), FONT_HERSHEY_SIMPLEX, 1, co.beaconColor.getRgbColor(), 4);
 
-            //Draw rectange
+        //Draw rectange
             Point pt1 = co.getRectangle().br();
             Point pt2 = co.getRectangle().tl();
             //Imgproc.rectangle(image, pt1, pt2, co.beaconColor.getBgrColor());
