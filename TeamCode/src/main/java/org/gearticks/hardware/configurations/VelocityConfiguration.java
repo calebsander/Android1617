@@ -326,8 +326,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
 
 		public static final double CAP_BALL_UP = -1.0;
-		public static final double CAP_BALL_DOWN = CAP_BALL_UP * -0.5;
-		public static final double CAP_BALL_SLOW_SCALE = 0.5;
+		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.5;
+		public static final double CAP_BALL_SLOW_SCALE = 0.3;
 		public static final int CAP_BALL_TOP = -6800;
 		public static final int CAP_BALL_BOTTOM = 0;
 	}

@@ -46,21 +46,22 @@ public class VelocityDrive extends BaseOpMode {
 		this.shooterState = ShooterState.values()[0];
 		this.ballStateTimer = new ElapsedTime();
 		this.ballInShooter = false;
-		this.rollersDeployed = false;
+		this.rollersDeployed = true;
 	}
 	protected void loopAfterStart() {
+		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
 		final int driveGamepad = CALVIN;
 		final double yScaleFactor = 1.0;
 		final double sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
-		if (this.gamepads[driveGamepad].leftStickAtRest()) {
-			this.direction.drive(0.0, 0.0);
-			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
-		}
-		else { //if banana-turning, turn faster
-			this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
-			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
-		}
-		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
+		final double scaleFactor;
+		if (slowMode) scaleFactor = 0.4; //limit max speed
+		else scaleFactor = 1.0;
+		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor * scaleFactor);
+		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor * scaleFactor);
+		final double accelLimit;
+		if (slowMode) accelLimit = 0.03;
+		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
+		this.configuration.move(this.direction, accelLimit);
 
 		final double intakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
