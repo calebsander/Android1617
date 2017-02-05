@@ -8,7 +8,6 @@ import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstant
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
-@Disabled
 public class PresserV2Test extends BaseOpMode {
     private VelocityConfiguration configuration;
 

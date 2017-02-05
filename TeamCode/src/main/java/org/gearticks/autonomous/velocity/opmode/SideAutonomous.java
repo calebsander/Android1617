@@ -41,7 +41,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new ShootBall(this.configuration, "Shoot 1st ball"));
         sm.addComponent(new MoveShooterDown(this.configuration, "Move Shooter Down"));
         sm.addComponent(new LoadBall(this.configuration, "Load 2nd ball"));
-        sm.addComponent(new ResetSnake(this.configuration, "Reset Snake"));
+        sm.addComponent(new ResetSnake(this.configuration, true, "Reset Snake"));
         sm.addComponent(new ShootBall(this.configuration, "Shoot 2nd ball"));
 
         //Blue side
@@ -64,7 +64,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180, 0.05, 500, this.configuration, "Adjust to white line"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         //sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, this.configuration, "Press Button"));
+        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press Button"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
 
@@ -79,7 +79,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new GiroDriveToLine(180, -0.05, 500, this.configuration, "Adjust to white line"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, this.configuration, "Press Button"));
+        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press Button"));
         sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
 
@@ -87,5 +87,8 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new Stopped(this.configuration));
 
         return sm;
+    }
+    protected boolean isV2() {
+        return true;
     }
 }

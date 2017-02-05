@@ -15,6 +15,7 @@
         <DigitalDevice name="badBoy2" port="4" />
         <DigitalDevice name="whiteLine" port="5" />
         <LED name="whiteLineColorLed" port="6" />
+        <DigitalDevice name="capBallLimit" port="7" />
     </DeviceInterfaceModule>
     <MotorController name="Intake and Shoot" serialNumber="AL00VWWM">
         <Motor name="intake" port="1" />

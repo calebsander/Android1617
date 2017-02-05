@@ -22,6 +22,7 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 	}
 
 	protected VelocityConfiguration newConfiguration() {
-		return new VelocityConfiguration(this.hardwareMap);
+		return new VelocityConfiguration(this.hardwareMap, this.isV2());
 	}
+	protected abstract boolean isV2();
 }

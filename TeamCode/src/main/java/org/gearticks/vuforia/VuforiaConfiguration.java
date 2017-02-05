@@ -92,12 +92,23 @@ public class VuforiaConfiguration {
     private static final double SCALE_FACTOR = 0.4;
     private static final int SCALED_WIDTH = (int)(IMAGE_WIDTH * SCALE_FACTOR), SCALED_HEIGHT = (int)(IMAGE_HEIGHT * SCALE_FACTOR);
     private static final int HALF_WIDTH = SCALED_WIDTH / 2;
-    public SideOfButton getBeaconBlueSide(){
-        SideOfButton sideOfButton = SideOfButton.UNKNOWN;
+    public static class BeaconColorCounts {
+        public final int leftRed, rightRed;
+        public final int leftBlue, rightBlue;
+
+        public BeaconColorCounts(int leftRed, int rightRed, int leftBlue, int rightBlue) {
+            this.leftRed = leftRed;
+            this.rightRed = rightRed;
+            this.leftBlue = leftBlue;
+            this.rightBlue = rightBlue;
+        }
+    }
+    public BeaconColorCounts getColorCounts() {
         Log.d(Utils.TAG, "Get bitmap");
-        Bitmap bitmap = getBitmap();
+        Bitmap bitmap = this.getBitmap();
         Log.d(Utils.TAG, "Scale Image");
-        if (bitmap != null) {
+        if (bitmap == null) return null;
+        else {
             bitmap = Bitmap.createScaledBitmap(bitmap, SCALED_WIDTH, SCALED_HEIGHT, false); //scale down to decrease processing time
 
             Log.d(Utils.TAG, "Process Image");
@@ -119,16 +130,20 @@ public class VuforiaConfiguration {
 
             Log.d(Utils.TAG, "leftRed: " + leftRed);
             Log.d(Utils.TAG, "rightRed: " + rightRed);
-            Log.d(Utils.TAG,"leftBlue: " + leftBlue);
+            Log.d(Utils.TAG, "leftBlue: " + leftBlue);
             Log.d(Utils.TAG, "rightBlue: " + rightBlue);
-
-            final boolean beacon1BlueLeft = leftRed + rightBlue < rightRed + leftBlue;
-            if (beacon1BlueLeft){
-                sideOfButton = SideOfButton.LEFT;
-            }
-            else {
-                sideOfButton = SideOfButton.RIGHT;
-            }
+            return new BeaconColorCounts(leftRed, rightRed, leftBlue, rightBlue);
+        }
+    }
+    public SideOfButton getBeaconBlueSide(BeaconColorCounts colorCounts) {
+        if (colorCounts == null) return SideOfButton.UNKNOWN;
+        final boolean beacon1BlueLeft = colorCounts.leftRed + colorCounts.rightBlue < colorCounts.rightRed + colorCounts.leftBlue;
+        final SideOfButton sideOfButton;
+        if (beacon1BlueLeft){
+            sideOfButton = SideOfButton.LEFT;
+        }
+        else {
+            sideOfButton = SideOfButton.RIGHT;
         }
 
         Log.i(Utils.TAG, "Beacon: Blue is on side " + sideOfButton);

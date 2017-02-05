@@ -37,6 +37,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 				this.component.tearDown();
 			}
 		}
+		this.telemetry.addData("Component", this.component);
 	}
 	protected void matchEnd() {
 		Log.i(Utils.TAG, "Starting OpMode matchEnd");

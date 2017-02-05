@@ -2,6 +2,7 @@ package org.gearticks.hardware.configurations;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -29,7 +30,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
 	public final Servo clutch, snake, beaconPresser;
-	private Servo frontRoller, rearRoller;
+	private final Servo frontRoller, rearRoller;
 	private final CRServo shooterStopper;
 	public final GearticksBNO055 imu;
 	public final GearticksMRRangeSensor rangeSensor;
@@ -37,6 +38,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel shooterNear, shooterFar;
 	private final DigitalChannel badBoy1, badBoy2;
 	private final DigitalChannel whiteLineSensor;
+	private final DigitalChannel capBallLimit;
 	public final TCS34725 whiteLineColorSensor;
 	public final LED whiteLineColorLed;
 
@@ -46,7 +48,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public VelocityConfiguration(HardwareMap hardwareMap, boolean v2) {
 		this.v2 = v2;
 		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorType.NEVEREST_20);
-		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
+		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_60);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.resetAutoShooter();
@@ -83,12 +85,14 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		if (v2) initialSnakePosition = MotorConstants.SNAKE_V2_HOLDING;
 		else initialSnakePosition = MotorConstants.SNAKE_HOLDING;
 		this.snake.setPosition(initialSnakePosition);
-		try {
+		if (v2) {
 			this.frontRoller = (Servo)hardwareMap.get("frontRoller");
 			this.rearRoller = (Servo)hardwareMap.get("rearRoller");
 			this.rollersUp();
 		}
-		catch (IllegalArgumentException e) {} //V1 robot
+		else {
+			this.frontRoller = this.rearRoller = null;
+		}
 		this.shooterStopper = (CRServo) hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 
@@ -105,6 +109,12 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.badBoy2 = (DigitalChannel) hardwareMap.get("badBoy2");
 		this.badBoy2.setMode(Mode.INPUT);
 		this.whiteLineSensor = (DigitalChannel) hardwareMap.get("whiteLine");
+		this.whiteLineSensor.setMode(Mode.INPUT);
+		if (v2) {
+			this.capBallLimit = (DigitalChannel) hardwareMap.get("capBallLimit");
+			this.capBallLimit.setMode(Mode.INPUT);
+		}
+		else this.capBallLimit = null;
 		this.whiteLineColorSensor = new TCS34725((I2cDevice) hardwareMap.get("whiteLineColor"));
 		this.whiteLineColorLed = (LED) hardwareMap.get("whiteLineColorLed");
 	}
@@ -277,17 +287,21 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.rearRoller.setPosition(MotorConstants.REAR_ROLLER_V2_DOWN);
 	}
 
+	public boolean isCapBallUp() {
+		return !capBallLimit.getState();
+	}
+
 	public static abstract class MotorConstants {
 		public static final double INTAKE_OUT = 1.0;
 		public static final double INTAKE_IN = -INTAKE_OUT;
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.3;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.4;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
-		public static final int SHOOTER_V2_TICKS_TO_DOWN = 0;
+		public static final int SHOOTER_V2_TICKS_TO_DOWN = -15;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 		public static final int SHOOTER_V2_TICKS_TO_SHOOTING = -150;
@@ -301,14 +315,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SNAKE_V2_TIME_TO_MOVE = 0.4; //seconds for snake to switch positions
 
 		@Deprecated
+		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
+		public static final double PRESSER_V2_NEUTRAL = 0.58;
+		@Deprecated
 		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0;
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_LEFT = 0.0;
-		@Deprecated
-		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
-		public static final double PRESSER_V2_NEUTRAL = 0.5;
+		public static final double PRESSER_V2_LEFT = PRESSER_V2_NEUTRAL - (PRESSER_V2_RIGHT - PRESSER_V2_NEUTRAL);
+		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
 
 		@Deprecated
 		public static final double CLUTCH_CLUTCHED = 0.7;
@@ -317,8 +332,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double CLUTCH_ENGAGED = 0.3;
 		public static final double CLUTCH_V2_ENGAGED = 0.3;
 
-		public static final double FRONT_ROLLER_V2_UP = 0.48;
-		public static final double FRONT_ROLLER_V2_DOWN = 0.95;
+		public static final double FRONT_ROLLER_V2_UP = 0.4;
+		public static final double FRONT_ROLLER_V2_DOWN = 0.88;
 		public static final double REAR_ROLLER_V2_UP = 0.6;
 		public static final double REAR_ROLLER_V2_DOWN = 0.1;
 
@@ -327,7 +342,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double CAP_BALL_UP = -1.0;
 		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.5;
-		public static final double CAP_BALL_SLOW_SCALE = 0.3;
+		public static final double CAP_BALL_SLOW_SCALE = 0.3, CAP_BALL_SUPER_SLOW_UP = CAP_BALL_UP * 0.1;
 		public static final int CAP_BALL_TOP = -6800;
 		public static final int CAP_BALL_BOTTOM = 0;
 	}

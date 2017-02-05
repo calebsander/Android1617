@@ -12,4 +12,7 @@ public class EncoderDriveTest extends VelocityBaseOpMode {
 	protected AutonomousComponent getComponent() {
 		return new GiroDriveEncoderStraighten(0.0, 1.0, 2000, this.configuration, "Drive");
 	}
+	protected boolean isV2() {
+		return false;
+	}
 }

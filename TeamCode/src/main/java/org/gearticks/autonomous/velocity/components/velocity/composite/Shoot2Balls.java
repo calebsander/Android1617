@@ -14,17 +14,13 @@ import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class Shoot2Balls extends LinearStateMachine {
-    public Shoot2Balls(@NonNull GamepadWrapper[] gamepads, Telemetry telemetry, @NonNull VelocityConfiguration configuration, String id) {
+    public Shoot2Balls(boolean alreadyDown, @NonNull VelocityConfiguration configuration, String id) {
         super();
-        addComponent(new MoveShooterDown(configuration, "MoveShooterDown"));
-        addComponent(new DebugPause(gamepads, telemetry, configuration, "Press A to continue"));
-        addComponent(new Wait(0.3, "Wait for 0.5 sec"));
+        if (!alreadyDown) addComponent(new MoveShooterDown(configuration, "MoveShooterDown"));
         addComponent(new ShootBall(configuration, "Shoot 1st ball"));
-        addComponent(new DebugPause(gamepads, telemetry, configuration, "Press A to continue"));
         addComponent(new MoveShooterDown(configuration, "Move Shooter Down"));
-        addComponent(new DebugPause(gamepads, telemetry, configuration, "Press A to continue"));
         addComponent(new LoadBall(configuration, "Load 2nd ball"));
-        addComponent(new ResetSnake(configuration, "Reset Snake"));
+        addComponent(new ResetSnake(configuration, false, "Reset Snake"));
         addComponent(new ShootBall(configuration, "Shoot 2nd ball"));
     }
 }

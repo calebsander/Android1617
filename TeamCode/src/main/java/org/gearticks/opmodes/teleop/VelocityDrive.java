@@ -1,6 +1,7 @@
 package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
@@ -47,6 +48,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.ballStateTimer = new ElapsedTime();
 		this.ballInShooter = false;
 		this.rollersDeployed = true;
+		this.configuration.rollersDown();
 	}
 	protected void loopAfterStart() {
 		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
@@ -58,6 +60,8 @@ public class VelocityDrive extends BaseOpMode {
 		else scaleFactor = 1.0;
 		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor * scaleFactor);
 		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor * scaleFactor);
+		this.telemetry.addData("Calvin's left Y", this.gamepads[driveGamepad].getLeftY());
+		this.telemetry.addData("Forward power", this.direction.getY());
 		final double accelLimit;
 		if (slowMode) accelLimit = 0.03;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
@@ -113,13 +117,30 @@ public class VelocityDrive extends BaseOpMode {
 		this.configuration.safeShooterStopper(shooterStopperPower);
 
 		final double capBallPower;
-		if (this.gamepads[JACK].getY()) capBallPower = MotorConstants.CAP_BALL_UP;
-		else if (this.gamepads[JACK].getA()) capBallPower = MotorConstants.CAP_BALL_DOWN;
-		else capBallPower = MotorWrapper.STOPPED;
+		final DcMotor.RunMode capBallMode;
+		if (this.gamepads[JACK].getY()) {
+			if(this.configuration.isCapBallUp()) {
+				capBallPower = MotorConstants.CAP_BALL_SUPER_SLOW_UP;
+				capBallMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+			}
+			else {
+				capBallPower = MotorConstants.CAP_BALL_UP;
+				capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
+			}
+		}
+		else if (this.gamepads[JACK].getA()) {
+			capBallPower = MotorConstants.CAP_BALL_DOWN;
+			capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
+		}
+		else {
+			capBallPower = MotorWrapper.STOPPED;
+			capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
+		}
 		final double capBallScaling;
 		if (this.gamepads[JACK].getBack()) capBallScaling = MotorConstants.CAP_BALL_SLOW_SCALE;
 		else capBallScaling = 1.0;
 		this.configuration.capBall.setPower(capBallPower * capBallScaling);
+		this.configuration.capBall.setRunMode(capBallMode);
 
 		if (this.gamepads[CALVIN].getX() && !this.gamepads[CALVIN].getLast().getX()) {
 			this.rollersDeployed = !this.rollersDeployed;

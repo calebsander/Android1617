@@ -136,6 +136,9 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		this.sm.addConnection(branch4, AutonomousComponentAbstractImpl.NEXT_STATE, stopped);
 		return this.sm;
 	}
+	protected boolean isV2() {
+		return false;
+	}
 
 	@Override
 	protected void initialize() {

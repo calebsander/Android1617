@@ -21,4 +21,7 @@ public class DriveSquareTest extends VelocityBaseOpMode {
         }
         return sm;
     }
+    protected boolean isV2() {
+        return false;
+    }
 }

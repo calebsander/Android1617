@@ -16,7 +16,6 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class NonLinearPressBeaconButton extends NetworkedStateMachine {
 
     public NonLinearPressBeaconButton(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-        super();
         final AutonomousComponent selectSide = new SelectBeaconSide(vuforiaConfiguration, configuration, "Press beacon button");
         final AutonomousComponent pushLeftButton = new GiroTurnBeacon(10.0, configuration, "Turn left");
         final AutonomousComponent pushRightButton = new GiroTurnBeacon(-10.0, configuration, "Turn right");

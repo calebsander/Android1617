@@ -24,20 +24,11 @@ public class ComponentTest extends VelocityBaseOpMode {
         final VuforiaConfiguration vuforiaConfiguration = new VuforiaConfiguration();
         final LinearStateMachine sm = new LinearStateMachine();
 
-        //sm.addComponent(new RangeSensorReadout(1.0, this.configuration, "Show range sensor val"));
-
-        //sm.addComponent(new DebugPause(gamepads, telemetry, this.configuration, "Press A to continue"));
-
-//
-//        sm.addComponent(new ResetSnake(this.configuration, "Reset Snake"));
-//
-//        sm.addComponent(new Shoot2Balls(gamepads, telemetry, this.configuration, "Shoot 2 balls"));
-
-//        sm.addComponent(new GiroDriveToLine(0, 0.25, 4000, configuration, "Adjust to white line"));
-
-        sm.addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, this.configuration, "Press Button"));
-
+        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press Button"));
 
         return sm;
+    }
+    protected boolean isV2() {
+        return true;
     }
 }

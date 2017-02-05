@@ -42,7 +42,6 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         this.configuration.resetEncoder();
         this.pidController = new MiniPID(p, i, d);
         this.pidController.setOutputLimits(10);
-//        this.configuration.activateWhiteLineColor();
     }
 
     @Override
@@ -84,13 +83,6 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
             return NEXT_STATE; //TODO returning LIMIT_REACHED
         }
         return NOT_DONE;
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
-//        this.configuration.deactivateWhiteLineColor();
-        //Custom code here control
     }
 
 }

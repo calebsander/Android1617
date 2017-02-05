@@ -18,9 +18,7 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
     @Override
     public void setup() {
         super.setup();
-        this.configuration.shooter.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-        this.configuration.shooter.setTarget(VelocityConfiguration.MotorConstants.SHOOTER_TICKS_TO_SHOOTING);
-        this.configuration.shooter.setPower(VelocityConfiguration.MotorConstants.SHOOTER_BACK);
+        this.configuration.advanceShooterToShooting();
     }
 
     @Override

@@ -33,13 +33,8 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		this.power = power;
 		this.startHeading = startHeading;
 		this.endHeading = endHeading;
-		this.encoderTarget = encoderTarget;
-		if (this.encoderTarget != 0) {
-			this.headingSlope = (this.endHeading - this.startHeading) / this.encoderTarget;
-		}
-		else {
-			this.headingSlope = 0;
-		}
+		this.encoderTarget = Math.abs(encoderTarget);
+		this.headingSlope = (this.endHeading - this.startHeading) / this.encoderTarget;
 	}
 
 	@Override
@@ -56,33 +51,31 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		final int superTransition = super.run();
 		if (superTransition != NOT_DONE) return superTransition;
 
-		int transition = NOT_DONE;
+		final int transition;
 
-		final double distance = this.configuration.signedEncoder();
+		final int distance = this.configuration.encoderPositive();
 
 		final double targetHeading = getHeading(distance);
 
-
-		this.direction.drive(0.0, this.power);
 		double currentHeading = this.configuration.imu.getRelativeYaw();
-		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1); // * this.angleMultiplier
-		this.configuration.move(this.direction, 0.06);
-		double delta = currentHeading - ((360 + this.endHeading * this.angleMultiplier)%360);
+		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 
 		if (distance > this.encoderTarget) {
-			this.direction.drive(0.0, 0);
-			if (Math.abs(delta) < 10){
+			this.direction.drive(0.0, 0.0);
+			if (this.direction.isStopped()) {
 				transition = NEXT_STATE;
 			}
-			else{
-				//keep rotating until turn completed
+			else { //keep rotating until turn completed
 				transition = NOT_DONE;
 			}
 		}
-		else transition = NOT_DONE;
+		else {
+			this.direction.drive(0.0, this.power);
+			transition = NOT_DONE;
+		}
 		this.configuration.move(this.direction, 0.06);
 
-		Log.v(Utils.TAG, "Target heading = " + targetHeading + " Distance = " + distance + " Current Heading = " + currentHeading + " Delta = " + delta);
+		Log.v(Utils.TAG, "Target heading = " + targetHeading + " Distance = " + distance + " Current Heading = " + currentHeading);
 		return transition;
 	}
 
@@ -94,11 +87,11 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 	}
 
 	private double getHeading(double distance){
-		if (this.endHeading == 0){
+		if (this.encoderTarget == 0){
 			return this.endHeading;
 		}
 		else {
-			return this.startHeading + distance * this.headingSlope; //TODO: fix banana turn
+			return this.startHeading + Math.min(distance, this.encoderTarget) * this.headingSlope;
 		}
 	}
 }

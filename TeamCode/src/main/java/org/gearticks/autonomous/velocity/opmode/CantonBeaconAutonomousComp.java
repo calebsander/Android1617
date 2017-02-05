@@ -32,7 +32,7 @@ public class CantonBeaconAutonomousComp extends VelocityBaseOpMode {
         sm.addComponent(new ShootBall(this.configuration, "Shoot 1st ball"));
         sm.addComponent(new MoveShooterDown(this.configuration, "Move Shooter Down"));
         sm.addComponent(new LoadBall(this.configuration, "Load 2nd ball"));
-        sm.addComponent(new ResetSnake(this.configuration, "Reset Snake"));
+        sm.addComponent(new ResetSnake(this.configuration, true, "Reset Snake"));
         sm.addComponent(new ShootBall(this.configuration, "Shoot 2nd ball"));
 
         //Drive to beacon
@@ -70,5 +70,8 @@ public class CantonBeaconAutonomousComp extends VelocityBaseOpMode {
         sm.addComponent(new Stopped(this.configuration));
 
         return sm;
+    }
+    protected boolean isV2() {
+        return false;
     }
 }

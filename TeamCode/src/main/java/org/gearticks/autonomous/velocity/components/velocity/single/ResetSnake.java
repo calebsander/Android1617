@@ -4,21 +4,25 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.opmodes.utility.Utils;
 
 public class ResetSnake extends AutonomousComponentHardware<VelocityConfiguration> {
+    private final boolean waitAfter;
+
     /**
      * @param configuration - config file
      * @param id - descriptive name for logging
      */
-    public ResetSnake(@NonNull VelocityConfiguration configuration, String id) {
+    public ResetSnake(@NonNull VelocityConfiguration configuration, boolean waitAfter, String id) {
         super(configuration, id);
+        this.waitAfter = waitAfter;
     }
 
     @Override
     public void setup() {
         super.setup();
-        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_V2_HOLDING);
+        this.configuration.snake.setPosition(MotorConstants.SNAKE_V2_HOLDING);
     }
 
     @Override
@@ -26,8 +30,7 @@ public class ResetSnake extends AutonomousComponentHardware<VelocityConfiguratio
         final int superTransition = super.run();
         if (superTransition != NOT_DONE) return superTransition;
 
-        Log.i(Utils.TAG, "ResetSnake - timer = " + this.stageTimer.seconds());
-        if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
+        if (!this.waitAfter || this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
         else return NOT_DONE;
     }
 }

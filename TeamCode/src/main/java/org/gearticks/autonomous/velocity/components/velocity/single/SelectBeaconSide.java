@@ -3,6 +3,7 @@ package org.gearticks.autonomous.velocity.components.velocity.single;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import org.gearticks.vuforia.VuforiaConfiguration;
+import org.gearticks.vuforia.VuforiaConfiguration.BeaconColorCounts;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.AllianceOption;
@@ -14,15 +15,19 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 
 	private final VuforiaConfiguration vuforiaConfiguration;
 	private boolean allianceColorIsBlue;
+	private final PictureResult pictureResult;
 
 	/**
 	 * @param configuration
 	 * @param id - descriptive name for logging
 	 */
-	public SelectBeaconSide(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+	public SelectBeaconSide(PictureResult pictureResult, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
-
+		this.pictureResult = pictureResult;
+	}
+	public SelectBeaconSide(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
+		this(new PictureResult(), vuforiaConfiguration, configuration, id);
 	}
 
 	@Override
@@ -35,7 +40,9 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 		final int superTransition = super.run();
 		if (superTransition != NOT_DONE) return superTransition;
 
-		final SideOfButton sideOfButton = getButtonToPress(this.vuforiaConfiguration.getBeaconBlueSide());
+		final BeaconColorCounts colorCounts = this.vuforiaConfiguration.getColorCounts();
+		this.pictureResult.colorCounts = colorCounts;
+		final SideOfButton sideOfButton = getButtonToPress(this.vuforiaConfiguration.getBeaconBlueSide(colorCounts));
 		switch (sideOfButton) {
 			case LEFT:
 				Log.i(Utils.TAG, "Going left");
@@ -57,6 +64,10 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 		else {
 			return sideOfBlue.getInverse();
 		}
+	}
+
+	public static class PictureResult {
+		BeaconColorCounts colorCounts;
 	}
 
 }

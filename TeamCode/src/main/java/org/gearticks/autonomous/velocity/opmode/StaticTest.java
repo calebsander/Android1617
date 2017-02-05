@@ -46,4 +46,7 @@ public class StaticTest extends VelocityBaseOpMode {
 
         return sm;
     }
+    protected boolean isV2() {
+        return false;
+    }
 }

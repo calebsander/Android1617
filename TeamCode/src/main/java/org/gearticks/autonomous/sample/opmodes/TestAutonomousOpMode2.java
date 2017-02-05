@@ -55,4 +55,7 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
         });
         return sm;
     }
+    protected boolean isV2() {
+        return false;
+    }
 }

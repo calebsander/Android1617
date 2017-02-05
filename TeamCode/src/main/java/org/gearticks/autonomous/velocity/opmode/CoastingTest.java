@@ -32,4 +32,7 @@ public class CoastingTest extends VelocityBaseOpMode {
 
         return sm;
     }
+    protected boolean isV2() {
+        return false;
+    }
 }

@@ -16,4 +16,7 @@ public class TestAutonomousOpMode1 extends VelocityBaseOpMode {
         sm.addComponent(new GyroDriveEncoder(NEW_TARGET, 1.0, 2000, this.configuration, "drive2"));
         return sm;
     }
+    protected boolean isV2() {
+        return false;
+    }
 }

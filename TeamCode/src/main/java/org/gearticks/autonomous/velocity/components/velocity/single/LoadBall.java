@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.opmodes.utility.Utils;
 
 public class LoadBall extends AutonomousComponentHardware<VelocityConfiguration> {
@@ -18,7 +19,7 @@ public class LoadBall extends AutonomousComponentHardware<VelocityConfiguration>
     @Override
     public void setup() {
         super.setup();
-        this.configuration.snake.setPosition(VelocityConfiguration.MotorConstants.SNAKE_V2_DUMPING);
+        this.configuration.snake.setPosition(MotorConstants.SNAKE_V2_DUMPING);
     }
 
     @Override
@@ -26,8 +27,7 @@ public class LoadBall extends AutonomousComponentHardware<VelocityConfiguration>
         final int superTransition = super.run();
         if (superTransition != NOT_DONE) return superTransition;
 
-        //Log.d(Utils.TAG, "LoadBall - timer = " + this.stageTimer.seconds());
-        if (this.stageTimer.seconds() > 0.7) return NEXT_STATE;
+        if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
         else return NOT_DONE;
     }
 }

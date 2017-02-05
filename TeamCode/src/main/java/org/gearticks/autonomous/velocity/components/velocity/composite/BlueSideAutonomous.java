@@ -33,7 +33,7 @@ public class BlueSideAutonomous extends LinearStateMachine {
         addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180, 0.05, 500, configuration, "Adjust to white line"));
         addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         //sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, configuration, "Press Button"));
+        addComponent(new SidePressBeaconButton(vuforiaConfiguration, configuration, "Press Button"));
 
         //Go to second beacon
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, 0.25, 3000, configuration, "Range sensor drive along wall"));
@@ -44,6 +44,6 @@ public class BlueSideAutonomous extends LinearStateMachine {
         addComponent(new GiroDriveToLine(180, -0.05, 500, configuration, "Adjust to white line"));
         addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         addComponent(new GiroTurn(180.0, configuration, "Straighten out"));
-        addComponent(new SidePressBeaconButton(180.0, vuforiaConfiguration, configuration, "Press Button"));
+        addComponent(new SidePressBeaconButton(vuforiaConfiguration, configuration, "Press Button"));
     }
 }

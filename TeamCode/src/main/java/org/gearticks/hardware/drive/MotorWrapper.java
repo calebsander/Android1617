@@ -92,8 +92,10 @@ public class MotorWrapper {
 	}
 	//Sets the desired run mode
 	public void setRunMode(RunMode runMode) {
-		this.motor.setMode(runMode);
-		this.lastRunMode = runMode;
+		if (runMode != this.lastRunMode) {
+			this.motor.setMode(runMode);
+			this.lastRunMode = runMode;
+		}
 	}
 	//Gets the last set run mode
 	public RunMode getRunMode() {

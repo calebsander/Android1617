@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -16,6 +17,7 @@ import org.gearticks.vuforia.VuforiaConfiguration;
  * Created by Kevin on 1/17/2017.
  */
 @Autonomous
+@Disabled
 public class TicksToCentimeters extends VelocityBaseOpMode {
     protected AutonomousComponent getComponent() {
         final LinearStateMachine sm = new LinearStateMachine();
@@ -28,8 +30,8 @@ public class TicksToCentimeters extends VelocityBaseOpMode {
         sm.addComponent(new Stopped(this.configuration));
 
         return sm;
-
-
-
+    }
+    protected boolean isV2() {
+        return true;
     }
 }
