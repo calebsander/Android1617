@@ -13,6 +13,8 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	private final DriveDirection direction = new DriveDirection();
 	private final double targetHeading;
 	private double angleMultiplier;
+	private final double power;
+	private final int range;
 
 	/**
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
@@ -22,6 +24,14 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	public GiroTurn(double targetHeading, @NonNull VelocityConfiguration configuration, String id) {
 		super(configuration, id);
 		this.targetHeading = targetHeading;
+		this.power = 0.05;
+		this.range = 10;
+	}
+	public GiroTurn(double targetHeading, double power, int range, @NonNull VelocityConfiguration configuration, String id) {
+		super(configuration, id);
+		this.targetHeading = targetHeading;
+		this.power = power;
+		this.range = range;
 	}
 
 	@Override
@@ -39,7 +49,7 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 		if (superTransition != NOT_DONE) return superTransition;
 
 		final int transition;
-		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10) {
+		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), this.power, 0.1) > this.range) {
 			Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
 			transition = NEXT_STATE;
 		}

@@ -37,7 +37,7 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
         //Initialization components
         final AutonomousComponent sideSelector = new AutonomousSideSelector(this.configuration);
         final AutonomousComponent disengageBeaconServo = new DisengageBeaconServo(this.configuration, "Disengage beacon button");
-        final AutonomousComponent deploySideRollers = new DeploySideRollers(this.configuration, "Deploy rollers");
+        //final AutonomousComponent deploySideRollers = new DeploySideRollers(this.configuration, "Deploy rollers");
         //shooter components
         final AutonomousComponent shoot2Balls = new Shoot2Balls(true, this.configuration, "Shoot 2 balls");
 
@@ -53,8 +53,8 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
 
         //Initialize
         sm.setInitialComponent(disengageBeaconServo);
-        sm.addConnection(disengageBeaconServo, NEXT_STATE, deploySideRollers);
-        sm.addConnection(deploySideRollers, NEXT_STATE, shoot2Balls);
+        sm.addConnection(disengageBeaconServo, NEXT_STATE, shoot2Balls);
+        //sm.addConnection(deploySideRollers, NEXT_STATE, shoot2Balls);
         sm.addConnection(shoot2Balls, NEXT_STATE, sideSelector);
 
         //Blue Side

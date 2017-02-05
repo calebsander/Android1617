@@ -14,6 +14,7 @@ import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoderNoSt
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
+import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageSideRollers;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration;
@@ -23,6 +24,7 @@ public class RedSideAutonomous extends LinearStateMachine {
         super();
 
         //Drive to wall
+        addComponent(new DeploySideRollers(configuration, "Deploy rollers"));
         addComponent(new GiroBananaTurnEncoder(0.0, 70.0, 0.7, 500, configuration, "BTL"));
         addComponent(new GiroBananaTurnEncoder(70.0, 0.0, 0.6, 7000, configuration, "BTR"));
         addComponent(new GiroTurn(0.0, configuration, "Straighten out"));
