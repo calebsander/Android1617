@@ -18,9 +18,9 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
         }
 
         @Override
-        public int run() {
-            final int superTransition = super.run();
-            if (superTransition != NOT_DONE) return superTransition;
+        public Transition run() {
+            final Transition superTransition = super.run();
+            if (superTransition != null) return superTransition;
 
             //control gyro drive
             this.direction.drive(0.0, 0.7); //you can access the attribute of the enclosing class
@@ -28,7 +28,7 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
             this.configuration.move(this.direction, 0.06);
 
             if (this.configuration.encoderPositive() > 2000) return NEXT_STATE;
-            else return NOT_DONE;
+            else return null;
         }
     }
 
@@ -40,9 +40,9 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
             private final DriveDirection direction = new DriveDirection();
 
             @Override
-            public int run() {
-                final int superTransition = super.run();
-                if (superTransition != NOT_DONE) return superTransition;
+            public Transition run() {
+                final Transition superTransition = super.run();
+                if (superTransition != null) return superTransition;
 
                 //control gyro drive
                 this.direction.drive(0.0, 0.7); //you can access the attribute of the enclosing class
@@ -50,7 +50,7 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
                 this.configuration.move(this.direction, 0.06);
 
                 if (this.configuration.encoderPositive() > 2000) return NEXT_STATE;
-                else return NOT_DONE;
+                else return null;
             }
         });
         return sm;

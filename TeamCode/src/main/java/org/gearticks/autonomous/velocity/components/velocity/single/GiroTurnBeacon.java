@@ -31,15 +31,15 @@ public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfigur
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		final boolean done = this.direction.gyroCorrect(90.0 * this.angleMultiplier + this.targetHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10;
 		this.configuration.move(this.direction, 0.06);
 
 		if (done) return NEXT_STATE;
-		else return NOT_DONE;
+		else return null;
 	}
 
 	@Override

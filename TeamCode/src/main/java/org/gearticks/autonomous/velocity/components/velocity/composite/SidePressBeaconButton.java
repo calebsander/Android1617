@@ -13,7 +13,6 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration;
 
 public class SidePressBeaconButton extends NetworkedStateMachine {
-
     public SidePressBeaconButton(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
         super();
         final PictureResult pictureResult = new PictureResult();

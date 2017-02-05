@@ -8,7 +8,7 @@ import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
 public class AutonomousSideSelector extends AutonomousComponentHardware<VelocityConfiguration> {
-	public static final int BLUE = newTransition(), RED = newTransition();
+	public static final Transition BLUE = new Transition("Blue"), RED = new Transition("Red");
 	/**
 	 *
 	 * @param configuration
@@ -18,9 +18,9 @@ public class AutonomousSideSelector extends AutonomousComponentHardware<Velocity
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		switch (AllianceOption.allianceOption.getRawSelectedOption()) {
 			case BLUE:

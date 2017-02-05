@@ -47,11 +47,9 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
-
-		final int transition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		final int distance = this.configuration.encoderPositive();
 
@@ -60,18 +58,19 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		double currentHeading = this.configuration.imu.getRelativeYaw();
 		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 
+		final Transition transition;
 		if (distance > this.encoderTarget) {
 			this.direction.drive(0.0, 0.0);
 			if (this.direction.isStopped()) {
 				transition = NEXT_STATE;
 			}
 			else { //keep rotating until turn completed
-				transition = NOT_DONE;
+				transition = null;
 			}
 		}
 		else {
 			this.direction.drive(0.0, this.power);
-			transition = NOT_DONE;
+			transition = null;
 		}
 		this.configuration.move(this.direction, 0.06);
 
@@ -86,8 +85,8 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		this.configuration.stopMotion();
 	}
 
-	private double getHeading(double distance){
-		if (this.encoderTarget == 0){
+	private double getHeading(int distance) {
+		if (this.encoderTarget == 0) {
 			return this.endHeading;
 		}
 		else {

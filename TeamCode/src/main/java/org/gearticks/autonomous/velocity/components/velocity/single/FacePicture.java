@@ -45,9 +45,9 @@ public class FacePicture extends AutonomousComponentHardware<VelocityConfigurati
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         final OpenGLMatrix firstTargetPose = this.firstTargetListener.getPose();
         if (firstTargetPose == null) {
@@ -63,7 +63,7 @@ public class FacePicture extends AutonomousComponentHardware<VelocityConfigurati
         }
         this.configuration.move(this.direction, 0.06);
         if (this.angleCorrectionTimer.seconds() > 0.4) return NEXT_STATE; //if we have been on target for .4 seconds in a row, take the picture
-        return NOT_DONE;
+        return null;
     }
 
     @Override

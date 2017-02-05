@@ -26,8 +26,6 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
     private final double d = 0;
     private MiniPID pidController;
 
-    MessageFormat mf = new MessageFormat("test {0}, test {1}");
-
 
     public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, @NonNull VelocityConfiguration configuration, String id) {
         super(configuration, id);
@@ -49,9 +47,9 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         this.direction.drive(0.0, this.power);
         this.direction.gyroCorrect(this.controlledHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
@@ -77,7 +75,7 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
 //        Log.d(Utils.TAG, this.mf.format(ultrasonicDistance, distanceError));
         if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
-        else return NOT_DONE;
+        else return null;
     }
 
     @Override

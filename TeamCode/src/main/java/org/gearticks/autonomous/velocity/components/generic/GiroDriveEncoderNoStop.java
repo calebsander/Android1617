@@ -38,9 +38,9 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentHardware<Velocity
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		//control giro drive
 		this.direction.drive(0.0, this.power);
@@ -48,6 +48,6 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentHardware<Velocity
 		this.configuration.move(this.direction, 0.06);
 
 		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
-		else return NOT_DONE;
+		else return null;
 	}
 }

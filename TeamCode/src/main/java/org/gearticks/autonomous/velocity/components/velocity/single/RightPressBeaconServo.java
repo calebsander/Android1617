@@ -21,11 +21,11 @@ public class RightPressBeaconServo extends AutonomousComponentHardware<VelocityC
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         if (this.stageTimer.seconds() > VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE) return NEXT_STATE;
-        else return NOT_DONE;
+        else return null;
     }
 }

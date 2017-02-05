@@ -19,11 +19,11 @@ public class Stopped extends AutonomousComponentHardware<HardwareConfiguration> 
 		this.configuration.stopMotion();
 	}
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		this.configuration.stopMotion();
-		return NOT_DONE; //never finishes
+		return null; //never finishes
 	}
 }

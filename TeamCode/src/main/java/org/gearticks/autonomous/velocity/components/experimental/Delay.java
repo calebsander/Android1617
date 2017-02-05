@@ -13,12 +13,12 @@ public class Delay extends AutonomousComponentHardware<HardwareConfiguration> {
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		this.configuration.stopMotion();
 		if (this.stageTimer.seconds() > this.delayOption.getValue()) return NEXT_STATE;
-		else return NOT_DONE;
+		else return null;
 	}
 }

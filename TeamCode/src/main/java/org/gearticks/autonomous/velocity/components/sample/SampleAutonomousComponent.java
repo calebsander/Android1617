@@ -16,14 +16,14 @@ public class SampleAutonomousComponent extends AutonomousComponentHardware<Veloc
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         //Code to update control system
 
         if (true /*end condition met*/) return NEXT_STATE;
-        else return NOT_DONE;
+        else return null;
     }
 
     @Override

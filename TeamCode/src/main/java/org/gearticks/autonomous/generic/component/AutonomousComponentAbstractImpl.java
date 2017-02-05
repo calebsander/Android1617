@@ -12,22 +12,10 @@ import java.util.logging.Logger;
  */
 public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
 	/**
-	 * Returning this from run() means that the component is not ready to transition to the next one
-	 */
-	public static final int NOT_DONE = 0;
-	/**
 	 * The default output port.
 	 * Use if there is only one output port
 	 */
-	public static final int NEXT_STATE = 1;
-	private static int firstUnusedTransition = Math.max(NOT_DONE, NEXT_STATE) + 1;
-	/**
-	 * Gets a unique transition id
-	 * @return the lowest unused transition id
-	 */
-	public static int newTransition() {
-		return firstUnusedTransition++;
-	}
+	public static final Transition NEXT_STATE = new Transition("Default");
 
 	protected final String id;
 
@@ -52,10 +40,10 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary.
-	 * Returns NOT_DONE
+	 * Returns null
 	 */
-	public int run() {
-		return NOT_DONE;
+	public Transition run() {
+		return null;
 	}
 
 	/**

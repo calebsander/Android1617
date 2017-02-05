@@ -32,13 +32,13 @@ public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
-		final int transition;
+		final Transition transition;
 		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10) transition = NEXT_STATE;
-		else transition = NOT_DONE;
+		else transition = null;
 		this.configuration.move(this.direction, 0.06);
 
 		return transition;
