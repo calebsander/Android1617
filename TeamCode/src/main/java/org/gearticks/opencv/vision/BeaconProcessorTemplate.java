@@ -1,6 +1,7 @@
 package org.gearticks.opencv.vision;
 
 
+import org.gearticks.opencv.imageprocessors.evbeacon.BeaconColorResult;
 import org.opencv.core.Mat;
 
 /**

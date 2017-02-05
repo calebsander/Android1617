@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.R;
 import org.gearticks.opencv.vision.FrameGrabber;
-import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
-import org.gearticks.opencv.vision.ImageProcessor;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -32,6 +30,7 @@ public class OpenCvConfiguration {
     private Mat image;
 
     private static final boolean cameraEnabled = false; //Camera is not working yet!
+    private boolean openCvInitialized = false;
 
     //manages getting one frame at a time
     public static FrameGrabber frameGrabber = null;
@@ -39,9 +38,6 @@ public class OpenCvConfiguration {
     public OpenCvConfiguration(HardwareMap hardwareMap){
         this.activity = (FtcRobotControllerActivity)hardwareMap.appContext;
 
-
-
-//        cameraBridgeViewBase = (CameraBridgeViewBase)activity.findViewById(R.id.ImageView01);
         cameraBridgeViewBase = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
         cameraBridgeViewBase.setCameraIndex(1);   //use front camera
         this.initializeCameraBridgeViewBase(cameraBridgeViewBase, FRAME_WIDTH_REQUEST, FRAME_HEIGHT_REQUEST);
@@ -105,12 +101,12 @@ public class OpenCvConfiguration {
                  */
                 @Override
                 public void onManagerConnected(int status) {
-                    final String funcName = "onManagerConnected";
 
                     switch (status) {
                         case LoaderCallbackInterface.SUCCESS:
                             Log.i(TAG, "OpenCV Init success");
                             cameraBridgeViewBase.enableView();
+                            openCvInitialized = true;
                             break;
                         case LoaderCallbackInterface.INIT_FAILED:
                             Log.i(TAG, "OpenCV Init Failed");
@@ -132,7 +128,33 @@ public class OpenCvConfiguration {
                 }   //onManagerConnected
             };
 
+    /**
+     * Enables the camera, but only if OpenCV has successfully been initialized.
+     * The camera (and thus the listeners) should not be enabled before OpenCV is enabled.
+     * Since OpenCV gets enabled during match initialization, once in autonomous or teleop,
+     * OpenCV should have been initialized and this initialize will always enable the camera.
+     *
+     * Allows the camera to generate frames and notify the listeners.
+     * Note that on top of this, the listener, i.e. the FrameGrabber, also has a mode that stops it from processing.
+     *
+     * Not sure how long it takes between the moment the camera is activated and the first listener call to the FrameGrabber.
+     * @return
+     */
+    public boolean activate(){
+        boolean success = false;
+        if (this.openCvInitialized){
+            this.cameraBridgeViewBase.enableView();
+            success = true;
+        }
+        return success;
+    }
 
+    /**
+     * Disables the camera. Stops it from creating frames and calling the listener (FrameGrabber)
+     */
+    public void deactivate(){
+        this.cameraBridgeViewBase.disableView();
+    }
 
     //-------------------------------------------------------------------------------------------
 

@@ -1,9 +1,8 @@
-package org.gearticks.opencv.imageprocessors;
+package org.gearticks.opencv.imageprocessors.evbeacon;
 
 
 import android.util.Log;
 
-import org.gearticks.opencv.vision.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessor;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.gearticks.opencv.vision.ImageUtil;
@@ -21,7 +20,7 @@ import java.util.List;
  * Created by vandejd1 on 8/29/16.
  * FTC Team EV 7393
  */
-public class EvBeaconProcessor2 implements ImageProcessor<BeaconColorResult> {
+public class EvBeaconProcessor implements ImageProcessor<BeaconColorResult> {
     private static final String TAG = "EvBeaconProcessor";
     private static final double MIN_MASS = 6;
 

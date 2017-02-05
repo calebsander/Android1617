@@ -3,13 +3,12 @@ package org.gearticks.autonomous.velocity.components.experimental;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opencv.OpenCvConfiguration;
-import org.gearticks.opencv.imageprocessors.EvBeaconProcessor;
-import org.gearticks.opencv.vision.BeaconColorResult;
+import org.gearticks.opencv.imageprocessors.evbeacon.EvBeaconProcessor;
+import org.gearticks.opencv.imageprocessors.evbeacon.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.gearticks.opmodes.units.SideOfButton;
 import org.gearticks.opmodes.utility.Utils;
