@@ -33,6 +33,17 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	//The current state of the shooter control
 	private ShooterState shooterState;
+
+	private enum BeaconState {
+		REST,
+		LEFT,
+		RIGHT
+	}
+	private BeaconState beaconState;
+	private ElapsedTime beaconStateTimer;
+
+	private boolean beaconButtonLastPressed = false;
+
 	//Keeps track of the amount of time elapsed since the switch to the current BallState
 	private ElapsedTime ballStateTimer;
 	//Whether we think there is a ball in the shooter
@@ -45,6 +56,9 @@ public class VelocityDrive extends BaseOpMode {
 		this.direction = new DriveDirection();
 		this.ballState = BallState.values()[0];
 		this.shooterState = ShooterState.values()[0];
+		this.shooterState = ShooterState.values()[0];
+		this.beaconState = BeaconState.values()[0];
+		this.beaconStateTimer = new ElapsedTime();
 		this.ballStateTimer = new ElapsedTime();
 		this.ballInShooter = false;
 		this.rollersDeployed = true;
@@ -78,6 +92,26 @@ public class VelocityDrive extends BaseOpMode {
 			intakePower = MotorWrapper.STOPPED; //leave intake off by default to save battery
 		}
 		this.configuration.intake.setPower(intakePower);
+
+		//Beacon ------------------------------------------------------------------------------
+		//Beacon button press event
+		boolean beaconToggle = (!beaconButtonLastPressed && this.gamepads[CALVIN].getB());
+		switch (this.beaconState) {
+			case REST:
+				this.configuration.beaconPresserDisengage();
+				if (beaconToggle) this.nextBeaconState();
+				break;
+			case LEFT:
+				this.configuration.beaconPresserEngageLeft();
+				if (beaconToggle) this.nextBeaconState();
+				break;
+			case RIGHT:
+				this.configuration.beaconPresserEngageRight();
+				if (beaconToggle) this.beaconState = BeaconState.REST;
+				break;
+		}
+		this.beaconButtonLastPressed = this.gamepads[CALVIN].getB();
+		//\Beacon ------------------------------------------------------------------------------
 
 		double snakePosition  = MotorConstants.SNAKE_V2_HOLDING,
 		       clutchPosition = MotorConstants.CLUTCH_V2_CLUTCHED;
@@ -174,6 +208,11 @@ public class VelocityDrive extends BaseOpMode {
 		this.ballStateTimer.reset();
 		final BallState[] ballStates = BallState.values();
 		this.ballState = ballStates[(this.ballState.ordinal() + 1) % ballStates.length];
+	}
+	private void nextBeaconState() {
+		this.beaconStateTimer.reset();
+		final BeaconState[] beaconStates = BeaconState.values();
+		this.beaconState = beaconStates[(this.ballState.ordinal() + 1) % beaconStates.length];
 	}
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
