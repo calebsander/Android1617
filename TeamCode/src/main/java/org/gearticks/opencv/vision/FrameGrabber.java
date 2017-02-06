@@ -33,7 +33,7 @@ public class FrameGrabber implements CameraBridgeViewBase.CvCameraViewListener2 
   private Mat frame, blank, tmp1, tmp2;
 
   //logging tag
-  private static final String TAG = "FrameGrabber";
+  private static final String TAG = "gearticks_FrameGrabber";
 
   private boolean resultReady = false;
 
@@ -112,6 +112,7 @@ public class FrameGrabber implements CameraBridgeViewBase.CvCameraViewListener2 
   }
 
   private void processFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
+      Log.v(TAG, "FrameGrabber processing image. Mode = " + mode + ". IP = "+(imageProcessor == null? "false" : "true"));
     if(imageProcessor == null){
       return;
     }

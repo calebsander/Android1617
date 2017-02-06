@@ -7,6 +7,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opencv.OpenCvConfiguration;
+import org.gearticks.opencv.imageprocessors.beaconposition.BeaconPositionResult;
 import org.gearticks.opencv.imageprocessors.beaconposition.CenterOnBeaconProcessor;
 import org.gearticks.opencv.imageprocessors.evbeacon.EvBeaconProcessor;
 import org.gearticks.opencv.imageprocessors.evbeacon.BeaconColorResult;
@@ -26,7 +27,7 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
     private final OpenCvConfiguration openCvConfiguration;
 	private boolean allianceColorIsBlue;
 
-    private final int maxNumFrames = 3;
+    private final int maxNumFrames = 1;
     private int numFramesProcessed = 0;
 
 	/**
@@ -54,7 +55,7 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
         Beware that the frameGrabber is a static class and can only support one ImageProcessor at the time.
         Need to set image processor here so that other components can crete and use other ImageProcessors
          */
-        this.openCvConfiguration.activate();
+        //this.openCvConfiguration.activate();
         this.openCvConfiguration.frameGrabber.setImageProcessor(processor);
         this.openCvConfiguration.frameGrabber.grabSingleFrame();
 		//Mat m = new Mat();
@@ -68,10 +69,11 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
 
         if (this.openCvConfiguration.frameGrabber.isResultReady()){
             Log.v(TAG, "New Frame is ready. Requesting next frame. NumFrames = " + this.numFramesProcessed);
-            ImageProcessorResult<BeaconColorResult> result =  this.openCvConfiguration.frameGrabber.getResult();
-            Log.v(TAG, "Result: Left color =  "+ result.getResult().getLeftColor() + ", right color = " +  result.getResult().getRightColor());
+            ImageProcessorResult<BeaconPositionResult> result =  this.openCvConfiguration.frameGrabber.getResult();
+            //Log.v(TAG, "Result: Left color =  "+ result.getResult().getLeftColor() + ", right color = " +  result.getResult().getRightColor());
+            Log.v(TAG, "Result: " + result.toString());
             this.numFramesProcessed++;
-            if (this.numFramesProcessed > this.maxNumFrames){
+            if (this.numFramesProcessed >= this.maxNumFrames){
                 return NEXT_STATE;
             }
             else {
@@ -112,7 +114,7 @@ public class OpenCVBeacon extends AutonomousComponentHardware<VelocityConfigurat
     public void tearDown() {
         super.tearDown();
         this.openCvConfiguration.frameGrabber.stopFrameGrabber();
-        this.openCvConfiguration.deactivate();
+        //this.openCvConfiguration.deactivate();
     }
 
 }

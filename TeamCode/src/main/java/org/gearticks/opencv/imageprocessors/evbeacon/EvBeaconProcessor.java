@@ -3,6 +3,7 @@ package org.gearticks.opencv.imageprocessors.evbeacon;
 
 import android.util.Log;
 
+import org.gearticks.opencv.imageprocessors.evbeacon.BeaconColorResult;
 import org.gearticks.opencv.vision.ImageProcessor;
 import org.gearticks.opencv.vision.ImageProcessorResult;
 import org.gearticks.opencv.vision.ImageUtil;
@@ -14,6 +15,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**

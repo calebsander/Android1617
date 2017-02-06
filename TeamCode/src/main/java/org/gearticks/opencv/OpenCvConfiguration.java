@@ -33,9 +33,10 @@ public class OpenCvConfiguration {
     private boolean openCvInitialized = false;
 
     //manages getting one frame at a time
-    public static FrameGrabber frameGrabber = null;
+    public FrameGrabber frameGrabber = null;
 
     public OpenCvConfiguration(HardwareMap hardwareMap){
+        Log.d(TAG, "Creating new OpenCvConfiguration (constructor)");
         this.activity = (FtcRobotControllerActivity)hardwareMap.appContext;
 
         cameraBridgeViewBase = (JavaCameraView) activity.findViewById(R.id.show_camera_activity_java_surface_view);
@@ -53,17 +54,15 @@ public class OpenCvConfiguration {
         this.initOpenCv(); //does this needs to be done at least after the cameraBridgeViewBase has a non-null value
     }
 
-    private void initializeCameraBridgeViewBase(final CameraBridgeViewBase camera, final int frameWidthRequest, final int frameHeightRequest){
+    private void initializeCameraBridgeViewBase(final CameraBridgeViewBase camera, final int frameWidthRequest, final int frameHeightRequest) {
         this.activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 //stuff that updates ui
                 camera.setVisibility(SurfaceView.VISIBLE);
                 camera.setMinimumWidth(frameWidthRequest);
                 camera.setMinimumHeight(frameHeightRequest);
                 camera.setMaxFrameSize(frameWidthRequest, frameHeightRequest);
-
             }
         });
     }

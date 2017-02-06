@@ -1,6 +1,5 @@
 package org.gearticks.opencv.imageprocessors.beaconposition;
 
-import org.gearticks.opencv.imageprocessors.beaconposition.BeaconColor;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
