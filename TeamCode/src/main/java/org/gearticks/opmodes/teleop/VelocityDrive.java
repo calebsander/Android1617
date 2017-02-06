@@ -65,21 +65,38 @@ public class VelocityDrive extends BaseOpMode {
 		this.configuration.rollersDown();
 	}
 	protected void loopAfterStart() {
-		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
-		final int driveGamepad = CALVIN;
-		final double yScaleFactor = 1.0;
-		final double sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
+		int driveGamepad;
+		double yScaleFactor;
+		double sScaleFactor;
+		if ((Math.abs(this.gamepads[CALVIN].getLeftY()) < 0.1 && Math.abs(this.gamepads[CALVIN].getRightX())  < 0.1)
+				&& (Math.abs(this.gamepads[JACK].getLeftY()) > 0.1 || Math.abs(this.gamepads[JACK].getRightX()) > 0.1)){
+			driveGamepad = JACK;
+			yScaleFactor = 0.5;
+			sScaleFactor = Math.max(0.3, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
+		}
+		else {
+			driveGamepad = CALVIN;
+			yScaleFactor = 1.0;
+			sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
+		}
+
+
 		final double scaleFactor;
+		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
 		if (slowMode) scaleFactor = 0.4; //limit max speed
 		else scaleFactor = 1.0;
-		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor * scaleFactor);
-		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor * scaleFactor);
-		this.telemetry.addData("Calvin's left Y", this.gamepads[driveGamepad].getLeftY());
-		this.telemetry.addData("Forward power", this.direction.getY());
 		final double accelLimit;
 		if (slowMode) accelLimit = 0.03;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
+
+		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor * scaleFactor);
+		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor * scaleFactor);
+
 		this.configuration.move(this.direction, accelLimit);
+
+		this.telemetry.addData("Controller", driveGamepad);
+		this.telemetry.addData("Calvin's left Y", this.gamepads[CALVIN].getLeftY());
+		this.telemetry.addData("Forward power", this.direction.getY());
 
 		final double intakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
@@ -113,8 +130,12 @@ public class VelocityDrive extends BaseOpMode {
 		this.beaconButtonLastPressed = this.gamepads[CALVIN].getB();
 		//\Beacon ------------------------------------------------------------------------------
 
+
 		double snakePosition  = MotorConstants.SNAKE_V2_HOLDING,
-		       clutchPosition = MotorConstants.CLUTCH_V2_CLUTCHED;
+				clutchPosition = MotorConstants.CLUTCH_V2_CLUTCHED;
+		if (this.gamepads[JACK].getB()){
+			snakePosition  = MotorConstants.SNAKE_V2_DUMPING;
+		}
 		switch (this.ballState) {
 			case INTAKING:
 				clutchPosition = MotorConstants.CLUTCH_V2_ENGAGED; //this is the only state when it is safe to load a ball into the snake
