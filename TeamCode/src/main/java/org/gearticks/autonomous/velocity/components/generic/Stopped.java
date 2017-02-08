@@ -1,5 +1,6 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
@@ -9,8 +10,8 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
  * never transitions
  */
 public class Stopped extends AutonomousComponentHardware<HardwareConfiguration> {
-	public Stopped(HardwareConfiguration configuration) {
-		super(configuration);
+	public Stopped(OpModeContext opModeContext) {
+		super(opModeContext.configuration);
 	}
 
 	@Override

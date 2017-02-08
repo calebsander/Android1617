@@ -1,21 +1,20 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
-import org.gearticks.opmodes.utility.Utils;
 
 public class ResetSnake extends AutonomousComponentHardware<VelocityConfiguration> {
     private final boolean waitAfter;
 
     /**
-     * @param configuration - config file
+     * @param waitAfter - whether to wait after the reset
+     * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public ResetSnake(@NonNull VelocityConfiguration configuration, boolean waitAfter, String id) {
-        super(configuration, id);
+    public ResetSnake(boolean waitAfter, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
         this.waitAfter = waitAfter;
     }
 

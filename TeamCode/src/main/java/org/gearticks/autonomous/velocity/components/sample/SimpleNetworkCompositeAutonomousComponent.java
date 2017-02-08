@@ -1,10 +1,7 @@
 package org.gearticks.autonomous.velocity.components.sample;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.gearticks.GamepadWrapper;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.DecisionDebugPause;
@@ -17,14 +14,12 @@ import org.gearticks.opmodes.utility.Utils;
  */
 public class SimpleNetworkCompositeAutonomousComponent extends NetworkedStateMachine {
 
-    public SimpleNetworkCompositeAutonomousComponent(@NonNull GamepadWrapper[] gamepads, @NonNull Telemetry telemetry, @NonNull VelocityConfiguration configuration) {
+    public SimpleNetworkCompositeAutonomousComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         super();
-        Utils.assertNotNull(gamepads);
-        Utils.assertNotNull(telemetry);
         Log.d(Utils.TAG, "begin full state machine initialization of SimpleNetworkCompositeAutonomousComponent");
-        final AutonomousComponent debugDecision = new DecisionDebugPause(gamepads, telemetry, configuration, "Wait until X of Y are pressed");
-        final AutonomousComponent driveForward = new GiroDriveEncoder(0.0, 0.7, 1000, configuration, "Drive forward");
-        final AutonomousComponent driveBackward = new GiroDriveEncoder(0.0, -0.7, 1000, configuration, "Drive backward");
+        final AutonomousComponent debugDecision = new DecisionDebugPause(opModeContext, "Wait until X of Y are pressed");
+        final AutonomousComponent driveForward = new GiroDriveEncoder(0.0, 0.7, 1000, opModeContext, "Drive forward");
+        final AutonomousComponent driveBackward = new GiroDriveEncoder(0.0, -0.7, 1000, opModeContext, "Drive backward");
 
         this.setInitialComponent(debugDecision);
         this.addConnection(debugDecision, DecisionDebugPause.X_TRANSITION, driveForward);

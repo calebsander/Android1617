@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.vuforia.VuforiaImages;
-
 
 public class FacePicture extends AutonomousComponentHardware<VelocityConfiguration> {
     private final boolean isNearBeacon;
@@ -23,14 +23,14 @@ public class FacePicture extends AutonomousComponentHardware<VelocityConfigurati
     private VuforiaTrackableDefaultListener firstTargetListener;
 
     /**
-     * @param configuration - config file
+     * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public FacePicture(boolean isNearBeacon, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public FacePicture(boolean isNearBeacon, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
         this.isNearBeacon = isNearBeacon;
         this.direction = new DriveDirection();
-        this.vuforiaConfiguration = vuforiaConfiguration;
+        this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
         this.angleCorrectionTimer = new ElapsedTime();
     }
 

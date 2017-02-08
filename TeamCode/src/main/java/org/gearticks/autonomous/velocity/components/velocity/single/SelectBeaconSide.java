@@ -1,7 +1,7 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration.BeaconColorCounts;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
@@ -18,16 +18,17 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 	private final PictureResult pictureResult;
 
 	/**
-	 * @param configuration
+	 * @param pictureResult - the object to store the beacon color counts in
+	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public SelectBeaconSide(PictureResult pictureResult, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-		super(configuration, id);
-		this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
+	public SelectBeaconSide(PictureResult pictureResult, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext.configuration, id);
+		this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
 		this.pictureResult = pictureResult;
 	}
-	public SelectBeaconSide(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-		this(new PictureResult(), vuforiaConfiguration, configuration, id);
+	public SelectBeaconSide(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		this(new PictureResult(), opModeContext, id);
 	}
 
 	@Override

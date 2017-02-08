@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.generic.opmode;
 
 import android.util.Log;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
@@ -19,7 +20,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	protected void initialize() {
 		Log.i(Utils.TAG, "Start OpMode initialize");
 		this.configuration = this.newConfiguration();
-		this.component = this.getComponent();
+		this.component = this.getComponent(new OpModeContext<HARDWARE_TYPE>(this.configuration, this.gamepads, this.telemetry));
 	}
 	protected void matchStart() {
 		Log.i(Utils.TAG, "Starting OpMode matchStart");
@@ -50,7 +51,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	 * Will be called in initialize() after configuration is created.
 	 * @return the component to run
 	 */
-	protected abstract AutonomousComponent getComponent();
+	protected abstract AutonomousComponent getComponent(OpModeContext<HARDWARE_TYPE> opModeContext);
 	/**
 	 * Creates a configuration object of the specified type.
 	 * The idea is to have a subclass of this class for each configuration type in use

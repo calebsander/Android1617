@@ -1,12 +1,12 @@
 package org.gearticks.autonomous.velocity.components.sample;
 
-import android.support.annotation.NonNull;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class SampleAutonomousComponent extends AutonomousComponentHardware<VelocityConfiguration> {
-    public SampleAutonomousComponent(@NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public SampleAutonomousComponent(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
     }
 
     @Override

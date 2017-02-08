@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.velocity.components.velocity.composite;
 
-import android.support.annotation.NonNull;
-
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
@@ -10,18 +9,17 @@ import org.gearticks.autonomous.velocity.components.velocity.single.RightPressBe
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide.PictureResult;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.vuforia.VuforiaConfiguration;
 
 public class SidePressBeaconButton extends NetworkedStateMachine {
 
-    public SidePressBeaconButton(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-        super();
+    public SidePressBeaconButton(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(id);
         final PictureResult pictureResult = new PictureResult();
-        final AutonomousComponent selectSide = new SelectBeaconSide(pictureResult, vuforiaConfiguration, configuration, "Select beacon side");
-        final AutonomousComponent leftButton = new LeftPressBeaconServo(configuration, "Left press beacon");
-        final AutonomousComponent rightButton = new RightPressBeaconServo(configuration, "Right press beacon");
-        final AutonomousComponent resetButton = new DisengageBeaconServo(configuration, "Disengage beacon presser");
-        final AutonomousComponent fixBeacon = new FixBeacon(pictureResult, configuration, vuforiaConfiguration);
+        final AutonomousComponent selectSide = new SelectBeaconSide(pictureResult, opModeContext, "Select beacon side");
+        final AutonomousComponent leftButton = new LeftPressBeaconServo(opModeContext, "Left press beacon");
+        final AutonomousComponent rightButton = new RightPressBeaconServo(opModeContext, "Right press beacon");
+        final AutonomousComponent resetButton = new DisengageBeaconServo(opModeContext, "Disengage beacon presser");
+        final AutonomousComponent fixBeacon = new FixBeacon(pictureResult, opModeContext);
 
         this.setInitialComponent(selectSide);
         this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, leftButton);

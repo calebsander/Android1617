@@ -1,5 +1,6 @@
 package org.gearticks.autonomous.sample.opmodes;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
@@ -12,8 +13,8 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
     private class GyroDriveEncoderInner extends AutonomousComponentHardware<VelocityConfiguration> {
         private final DriveDirection direction;
 
-        public GyroDriveEncoderInner(VelocityConfiguration configuration, String id) {
-            super(configuration, id);
+        public GyroDriveEncoderInner(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+            super(opModeContext.configuration, id);
             this.direction = new DriveDirection();
         }
 
@@ -32,11 +33,11 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
         }
     }
 
-    protected AutonomousComponent getComponent() {
+    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
-        sm.addComponent(new GyroDriveEncoder(0.0, 1.0, 2000, this.configuration, "stage1"));
-        sm.addComponent(new GyroDriveEncoderInner(this.configuration, "gyro drive inner"));
-        sm.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(this.configuration, "giro drive anonymous") { //Anonymous class
+        sm.addComponent(new GyroDriveEncoder(0.0, 1.0, 2000, opModeContext, "stage1"));
+        sm.addComponent(new GyroDriveEncoderInner(opModeContext, "gyro drive inner"));
+        sm.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext.configuration, "giro drive anonymous") { //Anonymous class
             private final DriveDirection direction = new DriveDirection();
 
             @Override

@@ -1,8 +1,7 @@
 package org.gearticks.autonomous.velocity.components.experimental;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.opmodes.utility.Utils;
@@ -10,8 +9,8 @@ import org.gearticks.opmodes.utility.Utils;
 public class RangeSensorReadout extends AutonomousComponentHardware<VelocityConfiguration> {
     public final double timeLimit;
 
-    public RangeSensorReadout(double timeLimit, @NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public RangeSensorReadout(double timeLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
         this.timeLimit = timeLimit;
     }
 

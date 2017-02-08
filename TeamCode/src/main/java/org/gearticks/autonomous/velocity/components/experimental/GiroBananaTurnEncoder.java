@@ -3,6 +3,7 @@ package org.gearticks.autonomous.velocity.components.experimental;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -24,11 +25,11 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 	 * @param endHeading - between 0 and 360, input to DriveDirection.gyroCorrect
      * @param power - between 0 and 1, input for DriveDirection
      * @param encoderTarget - target for the encoder. If the encoderPositive exceeds this target, the component transitions
-     * @param configuration
+     * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, @NonNull VelocityConfiguration configuration, String id) {
-		super(configuration, id);
+	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext.configuration, id);
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.startHeading = startHeading;

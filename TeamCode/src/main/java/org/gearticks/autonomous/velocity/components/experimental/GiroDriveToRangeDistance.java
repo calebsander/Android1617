@@ -1,8 +1,7 @@
 package org.gearticks.autonomous.velocity.components.experimental;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -16,8 +15,8 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
     private final long encoderTarget;
 
 
-    public GiroDriveToRangeDistance(double distanceFromWall, double targetHeading, double power, long encoderLimit, @NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public GiroDriveToRangeDistance(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.targetHeading = targetHeading;

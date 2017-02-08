@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.gearticks.PIDControl.MiniPID;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -26,11 +27,9 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
     private final double d = 0;
     private MiniPID pidController;
 
-    MessageFormat mf = new MessageFormat("test {0}, test {1}");
 
-
-    public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, @NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.distanceFromWall = distanceFromWall;

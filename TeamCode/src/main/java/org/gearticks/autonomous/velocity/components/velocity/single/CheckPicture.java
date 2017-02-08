@@ -1,5 +1,6 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide.PictureResult;
 import org.gearticks.joystickoptions.AllianceOption;
@@ -12,9 +13,9 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 	private final PictureResult pictureResult;
 	private final VuforiaConfiguration vuforiaConfiguration;
 
-	public CheckPicture(PictureResult pictureResult, VuforiaConfiguration vuforiaConfiguration) {
+	public CheckPicture(PictureResult pictureResult, OpModeContext opModeContext) {
 		this.pictureResult = pictureResult;
-		this.vuforiaConfiguration = vuforiaConfiguration;
+		this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
 	}
 
 	@Override
@@ -24,7 +25,7 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 
 		final BeaconColorCounts oldColorCounts = pictureResult.colorCounts;
 		final int oldBlue = oldColorCounts.leftBlue + oldColorCounts.rightBlue;
-		final BeaconColorCounts colorCounts = vuforiaConfiguration.getColorCounts();
+		final BeaconColorCounts colorCounts = this.vuforiaConfiguration.getColorCounts();
 		final int newBlue = colorCounts.leftBlue + colorCounts.rightBlue;
 		final boolean nowBlue = newBlue > oldBlue;
 		final boolean nowCorrect = nowBlue ^ AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.RED;

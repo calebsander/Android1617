@@ -1,6 +1,6 @@
 package org.gearticks.autonomous.velocity.components.deprecated;
 
-import android.support.annotation.NonNull;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -16,11 +16,11 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
 	 * @param power - between 0 and 1, input for DriveDirection
 	 * @param encoderTarget - target for the encoder. If the encoderPositive exceeds this target, the component transitions
-	 * @param configuration
+	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GyroDriveEncoder(double targetHeading, double power, long encoderTarget, @NonNull VelocityConfiguration configuration, String id) {
-		super(configuration, id);
+	public GyroDriveEncoder(double targetHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext.configuration, id);
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.targetHeading = targetHeading;

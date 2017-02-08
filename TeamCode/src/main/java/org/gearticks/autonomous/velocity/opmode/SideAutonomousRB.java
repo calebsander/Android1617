@@ -2,6 +2,7 @@ package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
@@ -30,26 +31,25 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
         this.configuration.advanceShooterToDown();
     }
 
-    protected AutonomousComponent getComponent() {
-        final VuforiaConfiguration vuforiaConfiguration = new VuforiaConfiguration();
+    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final NetworkedStateMachine sm = new NetworkedStateMachine();
 
         //Initialization components
-        final AutonomousComponent sideSelector = new AutonomousSideSelector(this.configuration);
-        final AutonomousComponent disengageBeaconServo = new DisengageBeaconServo(this.configuration, "Disengage beacon button");
+        final AutonomousComponent sideSelector = new AutonomousSideSelector(opModeContext);
+        final AutonomousComponent disengageBeaconServo = new DisengageBeaconServo(opModeContext, "Disengage beacon button");
         //final AutonomousComponent deploySideRollers = new DeploySideRollers(this.configuration, "Deploy rollers");
         //shooter components
-        final AutonomousComponent shoot2Balls = new Shoot2Balls(true, this.configuration, "Shoot 2 balls");
+        final AutonomousComponent shoot2Balls = new Shoot2Balls(true, opModeContext, "Shoot 2 balls");
 
         // Blue side driving components
-        final AutonomousComponent blueSide = new BlueSideAutonomous(DISTANCE_FROM_WALL, gamepads, telemetry, vuforiaConfiguration, this.configuration);
+        final AutonomousComponent blueSide = new BlueSideAutonomous(DISTANCE_FROM_WALL, opModeContext);
 
         //Red side driving components
-        final AutonomousComponent redSide = new RedSideAutonomous(DISTANCE_FROM_WALL, gamepads, telemetry, vuforiaConfiguration, this.configuration);
+        final AutonomousComponent redSide = new RedSideAutonomous(DISTANCE_FROM_WALL, opModeContext);
 
         //End component
         final LinearStateMachine teardown = new LinearStateMachine("Teardown");
-        teardown.addComponent(new Stopped(this.configuration));
+        teardown.addComponent(new Stopped(opModeContext));
 
         //Initialize
         sm.setInitialComponent(disengageBeaconServo);

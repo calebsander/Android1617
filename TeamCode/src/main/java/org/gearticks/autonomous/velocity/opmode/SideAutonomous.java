@@ -3,6 +3,7 @@ package org.gearticks.autonomous.velocity.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
@@ -22,69 +23,69 @@ import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterD
 import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
 import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
+import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration;
 
 @Autonomous
 @Disabled
 public class SideAutonomous extends VelocityBaseOpMode {
-    protected AutonomousComponent getComponent() {
-        final VuforiaConfiguration vuforiaConfiguration = new VuforiaConfiguration();
+    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         int distanceFromWall = 10;
-        sm.addComponent(new DisengageBeaconServo(this.configuration, "Disengage beacon button"));
+        sm.addComponent(new DisengageBeaconServo(opModeContext, "Disengage beacon button"));
 
 
         //Shoot 2 balls
-        sm.addComponent(new MoveShooterDown(this.configuration, "MoveShooterDown"));
+        sm.addComponent(new MoveShooterDown(opModeContext, "MoveShooterDown"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
-        sm.addComponent(new ShootBall(this.configuration, "Shoot 1st ball"));
-        sm.addComponent(new MoveShooterDown(this.configuration, "Move Shooter Down"));
-        sm.addComponent(new LoadBall(this.configuration, "Load 2nd ball"));
-        sm.addComponent(new ResetSnake(this.configuration, true, "Reset Snake"));
-        sm.addComponent(new ShootBall(this.configuration, "Shoot 2nd ball"));
+        sm.addComponent(new ShootBall(opModeContext, "Shoot 1st ball"));
+        sm.addComponent(new MoveShooterDown(opModeContext, "Move Shooter Down"));
+        sm.addComponent(new LoadBall(opModeContext, "Load 2nd ball"));
+        sm.addComponent(new ResetSnake(true, opModeContext, "Reset Snake"));
+        sm.addComponent(new ShootBall(opModeContext, "Shoot 2nd ball"));
 
         //Blue side
 
         //Drive to wall
         //sm.addComponent(new GiroDriveEncoder(0.0, 0.25, 500, this.configuration, "Drive forward for 500 ticks"));
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroBananaTurnEncoder(0.0, 20.0, 0.25, 1000, this.configuration, "Banana Turn right"));
+        sm.addComponent(new GiroBananaTurnEncoder(0.0, 20.0, 0.25, 1000, opModeContext, "Banana Turn right"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
-        sm.addComponent(new GiroBananaTurnEncoder(20.0, 90.0, 0.5, 5000, this.configuration, "Banana Turn right"));
+        sm.addComponent(new GiroBananaTurnEncoder(20.0, 90.0, 0.5, 5000, opModeContext, "Banana Turn right"));
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
-        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
+        sm.addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
         //sm.addComponent(new GiroBananaTurnEncoder(90.0, 180.0, 0.15, 1000, this.configuration, "Banana Turn left"));
 
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
 
-        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.20, 6000, this.configuration, "Range sensor drive along wall"));
+        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.20, 6000, opModeContext, "Range sensor drive along wall"));
 
         //Press beacon
-        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180, 0.05, 500, this.configuration, "Adjust to white line"));
+        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180, 0.05, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         //sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press Button"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+        sm.addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
 
 
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
 
         //Go to second beacon
-        sm.addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, 0.25, 3000, this.configuration, "Range sensor drive along wall"));
-        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, 0.25, 4000, this.configuration, "Range sensor drive along wall to line"));
+        sm.addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, 0.25, 3000, opModeContext, "Range sensor drive along wall"));
+        sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, 0.25, 4000, opModeContext, "Range sensor drive along wall to line"));
         //sm.addComponent(new GiroDriveToLine(180, 0.7, 8000, this.configuration, "Drive to white line"));
 
         //Press beacon
-        sm.addComponent(new GiroDriveToLine(180, -0.05, 500, this.configuration, "Adjust to white line"));
+        sm.addComponent(new GiroDriveToLine(180, -0.05, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
-        sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press Button"));
-        sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
+        sm.addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
+        sm.addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
 
 
 
-        sm.addComponent(new Stopped(this.configuration));
+        sm.addComponent(new Stopped(opModeContext));
 
         return sm;
     }

@@ -5,6 +5,7 @@ import android.util.Log;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
@@ -23,14 +24,14 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
     /**
      * @param finalDistance - distance from picture the robot stops
      * @param isNearBeacon - what beacon it's looking for
-     * @param configuration - config file
+     * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public VuforiaIn(float finalDistance, boolean isNearBeacon, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public VuforiaIn(float finalDistance, boolean isNearBeacon, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
         this.direction = new DriveDirection();
         this.finalDistance = finalDistance;
-        this.vuforiaConfiguration = Utils.assertNotNull(vuforiaConfiguration);
+        this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
         this.isNearBeacon = isNearBeacon;
     }
 

@@ -1,7 +1,7 @@
 package org.gearticks.autonomous.velocity.components.experimental;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.AllianceOption;
@@ -11,10 +11,10 @@ public class AutonomousSideSelector extends AutonomousComponentHardware<Velocity
 	public static final int BLUE = newTransition(), RED = newTransition();
 	/**
 	 *
-	 * @param configuration
+	 * @param opModeContext - the OpModeContext this is running in
 	 */
-	public AutonomousSideSelector(@NonNull VelocityConfiguration configuration) {
-		super(configuration, "Switch based on alliance");
+	public AutonomousSideSelector(OpModeContext<VelocityConfiguration> opModeContext) {
+		super(opModeContext.configuration, "Switch based on alliance");
 	}
 
 	@Override

@@ -3,12 +3,14 @@ package org.gearticks.autonomous.sample.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.AutonomousDatalogger;
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
+import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 
 @Autonomous
@@ -98,7 +100,7 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 	private AutonomousDatalogger datalogger;
 	private NetworkedStateMachine sm;
 
-	protected AutonomousComponent getComponent() {
+	protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		/*
 			Branch 1: 1, 2, 3
 			Branch 2: 4, 5, 6
@@ -123,7 +125,7 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 		branch3.addComponent(new BranchFourChoice());
 		final LinearStateMachine branch4 = new LinearStateMachine("branch4");
 		branch4.addComponent(new SimulatedStage(8));
-		final AutonomousComponent stopped = new Stopped(this.configuration);
+		final AutonomousComponent stopped = new Stopped(opModeContext);
 
 		this.sm = new NetworkedStateMachine("sm");
 		this.sm.setInitialComponent(entranceComponent);

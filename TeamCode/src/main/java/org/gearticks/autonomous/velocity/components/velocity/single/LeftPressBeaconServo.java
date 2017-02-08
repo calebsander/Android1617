@@ -1,17 +1,16 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
-import android.support.annotation.NonNull;
-
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class LeftPressBeaconServo extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
-     * @param configuration - config file
+     * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public LeftPressBeaconServo(@NonNull VelocityConfiguration configuration, String id) {
-        super(configuration, id);
+    public LeftPressBeaconServo(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext.configuration, id);
     }
 
     @Override

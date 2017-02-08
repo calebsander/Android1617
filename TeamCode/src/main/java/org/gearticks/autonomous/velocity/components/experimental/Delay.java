@@ -1,5 +1,6 @@
 package org.gearticks.autonomous.velocity.components.experimental;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.joystickoptions.IncrementOption;
@@ -7,8 +8,8 @@ import org.gearticks.joystickoptions.IncrementOption;
 public class Delay extends AutonomousComponentHardware<HardwareConfiguration> {
 	private final IncrementOption delayOption;
 
-	public Delay(HardwareConfiguration configuration, IncrementOption delayOption) {
-		super(configuration);
+	public Delay(OpModeContext opModeContext, IncrementOption delayOption) {
+		super(opModeContext.configuration);
 		this.delayOption = delayOption;
 	}
 

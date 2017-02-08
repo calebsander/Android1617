@@ -1,8 +1,7 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -18,17 +17,14 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 
 	/**
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
-	 * @param configuration - config file
+	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GiroTurn(double targetHeading, @NonNull VelocityConfiguration configuration, String id) {
-		super(configuration, id);
-		this.targetHeading = targetHeading;
-		this.power = 0.05;
-		this.range = 10;
+	public GiroTurn(double targetHeading, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		this(targetHeading, 0.05, 10, opModeContext, id);
 	}
-	public GiroTurn(double targetHeading, double power, int range, @NonNull VelocityConfiguration configuration, String id) {
-		super(configuration, id);
+	public GiroTurn(double targetHeading, double power, int range, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext.configuration, id);
 		this.targetHeading = targetHeading;
 		this.power = power;
 		this.range = range;

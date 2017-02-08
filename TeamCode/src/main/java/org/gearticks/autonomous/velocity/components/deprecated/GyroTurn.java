@@ -1,5 +1,6 @@
 package org.gearticks.autonomous.velocity.components.deprecated;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -13,11 +14,11 @@ public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 
 	/**
 	 * @param targetHeading - between 0 and 360, input to DriveDirection.gyroCorrect
-	 * @param configuration - config file
+	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GyroTurn(double targetHeading, VelocityConfiguration configuration, String id) {
-		super(configuration, id);
+	public GyroTurn(double targetHeading, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext.configuration, id);
 		this.direction = new DriveDirection();
 		this.targetHeading = targetHeading;
 	}
