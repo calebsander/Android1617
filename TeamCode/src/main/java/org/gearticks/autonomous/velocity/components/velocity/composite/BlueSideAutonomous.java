@@ -53,5 +53,6 @@ public class BlueSideAutonomous extends LinearStateMachine {
         //Cap ball
         addComponent(new DisengageSideRollers(configuration, "Raise rollers"));
         addComponent(new GiroTurn(225.0, configuration, "Turn to cap ball"));
+        addComponent(new GiroDriveEncoder(225.0, 0.7, 8000, configuration, "Hit cap ball and park"));
     }
 }
