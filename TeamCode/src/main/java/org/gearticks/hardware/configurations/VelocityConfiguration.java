@@ -136,11 +136,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.drive.commitPowers();
 	}
 
-	private boolean shooterFarTriggered() {
+	public boolean shooterFarTriggered() {
 		return !this.shooterFar.getState();
 	}
 
-	private boolean shooterNearTriggered() {
+	public boolean shooterNearTriggered() {
 		return !this.shooterNear.getState();
 	}
 

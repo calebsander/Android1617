@@ -9,10 +9,12 @@ import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnE
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallEncoder;
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
+import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
+import org.gearticks.autonomous.velocity.components.velocity.single.DisengageSideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
 import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
@@ -47,5 +49,9 @@ public class BlueSideAutonomous extends LinearStateMachine {
         addComponent(new Wait(0.3, "Wait for 0.3 sec"));
         addComponent(new GiroTurn(180.0, configuration, "Straighten out"));
         addComponent(new SidePressBeaconButton(vuforiaConfiguration, configuration, "Press Button"));
+
+        //Cap ball
+        addComponent(new DisengageSideRollers(configuration, "Raise rollers"));
+        addComponent(new GiroTurn(225.0, configuration, "Turn to cap ball"));
     }
 }

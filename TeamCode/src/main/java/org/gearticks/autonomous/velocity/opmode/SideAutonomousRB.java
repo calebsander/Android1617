@@ -13,6 +13,7 @@ import org.gearticks.autonomous.velocity.components.velocity.composite.RedSideAu
 import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
+import org.gearticks.autonomous.velocity.components.velocity.single.ShooterStopperToNear;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration;
@@ -48,6 +49,7 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
         final AutonomousComponent redSide = new RedSideAutonomous(DISTANCE_FROM_WALL, gamepads, telemetry, vuforiaConfiguration, this.configuration);
 
         //End component
+        final AutonomousComponent shooterStopper = new ShooterStopperToNear(this.configuration, "Shooter Stopper to near");
         final LinearStateMachine teardown = new LinearStateMachine("Teardown");
         teardown.addComponent(new Stopped(this.configuration));
 
@@ -59,11 +61,16 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
 
         //Blue Side
         sm.addConnection(sideSelector, AutonomousSideSelector.BLUE, blueSide);
-        sm.addConnection(blueSide, NEXT_STATE, teardown);
+        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);
 
         //Red side
         sm.addConnection(sideSelector, AutonomousSideSelector.RED, redSide);
-        sm.addConnection(redSide, NEXT_STATE, teardown);
+        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
+
+        //Move Shooter Stopper to near
+        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);
+        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
+        sm.addConnection(shooterStopper, NEXT_STATE, teardown);
 
         return sm;
     }
