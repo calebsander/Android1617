@@ -312,7 +312,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		@Deprecated
 		public static final double SNAKE_DUMPING = 0.7;
 		public static final double SNAKE_V2_DUMPING = 0.8;
-		public static final double SNAKE_V2_TIME_TO_MOVE = 0.4; //seconds for snake to switch positions
+		public static final double SNAKE_V2_TIME_TO_MOVE = 0.5; //seconds for snake to switch positions
 
 		@Deprecated
 		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
