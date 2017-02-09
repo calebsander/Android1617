@@ -27,7 +27,7 @@ public class LoadBall extends AutonomousComponentHardware<VelocityConfiguration>
         final int superTransition = super.run();
         if (superTransition != NOT_DONE) return superTransition;
 
-        if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
+        if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE+0.2) return NEXT_STATE;
         else return NOT_DONE;
     }
 }

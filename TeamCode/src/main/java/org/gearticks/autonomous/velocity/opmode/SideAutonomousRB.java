@@ -22,7 +22,7 @@ import static org.gearticks.autonomous.generic.component.AutonomousComponentAbst
 
 @Autonomous
 public class SideAutonomousRB extends VelocityBaseOpMode {
-    private static final int DISTANCE_FROM_WALL = 10;
+    private static final int DISTANCE_FROM_WALL = 9;
 
     @Override
     protected void loopBeforeStart() {
@@ -65,12 +65,12 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
 
         //Red side
         sm.addConnection(sideSelector, AutonomousSideSelector.RED, redSide);
-        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
+//        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
 
         //Move Shooter Stopper to near
-        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);
-        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
-        sm.addConnection(shooterStopper, NEXT_STATE, teardown);
+//        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);
+//        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
+//        sm.addConnection(shooterStopper, NEXT_STATE, teardown);
 
         return sm;
     }

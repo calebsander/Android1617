@@ -211,6 +211,21 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			else this.shootSlow();
 		}
 	}
+	public void advanceShooterToDownAutonomous() {
+		if (!this.shooterWasDown) {
+			if (this.isShooterAtSensor()) {
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+				final int ticksToDown;
+				if (this.v2) ticksToDown = MotorConstants.SHOOTER_V2_TICKS_TO_DOWN;
+				else ticksToDown = MotorConstants.SHOOTER_TICKS_TO_DOWN;
+				this.shooter.setTarget(ticksToDown);
+				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+				this.shooterWasDown = true;
+			}
+			else this.shootSlow();
+		}
+	}
 
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
@@ -297,11 +312,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.4;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.6;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
-		public static final int SHOOTER_V2_TICKS_TO_DOWN = -15;
+		public static final int SHOOTER_V2_TICKS_TO_DOWN = -0;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 		public static final int SHOOTER_V2_TICKS_TO_SHOOTING = -150;
