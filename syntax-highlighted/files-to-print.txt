@@ -1,5 +1,6 @@
 AutonomousComponent
 BlueSideAutonomous
+DriveDirection
 HardwareComponentAutonomous
 LinearStateMachine
 NetworkedStateMachine
@@ -7,3 +8,4 @@ RedSideAutonomous
 SideAutonomousRB
 VelocityConfiguration
 VelocityDrive
+VuforiaConfiguration
