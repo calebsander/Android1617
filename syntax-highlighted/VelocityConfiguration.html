@@ -190,6 +190,21 @@
       <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">shootSlow</span><span class="o">();</span>
     <span class="o">}</span>
   <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">advanceShooterToDownAutonomous</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isShooterAtSensor</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_TO_POSITION</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">ticksToDown</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">v2</span><span class="o">)</span> <span class="n">ticksToDown</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_V2_TICKS_TO_DOWN</span><span class="o">;</span>
+        <span class="k">else</span> <span class="n">ticksToDown</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_TO_DOWN</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setTarget</span><span class="o">(</span><span class="n">ticksToDown</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK_SLOW</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">shootSlow</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
 
   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">resetAutoShooter</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
@@ -276,11 +291,11 @@
 
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_FORWARD</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK</span> <span class="o">=</span> <span class="o">-</span><span class="n">SHOOTER_FORWARD</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK_SLOW</span> <span class="o">=</span> <span class="n">SHOOTER_BACK</span> <span class="o">*</span> <span class="mf">0.4</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK_SLOW</span> <span class="o">=</span> <span class="n">SHOOTER_BACK</span> <span class="o">*</span> <span class="mf">0.6</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1870</span><span class="o">;</span>
     <span class="nd">@Deprecated</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_TICKS_TO_DOWN</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">*</span> <span class="mf">0.1</span><span class="o">);</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_V2_TICKS_TO_DOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">15</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_V2_TICKS_TO_DOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">0</span><span class="o">;</span>
     <span class="nd">@Deprecated</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_TICKS_TO_SHOOTING</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">*</span> <span class="mf">0.2</span><span class="o">);</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_V2_TICKS_TO_SHOOTING</span> <span class="o">=</span> <span class="o">-</span><span class="mi">150</span><span class="o">;</span>

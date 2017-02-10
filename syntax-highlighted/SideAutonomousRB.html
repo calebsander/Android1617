@@ -3,7 +3,7 @@
 
 <span class="nd">@Autonomous</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SideAutonomousRB</span> <span class="kd">extends</span> <span class="n">VelocityBaseOpMode</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">DISTANCE_FROM_WALL</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">DISTANCE_FROM_WALL</span> <span class="o">=</span> <span class="mi">9</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
     <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">loopBeforeStart</span><span class="o">()</span> <span class="o">{</span>
@@ -30,7 +30,7 @@
         <span class="kd">final</span> <span class="n">AutonomousComponent</span> <span class="n">redSide</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RedSideAutonomous</span><span class="o">(</span><span class="n">DISTANCE_FROM_WALL</span><span class="o">,</span> <span class="n">gamepads</span><span class="o">,</span> <span class="n">telemetry</span><span class="o">,</span> <span class="n">vuforiaConfiguration</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">);</span>
 
         <span class="c1">//End component</span>
-        <span class="kd">final</span> <span class="n">AutonomousComponent</span> <span class="n">shooterStopper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ShooterStopperToNear</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">,</span> <span class="s">&quot;Shooter Stopper to near&quot;</span><span class="o">);</span>
+        <span class="c1">//final AutonomousComponent shooterStopper = new ShooterStopperToNear(this.configuration, &quot;Shooter Stopper to near&quot;);</span>
         <span class="kd">final</span> <span class="n">LinearStateMachine</span> <span class="n">teardown</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinearStateMachine</span><span class="o">(</span><span class="s">&quot;Teardown&quot;</span><span class="o">);</span>
         <span class="n">teardown</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">Stopped</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">));</span>
 
@@ -42,16 +42,18 @@
 
         <span class="c1">//Blue Side</span>
         <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">sideSelector</span><span class="o">,</span> <span class="n">AutonomousSideSelector</span><span class="o">.</span><span class="na">BLUE</span><span class="o">,</span> <span class="n">blueSide</span><span class="o">);</span>
-        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">blueSide</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">shooterStopper</span><span class="o">);</span>
+<span class="c1">//        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);</span>
+        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">blueSide</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">teardown</span><span class="o">);</span>
 
         <span class="c1">//Red side</span>
         <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">sideSelector</span><span class="o">,</span> <span class="n">AutonomousSideSelector</span><span class="o">.</span><span class="na">RED</span><span class="o">,</span> <span class="n">redSide</span><span class="o">);</span>
-        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">redSide</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">shooterStopper</span><span class="o">);</span>
+<span class="c1">//        sm.addConnection(redSide, NEXT_STATE, shooterStopper);</span>
+        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">redSide</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">teardown</span><span class="o">);</span>
 
         <span class="c1">//Move Shooter Stopper to near</span>
-        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">blueSide</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">shooterStopper</span><span class="o">);</span>
-        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">redSide</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">shooterStopper</span><span class="o">);</span>
-        <span class="n">sm</span><span class="o">.</span><span class="na">addConnection</span><span class="o">(</span><span class="n">shooterStopper</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">,</span> <span class="n">teardown</span><span class="o">);</span>
+<span class="c1">//        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);</span>
+<span class="c1">//        sm.addConnection(redSide, NEXT_STATE, shooterStopper);</span>
+<span class="c1">//        sm.addConnection(shooterStopper, NEXT_STATE, teardown);</span>
 
         <span class="k">return</span> <span class="n">sm</span><span class="o">;</span>
     <span class="o">}</span>
