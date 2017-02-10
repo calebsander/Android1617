@@ -25,8 +25,8 @@ public class BlueSideAutonomous extends LinearStateMachine {
         super();
 
         //Drive to wall
-        addComponent(new GiroBananaTurnEncoder(0.0, 18.0, 0.7, 500, configuration, "BTR 27 - 1000"));
-        addComponent(new GiroBananaTurnEncoder(18, 90.0, 0.8, 7600, configuration, "BTR 90 - 6400"));
+        addComponent(new GiroBananaTurnEncoder(0.0, 18.0, 0.7, 500, configuration, "BTR 18 - 1000"));
+        addComponent(new GiroBananaTurnEncoder(18, 90.0, 0.8, 7700, configuration, "BTR 90 - 7700"));
         addComponent(new GiroTurn(180.0, 0.1, 20, configuration, "Straighten out"));
         addComponent(new DeploySideRollers(configuration, "Deploy rollers"));
         //addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.4, 2000, configuration, "Drive backwards"));
@@ -51,7 +51,7 @@ public class BlueSideAutonomous extends LinearStateMachine {
         //Cap ball
         addComponent(new DisengageSideRollers(configuration, "Raise rollers"));
         //addComponent(new GiroTurn(225.0, configuration, "Turn to cap ball"));
-        addComponent(new GiroBananaTurnEncoder(180.0, 235.0, 0.6, 400, configuration, "BTR 235 - 2000"));
+        addComponent(new GiroBananaTurnEncoder(180.0, 235.0, 0.6, 400, configuration, "BTR 235 - 400"));
         addComponent(new GiroDriveEncoder(235.0, 1.0, 6000, configuration, "Hit cap ball and park"));
     }
 }

@@ -49,7 +49,7 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
         final AutonomousComponent redSide = new RedSideAutonomous(DISTANCE_FROM_WALL, gamepads, telemetry, vuforiaConfiguration, this.configuration);
 
         //End component
-        final AutonomousComponent shooterStopper = new ShooterStopperToNear(this.configuration, "Shooter Stopper to near");
+        //final AutonomousComponent shooterStopper = new ShooterStopperToNear(this.configuration, "Shooter Stopper to near");
         final LinearStateMachine teardown = new LinearStateMachine("Teardown");
         teardown.addComponent(new Stopped(this.configuration));
 
@@ -61,11 +61,13 @@ public class SideAutonomousRB extends VelocityBaseOpMode {
 
         //Blue Side
         sm.addConnection(sideSelector, AutonomousSideSelector.BLUE, blueSide);
-        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);
+//        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);
+        sm.addConnection(blueSide, NEXT_STATE, teardown);
 
         //Red side
         sm.addConnection(sideSelector, AutonomousSideSelector.RED, redSide);
 //        sm.addConnection(redSide, NEXT_STATE, shooterStopper);
+        sm.addConnection(redSide, NEXT_STATE, teardown);
 
         //Move Shooter Stopper to near
 //        sm.addConnection(blueSide, NEXT_STATE, shooterStopper);

@@ -71,7 +71,7 @@ public class VelocityDrive extends BaseOpMode {
 		if ((Math.abs(this.gamepads[CALVIN].getLeftY()) < 0.1 && Math.abs(this.gamepads[CALVIN].getRightX())  < 0.1)
 				&& (Math.abs(this.gamepads[JACK].getLeftY()) > 0.1 || Math.abs(this.gamepads[JACK].getRightX()) > 0.1)){
 			driveGamepad = JACK;
-			yScaleFactor = 0.5;
+			yScaleFactor = 0.7;
 			sScaleFactor = Math.max(0.3, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
 		}
 		else {
