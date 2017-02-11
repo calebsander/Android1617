@@ -2,11 +2,13 @@ package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
+import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
+import org.gearticks.autonomous.velocity.components.velocity.single.LeftPressBeaconServo;
+import org.gearticks.autonomous.velocity.components.velocity.single.RightPressBeaconServo;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -57,6 +59,7 @@ public class VelocityDrive extends BaseOpMode {
 	//The state machine switching between intaking, holding, and loading
 	private NetworkedStateMachine ballStateMachine;
 
+
 	private enum ShooterState {
 		//Going to down position
 		ADVANCING_TO_DOWN,
@@ -66,13 +69,14 @@ public class VelocityDrive extends BaseOpMode {
 	//The current state of the shooter control
 	private ShooterState shooterState;
 
-	private enum BeaconState {
-		REST,
-		LEFT,
-		RIGHT
+	private class WaitForBeaconChange extends AutonomousComponentAbstractImpl {
+		public int run() {
+			if (gamepads[CALVIN].getB() && !gamepads[CALVIN].getLast().getB()) return NEXT_STATE;
+			else return NOT_DONE;
+		}
 	}
-	private BeaconState beaconState;
-	private ElapsedTime beaconStateTimer;
+	//The state machine controlling manually pressing the beacon
+	private NetworkedStateMachine beaconStateMachine;
 
 	//Whether rollers are deployed
 	private boolean rollersDeployed;
@@ -81,6 +85,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.direction = new DriveDirection();
 
+		this.ballInShooter = false;
 		this.ballStateMachine = new NetworkedStateMachine("Ball state");
 		final AutonomousComponent intaking = new IntakingComponent();
 		final AutonomousComponent holding = new HoldingComponent();
@@ -91,9 +96,22 @@ public class VelocityDrive extends BaseOpMode {
 		this.ballStateMachine.addConnection(loading, NEXT_STATE, intaking);
 
 		this.shooterState = ShooterState.values()[0];
-		this.beaconState = BeaconState.values()[0];
-		this.beaconStateTimer = new ElapsedTime();
-		this.ballInShooter = false;
+
+		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
+		final AutonomousComponent waitBeforeLeft = new WaitForBeaconChange();
+		final AutonomousComponent engageLeft = new LeftPressBeaconServo(configuration, "Beacon left");
+		final AutonomousComponent waitBeforeRight = new WaitForBeaconChange();
+		final AutonomousComponent engageRight = new RightPressBeaconServo(configuration, "Beacon right");
+		final AutonomousComponent waitBeforeDisengage = new WaitForBeaconChange();
+		final AutonomousComponent disengage = new DisengageBeaconServo(configuration, "Beacon neutral");
+		this.beaconStateMachine.setInitialComponent(waitBeforeLeft);
+		this.beaconStateMachine.addConnection(waitBeforeLeft, NEXT_STATE, engageLeft);
+		this.beaconStateMachine.addConnection(engageLeft, NEXT_STATE, waitBeforeRight);
+		this.beaconStateMachine.addConnection(waitBeforeRight, NEXT_STATE, engageRight);
+		this.beaconStateMachine.addConnection(engageRight, NEXT_STATE, waitBeforeDisengage);
+		this.beaconStateMachine.addConnection(waitBeforeDisengage, NEXT_STATE, disengage);
+		this.beaconStateMachine.addConnection(disengage, NEXT_STATE, waitBeforeLeft);
+
 		this.rollersDeployed = true;
 		this.configuration.rollersDown();
 	}
@@ -143,26 +161,8 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.intake.setPower(intakePower);
 
-		//Beacon ------------------------------------------------------------------------------
-		//Beacon button press event
-		boolean beaconToggle = this.gamepads[CALVIN].getB() && !this.gamepads[CALVIN].getLast().getB();
-		switch (this.beaconState) {
-			case REST:
-				this.configuration.beaconPresserDisengage();
-				if (beaconToggle) this.nextBeaconState();
-				break;
-			case LEFT:
-				this.configuration.beaconPresserEngageLeft();
-				if (beaconToggle) this.nextBeaconState();
-				break;
-			case RIGHT:
-				this.configuration.beaconPresserEngageRight();
-				if (beaconToggle) this.beaconState = BeaconState.REST;
-				break;
-		}
-		//\Beacon ------------------------------------------------------------------------------
-
 		this.ballStateMachine.run();
+		this.beaconStateMachine.run();
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
@@ -228,11 +228,6 @@ public class VelocityDrive extends BaseOpMode {
 					this.shooterState = ShooterState.ADVANCING_TO_DOWN;
 				}
 		}
-	}
-	private void nextBeaconState() {
-		this.beaconStateTimer.reset();
-		final BeaconState[] beaconStates = BeaconState.values();
-		this.beaconState = beaconStates[(this.beaconState.ordinal() + 1) % beaconStates.length];
 	}
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
