@@ -331,13 +331,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		@Deprecated
 		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
-		public static final double PRESSER_V2_NEUTRAL = 0.58;
+		public static final double PRESSER_V2_NEUTRAL = 0.5;
 		@Deprecated
 		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0;
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_LEFT = PRESSER_V2_NEUTRAL - (PRESSER_V2_RIGHT - PRESSER_V2_NEUTRAL);
+		public static final double PRESSER_V2_LEFT = 0.0;
 		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
 
 		@Deprecated
