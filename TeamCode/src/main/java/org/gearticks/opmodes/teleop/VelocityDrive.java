@@ -146,7 +146,8 @@ public class VelocityDrive extends BaseOpMode {
 				break;
 			case HOLDING:
 				this.autoShooterUnlessBumper();
-				if (this.configuration.isShooterDown() && !this.ballInShooter) this.nextBallState();
+				//if (this.configuration.isShooterDown() && !this.ballInShooter) this.nextBallState();
+				if (this.configuration.wasShooterDown() && !this.ballInShooter) this.nextBallState();
 				break;
 			case LOADING:
 				this.configuration.advanceShooterToDown(); //hold shooter down
