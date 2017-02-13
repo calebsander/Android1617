@@ -147,6 +147,8 @@ public class VelocityDrive extends BaseOpMode {
 		this.beaconStateMachine.addConnection(right, STOP, neutral);
 
 		this.rollersDeployed = true;
+	}
+	protected void matchStart() {
 		this.configuration.rollersDown();
 	}
 	protected void loopAfterStart() {
@@ -255,7 +257,7 @@ public class VelocityDrive extends BaseOpMode {
 				}
 				break;
 			case ADVANCING_TO_SHOOTING:
-				this.configuration.shootSlow();
+				this.configuration.shootFast();
 				if (this.configuration.hasShot()) {
 					this.ballInShooter = false;
 					this.configuration.resetAutoShooter();

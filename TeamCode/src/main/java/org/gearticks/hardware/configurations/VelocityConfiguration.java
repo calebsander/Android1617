@@ -196,7 +196,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
 	public void shootFast() {
-		this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 	}
 
@@ -215,7 +215,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				}
 				this.shooterWasDown = true;
 			}
-			else this.shootSlow();
+			else this.shootFast();
 		}
 	}
 
