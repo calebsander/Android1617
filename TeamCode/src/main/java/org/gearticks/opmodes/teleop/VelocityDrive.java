@@ -6,9 +6,6 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
-import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
-import org.gearticks.autonomous.velocity.components.velocity.single.LeftPressBeaconServo;
-import org.gearticks.autonomous.velocity.components.velocity.single.RightPressBeaconServo;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -27,6 +24,9 @@ public class VelocityDrive extends BaseOpMode {
 	private boolean ballInShooter;
 	private class IntakingComponent extends AutonomousComponentTimer {
 		public int run() {
+			final int superTransition = super.run();
+			if (superTransition != NOT_DONE) return superTransition;
+
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_ENGAGED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
@@ -37,6 +37,9 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	private class HoldingComponent extends AutonomousComponentAbstractImpl {
 		public int run() {
+			final int superTransition = super.run();
+			if (superTransition != NOT_DONE) return superTransition;
+
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
@@ -46,6 +49,9 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	private class LoadingComponent extends AutonomousComponentTimer {
 		public int run() {
+			final int superTransition = super.run();
+			if (superTransition != NOT_DONE) return superTransition;
+
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(MotorConstants.SNAKE_V2_DUMPING);
 			configuration.advanceShooterToDown();
@@ -69,10 +75,36 @@ public class VelocityDrive extends BaseOpMode {
 	//The current state of the shooter control
 	private ShooterState shooterState;
 
-	private class WaitForBeaconChange extends AutonomousComponentAbstractImpl {
+	private class PresserNeutral extends AutonomousComponentAbstractImpl {
 		public int run() {
-			if (gamepads[CALVIN].getB() && !gamepads[CALVIN].getLast().getB()) return NEXT_STATE;
+			final int superTransition = super.run();
+			if (superTransition != NOT_DONE) return superTransition;
+
+			configuration.beaconPresser.setPosition(MotorConstants.PRESSER_V2_NEUTRAL);
+			if (gamepads[CALVIN].getB()) return NEXT_STATE;
 			else return NOT_DONE;
+		}
+	}
+	private static final int
+		SWITCH = AutonomousComponentAbstractImpl.newTransition(),
+		STOP = AutonomousComponentAbstractImpl.newTransition();
+	private class PresserEngaged extends AutonomousComponentTimer {
+		private final double position;
+
+		public PresserEngaged(double position) {
+			this.position = position;
+		}
+
+		public int run() {
+			final int superTransition = super.run();
+			if (superTransition != NOT_DONE) return superTransition;
+
+			configuration.beaconPresser.setPosition(this.position);
+			if (gamepads[CALVIN].getB()) {
+				if (this.stageTimer.seconds() > MotorConstants.PRESSER_V2_TIME_TO_MOVE) return SWITCH;
+				else return NOT_DONE;
+			}
+			else return STOP;
 		}
 	}
 	//The state machine controlling manually pressing the beacon
@@ -98,19 +130,15 @@ public class VelocityDrive extends BaseOpMode {
 		this.shooterState = ShooterState.values()[0];
 
 		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
-		final AutonomousComponent waitBeforeLeft = new WaitForBeaconChange();
-		final AutonomousComponent engageLeft = new LeftPressBeaconServo(configuration, "Beacon left");
-		final AutonomousComponent waitBeforeRight = new WaitForBeaconChange();
-		final AutonomousComponent engageRight = new RightPressBeaconServo(configuration, "Beacon right");
-		final AutonomousComponent waitBeforeDisengage = new WaitForBeaconChange();
-		final AutonomousComponent disengage = new DisengageBeaconServo(configuration, "Beacon neutral");
-		this.beaconStateMachine.setInitialComponent(waitBeforeLeft);
-		this.beaconStateMachine.addConnection(waitBeforeLeft, NEXT_STATE, engageLeft);
-		this.beaconStateMachine.addConnection(engageLeft, NEXT_STATE, waitBeforeRight);
-		this.beaconStateMachine.addConnection(waitBeforeRight, NEXT_STATE, engageRight);
-		this.beaconStateMachine.addConnection(engageRight, NEXT_STATE, waitBeforeDisengage);
-		this.beaconStateMachine.addConnection(waitBeforeDisengage, NEXT_STATE, disengage);
-		this.beaconStateMachine.addConnection(disengage, NEXT_STATE, waitBeforeLeft);
+		final AutonomousComponent neutral = new PresserNeutral();
+		final AutonomousComponent left = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT);
+		final AutonomousComponent right = new PresserEngaged(MotorConstants.PRESSER_V2_RIGHT);
+		this.beaconStateMachine.setInitialComponent(neutral);
+		this.beaconStateMachine.addConnection(neutral, NEXT_STATE, left);
+		this.beaconStateMachine.addConnection(left, SWITCH, right);
+		this.beaconStateMachine.addConnection(right, SWITCH, left);
+		this.beaconStateMachine.addConnection(left, STOP, neutral);
+		this.beaconStateMachine.addConnection(right, STOP, neutral);
 
 		this.rollersDeployed = true;
 		this.configuration.rollersDown();
@@ -119,8 +147,7 @@ public class VelocityDrive extends BaseOpMode {
 		int driveGamepad;
 		double yScaleFactor;
 		double sScaleFactor;
-		if ((Math.abs(this.gamepads[CALVIN].getLeftY()) < 0.1 && Math.abs(this.gamepads[CALVIN].getRightX())  < 0.1)
-				&& (Math.abs(this.gamepads[JACK].getLeftY()) > 0.1 || Math.abs(this.gamepads[JACK].getRightX()) > 0.1)){
+		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) {
 			driveGamepad = JACK;
 			yScaleFactor = 0.7;
 			sScaleFactor = Math.max(0.3, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
@@ -131,23 +158,24 @@ public class VelocityDrive extends BaseOpMode {
 			sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
 		}
 
-
-		final double scaleFactor;
 		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
-		if (slowMode) scaleFactor = 0.4; //limit max speed
-		else scaleFactor = 1.0;
+		final double maxPower;
+		if (slowMode) maxPower = 0.4;
+		else maxPower = 1.0;
 		final double accelLimit;
 		if (slowMode) accelLimit = 0.03;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor * scaleFactor);
-		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor * scaleFactor);
+		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
+		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
 
-		this.configuration.move(this.direction, accelLimit);
+		this.configuration.drive.calculatePowers(this.direction);
+		this.configuration.drive.scaleMotorsDown(maxPower);
+		this.configuration.drive.accelLimit(accelLimit);
+		this.configuration.drive.commitPowers();
 
 		this.telemetry.addData("Controller", driveGamepad);
-		this.telemetry.addData("Calvin's left Y", this.gamepads[CALVIN].getLeftY());
-		this.telemetry.addData("Forward power", this.direction.getY());
+		this.telemetry.addData("Shooter down", this.configuration.isShooterDown());
 
 		final double intakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
@@ -221,8 +249,8 @@ public class VelocityDrive extends BaseOpMode {
 				}
 				break;
 			case ADVANCING_TO_SHOOTING:
-				this.configuration.advanceShooterToShooting();
-				if (this.configuration.isShooterAtTarget()) {
+				this.configuration.shootSlow();
+				if (this.configuration.hasShot()) {
 					this.ballInShooter = false;
 					this.configuration.resetAutoShooter();
 					this.shooterState = ShooterState.ADVANCING_TO_DOWN;

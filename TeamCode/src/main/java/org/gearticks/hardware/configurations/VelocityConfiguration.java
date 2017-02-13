@@ -51,7 +51,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
-		this.shooter.setStopMode(ZeroPowerBehavior.FLOAT);
 		this.resetAutoShooter();
 		if (v2) {
 			this.capBall = new MotorWrapper((DcMotor) hardwareMap.get("capBall"), MotorType.NEVEREST_20);
@@ -196,13 +195,17 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
+	public void shootFast() {
+		this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+	}
 
 	public void advanceShooterToDown() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 				if (this.v2) {
-					this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
 					this.shooter.stop();
 				}
 				else {
@@ -220,13 +223,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterWasDown = false;
 	}
 
-	public void advanceShooterToShooting() {
-		this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-		final int ticksToShooting;
-		if (this.v2) ticksToShooting = MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING;
-		else ticksToShooting = MotorConstants.SHOOTER_TICKS_TO_SHOOTING;
-		this.shooter.setTarget(ticksToShooting);
-		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+	public boolean hasShot() {
+		return Math.signum(this.shooter.encoderValue() - MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING) == Math.signum(MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING);
 	}
 
 	public boolean isShooterAtTarget() {
