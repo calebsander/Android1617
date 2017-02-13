@@ -2,12 +2,18 @@ package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
+import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
+import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
+import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
+
+import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
 @TeleOp
 public class VelocityDrive extends BaseOpMode {
@@ -15,16 +21,52 @@ public class VelocityDrive extends BaseOpMode {
 	private VelocityConfiguration configuration;
 	private DriveDirection direction;
 
-	private enum BallState {
-		//No ball in snake, so trying to put one into it
-		INTAKING,
-		//Ball in snake; prevent another from entering snake
-		HOLDING,
-		//Ball is ready to be loaded into shooter
-		LOADING
+	//Whether we think there is a ball in the shooter
+	private boolean ballInShooter;
+	private class IntakingComponent extends AutonomousComponentTimer {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_ENGAGED);
+			configuration.snake.setPosition(getDefaultSnakePosition());
+			autoShooterUnlessBumper();
+			final boolean snakeReturnedToHolding = this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE;
+			if (snakeReturnedToHolding && configuration.ballInSnake()) return NEXT_STATE;
+			else return null;
+		}
 	}
-	//The current state of the ball loader
-	private BallState ballState;
+	private class HoldingComponent extends AutonomousComponentAbstractImpl {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
+			configuration.snake.setPosition(getDefaultSnakePosition());
+			autoShooterUnlessBumper();
+			if (!ballInShooter && configuration.isShooterDown()) return NEXT_STATE;
+			else return null;
+		}
+	}
+	private class LoadingComponent extends AutonomousComponentTimer {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
+			configuration.snake.setPosition(MotorConstants.SNAKE_V2_DUMPING);
+			configuration.advanceShooterToDown();
+			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
+			else return null;
+		}
+		public void tearDown() {
+			ballInShooter = true;
+		}
+	}
+	//The state machine switching between intaking, holding, and loading
+	private NetworkedStateMachine ballStateMachine;
+
+
 	private enum ShooterState {
 		//Going to down position
 		ADVANCING_TO_DOWN,
@@ -34,52 +76,107 @@ public class VelocityDrive extends BaseOpMode {
 	//The current state of the shooter control
 	private ShooterState shooterState;
 
-	private enum BeaconState {
-		REST,
-		LEFT,
-		RIGHT
+	private class PresserNeutral extends AutonomousComponentAbstractImpl {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.beaconPresser.setPosition(MotorConstants.PRESSER_V2_NEUTRAL);
+			if (gamepads[CALVIN].getB()) return NEXT_STATE;
+			else return null;
+		}
 	}
-	private BeaconState beaconState;
-	private ElapsedTime beaconStateTimer;
+	private static final Transition
+		SWITCH = new AutonomousComponent.Transition("Switch sides"),
+		STOP = new AutonomousComponent.Transition("Stop pressing");
+	private class PresserEngaged extends AutonomousComponentTimer {
+		private final double position;
 
-	private boolean beaconButtonLastPressed = false;
+		public PresserEngaged(double position) {
+			this.position = position;
+		}
 
-	//Keeps track of the amount of time elapsed since the switch to the current BallState
-	private ElapsedTime ballStateTimer;
-	//Whether we think there is a ball in the shooter
-	private boolean ballInShooter;
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.beaconPresser.setPosition(this.position);
+			if (gamepads[CALVIN].getB()) {
+				if (this.stageTimer.seconds() > MotorConstants.PRESSER_V2_TIME_TO_MOVE) return SWITCH;
+				else return null;
+			}
+			else return STOP;
+		}
+	}
+	//The state machine controlling manually pressing the beacon
+	private NetworkedStateMachine beaconStateMachine;
+
 	//Whether rollers are deployed
 	private boolean rollersDeployed;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.direction = new DriveDirection();
-		this.ballState = BallState.values()[0];
-		this.shooterState = ShooterState.values()[0];
-		this.shooterState = ShooterState.values()[0];
-		this.beaconState = BeaconState.values()[0];
-		this.beaconStateTimer = new ElapsedTime();
-		this.ballStateTimer = new ElapsedTime();
+
 		this.ballInShooter = false;
+		this.ballStateMachine = new NetworkedStateMachine("Ball state");
+		final AutonomousComponent intaking = new IntakingComponent();
+		final AutonomousComponent holding = new HoldingComponent();
+		final AutonomousComponent loading = new LoadingComponent();
+		this.ballStateMachine.setInitialComponent(intaking);
+		this.ballStateMachine.addConnection(intaking, NEXT_STATE, holding);
+		this.ballStateMachine.addConnection(holding, NEXT_STATE, loading);
+		this.ballStateMachine.addConnection(loading, NEXT_STATE, intaking);
+
+		this.shooterState = ShooterState.values()[0];
+
+		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
+		final AutonomousComponent neutral = new PresserNeutral();
+		final AutonomousComponent left = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT);
+		final AutonomousComponent right = new PresserEngaged(MotorConstants.PRESSER_V2_RIGHT);
+		this.beaconStateMachine.setInitialComponent(neutral);
+		this.beaconStateMachine.addConnection(neutral, NEXT_STATE, left);
+		this.beaconStateMachine.addConnection(left, SWITCH, right);
+		this.beaconStateMachine.addConnection(right, SWITCH, left);
+		this.beaconStateMachine.addConnection(left, STOP, neutral);
+		this.beaconStateMachine.addConnection(right, STOP, neutral);
+
 		this.rollersDeployed = true;
 		this.configuration.rollersDown();
 	}
 	protected void loopAfterStart() {
+		int driveGamepad;
+		double yScaleFactor;
+		double sScaleFactor;
+		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) {
+			driveGamepad = JACK;
+			yScaleFactor = 0.7;
+			sScaleFactor = Math.max(0.3, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
+		}
+		else {
+			driveGamepad = CALVIN;
+			yScaleFactor = 1.0;
+			sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
+		}
+
 		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
-		final int driveGamepad = CALVIN;
-		final double yScaleFactor = 1.0;
-		final double sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
-		final double scaleFactor;
-		if (slowMode) scaleFactor = 0.4; //limit max speed
-		else scaleFactor = 1.0;
-		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor * scaleFactor);
-		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor * scaleFactor);
-		this.telemetry.addData("Calvin's left Y", this.gamepads[driveGamepad].getLeftY());
-		this.telemetry.addData("Forward power", this.direction.getY());
+		final double maxPower;
+		if (slowMode) maxPower = 0.4;
+		else maxPower = 1.0;
 		final double accelLimit;
 		if (slowMode) accelLimit = 0.03;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
-		this.configuration.move(this.direction, accelLimit);
+
+		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
+		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+
+		this.configuration.drive.calculatePowers(this.direction);
+		this.configuration.drive.scaleMotorsDown(maxPower);
+		this.configuration.drive.accelLimit(accelLimit);
+		this.configuration.drive.commitPowers();
+
+		this.telemetry.addData("Controller", driveGamepad);
+		this.telemetry.addData("Shooter down", this.configuration.isShooterDown());
 
 		final double intakePower;
 		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
@@ -93,50 +190,8 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.intake.setPower(intakePower);
 
-		//Beacon ------------------------------------------------------------------------------
-		//Beacon button press event
-		boolean beaconToggle = (!beaconButtonLastPressed && this.gamepads[CALVIN].getB());
-		switch (this.beaconState) {
-			case REST:
-				this.configuration.beaconPresserDisengage();
-				if (beaconToggle) this.nextBeaconState();
-				break;
-			case LEFT:
-				this.configuration.beaconPresserEngageLeft();
-				if (beaconToggle) this.nextBeaconState();
-				break;
-			case RIGHT:
-				this.configuration.beaconPresserEngageRight();
-				if (beaconToggle) this.beaconState = BeaconState.REST;
-				break;
-		}
-		this.beaconButtonLastPressed = this.gamepads[CALVIN].getB();
-		//\Beacon ------------------------------------------------------------------------------
-
-		double snakePosition  = MotorConstants.SNAKE_V2_HOLDING,
-		       clutchPosition = MotorConstants.CLUTCH_V2_CLUTCHED;
-		switch (this.ballState) {
-			case INTAKING:
-				clutchPosition = MotorConstants.CLUTCH_V2_ENGAGED; //this is the only state when it is safe to load a ball into the snake
-				this.autoShooterUnlessBumper();
-				//Wait for snake to return to holding because it triggers the sensors on the way down
-				final boolean snakeReturnedToHolding = this.ballStateTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE;
-				if (snakeReturnedToHolding && this.configuration.ballInSnake()) this.nextBallState();
-				break;
-			case HOLDING:
-				this.autoShooterUnlessBumper();
-				if (this.configuration.isShooterDown() && !this.ballInShooter) this.nextBallState();
-				break;
-			case LOADING:
-				this.configuration.advanceShooterToDown(); //hold shooter down
-				snakePosition = MotorConstants.SNAKE_V2_DUMPING; //this is the only state when the snake should be up
-				if (this.ballStateTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) {
-					this.ballInShooter = true;
-					this.nextBallState();
-				}
-		}
-		this.configuration.snake.setPosition(snakePosition);
-		this.configuration.clutch.setPosition(clutchPosition);
+		this.ballStateMachine.run();
+		this.beaconStateMachine.run();
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
@@ -195,26 +250,19 @@ public class VelocityDrive extends BaseOpMode {
 				}
 				break;
 			case ADVANCING_TO_SHOOTING:
-				this.configuration.advanceShooterToShooting();
-				if (this.configuration.isShooterAtTarget()) {
+				this.configuration.shootSlow();
+				if (this.configuration.hasShot()) {
 					this.ballInShooter = false;
 					this.configuration.resetAutoShooter();
 					this.shooterState = ShooterState.ADVANCING_TO_DOWN;
 				}
 		}
 	}
-	//Advance to next BallState (wrapping around) and reset state timer
-	private void nextBallState() {
-		this.ballStateTimer.reset();
-		final BallState[] ballStates = BallState.values();
-		this.ballState = ballStates[(this.ballState.ordinal() + 1) % ballStates.length];
-	}
-	private void nextBeaconState() {
-		this.beaconStateTimer.reset();
-		final BeaconState[] beaconStates = BeaconState.values();
-		this.beaconState = beaconStates[(this.ballState.ordinal() + 1) % beaconStates.length];
-	}
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
+	}
+	private double getDefaultSnakePosition() {
+		if (this.gamepads[JACK].getB()) return MotorConstants.SNAKE_V2_DUMPING;
+		else return MotorConstants.SNAKE_V2_HOLDING;
 	}
 }

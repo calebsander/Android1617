@@ -24,7 +24,7 @@ public class ComponentTest extends VelocityBaseOpMode {
         final VuforiaConfiguration vuforiaConfiguration = new VuforiaConfiguration();
         final LinearStateMachine sm = new LinearStateMachine();
 
-        sm.addComponent(new SidePressBeaconButton(vuforiaConfiguration, this.configuration, "Press Button"));
+        sm.addComponent(new GiroDriveAlongWallEncoder(10.0, 0.0, 0.05, 10000, this.configuration, "Press Button"));
 
         return sm;
     }

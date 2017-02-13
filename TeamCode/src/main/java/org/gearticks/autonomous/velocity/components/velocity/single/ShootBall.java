@@ -18,7 +18,7 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
     @Override
     public void setup() {
         super.setup();
-        this.configuration.advanceShooterToShooting();
+        this.configuration.shootSlow();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
         final Transition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
-        if (this.configuration.isShooterAtTarget()) return NEXT_STATE;
+        if (this.configuration.hasShot()) return NEXT_STATE;
         else return null;
     }
 }
