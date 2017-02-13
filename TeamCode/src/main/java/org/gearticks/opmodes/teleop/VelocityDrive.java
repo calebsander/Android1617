@@ -36,6 +36,7 @@ public class VelocityDrive extends BaseOpMode {
 			else return null;
 		}
 	}
+	private static final Transition MANUAL_SNAKE = new Transition("Snake triggered manually");
 	private class HoldingComponent extends AutonomousComponentAbstractImpl {
 		public Transition run() {
 			final Transition superTransition = super.run();
@@ -44,6 +45,9 @@ public class VelocityDrive extends BaseOpMode {
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
+
+			if (isManualSnakeOn()) return MANUAL_SNAKE;
+
 			if (!ballInShooter && configuration.isShooterDown()) return NEXT_STATE;
 			else return null;
 		}
@@ -87,8 +91,8 @@ public class VelocityDrive extends BaseOpMode {
 		}
 	}
 	private static final Transition
-		SWITCH = new AutonomousComponent.Transition("Switch sides"),
-		STOP = new AutonomousComponent.Transition("Stop pressing");
+		SWITCH = new Transition("Switch sides"),
+		STOP = new Transition("Stop pressing");
 	private class PresserEngaged extends AutonomousComponentTimer {
 		private final double position;
 
@@ -126,6 +130,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.ballStateMachine.setInitialComponent(intaking);
 		this.ballStateMachine.addConnection(intaking, NEXT_STATE, holding);
 		this.ballStateMachine.addConnection(holding, NEXT_STATE, loading);
+		this.ballStateMachine.addConnection(holding, MANUAL_SNAKE, intaking);
 		this.ballStateMachine.addConnection(loading, NEXT_STATE, intaking);
 
 		this.shooterState = ShooterState.values()[0];
@@ -261,8 +266,11 @@ public class VelocityDrive extends BaseOpMode {
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
 	}
+	private boolean isManualSnakeOn() {
+		return this.gamepads[JACK].getB();
+	}
 	private double getDefaultSnakePosition() {
-		if (this.gamepads[JACK].getB()) return MotorConstants.SNAKE_V2_DUMPING;
+		if (this.isManualSnakeOn()) return MotorConstants.SNAKE_V2_DUMPING;
 		else return MotorConstants.SNAKE_V2_HOLDING;
 	}
 }

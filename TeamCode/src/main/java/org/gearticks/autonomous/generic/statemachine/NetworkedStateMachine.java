@@ -113,7 +113,7 @@ public class NetworkedStateMachine extends StateMachineBase {
 		Utils.assertNotNull(componentConnections, "No transitions defined for " + this.currentState);
 		final AutonomousComponent nextState = componentConnections.get(transition);
 		Utils.assertNotNull(nextState, "No transition defined for " + this.currentState + " on port " + transition);
-		Log.i(Utils.TAG, "Transition from " + this.currentState + " => " + nextState);
+		Log.i(Utils.TAG, "Transition from " + this.currentState + " => " + nextState + " on port " + transition);
 		this.currentState = nextState;
 		nextState.setup();
 		return null;
