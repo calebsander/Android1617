@@ -31,8 +31,19 @@ public class VelocityDrive extends BaseOpMode {
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_ENGAGED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
-			final boolean snakeReturnedToHolding = this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE;
-			if (snakeReturnedToHolding && configuration.ballInSnake()) return NEXT_STATE;
+			if (configuration.ballInSnake()) return NEXT_STATE;
+			else return null;
+		}
+	}
+	private class SettleInSnakeComponent extends AutonomousComponentTimer {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
+			configuration.snake.setPosition(getDefaultSnakePosition());
+			autoShooterUnlessBumper();
+			if (this.stageTimer.seconds() > 0.1) return NEXT_STATE; //wait for ball to settle in snake before loading
 			else return null;
 		}
 	}
@@ -126,10 +137,12 @@ public class VelocityDrive extends BaseOpMode {
 		this.ballInShooter = false;
 		this.ballStateMachine = new NetworkedStateMachine("Ball state");
 		final AutonomousComponent intaking = new IntakingComponent();
+		final AutonomousComponent settling = new SettleInSnakeComponent();
 		final AutonomousComponent holding = new HoldingComponent();
 		final AutonomousComponent loading = new LoadingComponent();
 		this.ballStateMachine.setInitialComponent(intaking);
-		this.ballStateMachine.addConnection(intaking, NEXT_STATE, holding);
+		this.ballStateMachine.addConnection(intaking, NEXT_STATE, settling);
+		this.ballStateMachine.addConnection(settling, NEXT_STATE, holding);
 		this.ballStateMachine.addConnection(holding, NEXT_STATE, loading);
 		this.ballStateMachine.addConnection(holding, MANUAL_SNAKE, intaking);
 		this.ballStateMachine.addConnection(loading, NEXT_STATE, intaking);
