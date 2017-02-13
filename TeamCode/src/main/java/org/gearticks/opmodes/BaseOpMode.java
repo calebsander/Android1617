@@ -11,16 +11,16 @@ public abstract class BaseOpMode extends OpMode {
 	protected static final int GAMEPAD_COUNT = 2;
 
 	protected final ElapsedTime matchTime;
-	private final JoystickOptionController optionController;
+	private JoystickOptionController optionController;
 	protected final GamepadWrapper[] gamepads;
 
 	public BaseOpMode() {
 		this.matchTime = new ElapsedTime();
-		this.optionController = new JoystickOptionController();
 		this.gamepads = new GamepadWrapper[GAMEPAD_COUNT];
 	}
 
 	public void init() {
+		this.optionController = new JoystickOptionController();
 		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
 		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
 		this.addOption(AllianceOption.allianceOption);
