@@ -28,7 +28,7 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
      * @param id - descriptive name for logging
      */
     public VuforiaIn(float finalDistance, boolean isNearBeacon, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
         this.direction = new DriveDirection();
         this.finalDistance = finalDistance;
         this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
@@ -45,19 +45,19 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         Log.v(Utils.TAG, "get pose from listener");
         final OpenGLMatrix pose = this.firstTargetListener.getPose();
-        final int transition;
+        final Transition transition;
         if (pose == null) {
             Log.v(Utils.TAG, "pose == null");
 
             this.direction.drive(0.0, 0.05);
             this.direction.turn(0.0);
-            transition = NOT_DONE;
+            transition = null;
         }
         else {
             Log.v(Utils.TAG, "pose != null");
@@ -75,7 +75,7 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
                 Log.v(Utils.TAG, "drive and turn to beacon");
                 this.direction.drive(0.0, 0.12);
                 this.vuforiaTurn(translation, 0.0);
-                transition = NOT_DONE;
+                transition = null;
             }
         }
         this.configuration.move(this.direction, 0.06);

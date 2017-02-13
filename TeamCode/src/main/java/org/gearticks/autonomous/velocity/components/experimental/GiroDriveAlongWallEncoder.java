@@ -1,16 +1,12 @@
 package org.gearticks.autonomous.velocity.components.experimental;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
 import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.opmodes.utility.Utils;
-
-import java.text.MessageFormat;
 
 /**
  * drives with gyro and range sensor along the wall at a set distance for encoder ticks
@@ -29,7 +25,7 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
 
 
     public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.distanceFromWall = distanceFromWall;
@@ -48,9 +44,9 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         this.direction.drive(0.0, this.power);
         this.direction.gyroCorrect(this.controlledHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
@@ -74,15 +70,8 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         //this.controlledHeading = this.targetHeading + headingDeviation;
 
         Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
-//        Log.d(Utils.TAG, this.mf.format(ultrasonicDistance, distanceError));
         if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
-        else return NOT_DONE;
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
-        //Custom code here control
+        else return null;
     }
 
 }

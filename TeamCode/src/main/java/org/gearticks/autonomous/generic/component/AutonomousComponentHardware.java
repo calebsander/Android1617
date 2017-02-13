@@ -1,5 +1,6 @@
 package org.gearticks.autonomous.generic.component;
 
+import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 
 /**
@@ -9,14 +10,14 @@ import org.gearticks.hardware.configurations.HardwareConfiguration;
 public class AutonomousComponentHardware<HARDWARE_TYPE extends HardwareConfiguration> extends AutonomousComponentTimer {
     protected final HARDWARE_TYPE configuration;
 
-    public AutonomousComponentHardware(HARDWARE_TYPE configuration) {
+    public AutonomousComponentHardware(OpModeContext<HARDWARE_TYPE> opModeContext) {
         super();
-        this.configuration = configuration;
+        this.configuration = opModeContext.configuration;
     }
 
-    public AutonomousComponentHardware(HARDWARE_TYPE configuration, String id) {
+    public AutonomousComponentHardware(OpModeContext<HARDWARE_TYPE> opModeContext, String id) {
         super(id);
-        this.configuration = configuration;
+        this.configuration = opModeContext.configuration;
     }
 
     @Override

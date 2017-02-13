@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.AutonomousDatalogger;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -16,28 +17,19 @@ import org.gearticks.joystickoptions.ValuesJoystickOption;
 @Autonomous
 @Disabled
 public class SequencesAutonomousTest extends VelocityBaseOpMode {
-	private static final int
-		BRANCH_ONE_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
-		BRANCH_TWO_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
-		BRANCH_FOUR_TRANSITION = AutonomousComponentAbstractImpl.newTransition(),
-		END_TRANSITION = AutonomousComponentAbstractImpl.newTransition();
-
+	private static final Transition
+			BRANCH_ONE_TRANSITION = new Transition("Branch one"),
+			BRANCH_TWO_TRANSITION = new Transition("Branch two");
 	private enum FirstBranchOption {
 		BRANCH_ONE,
 		BRANCH_TWO
 	}
 	private ValuesJoystickOption<FirstBranchOption> firstBranchOption;
-	private enum BranchFourOption {
-		RUN_BRANCH_FOUR,
-		NO_BRANCH_FOUR
-	}
-	private ValuesJoystickOption<BranchFourOption> branchFourOption;
-
 	private class FirstBranchChoice extends AutonomousComponentAbstractImpl {
 		@Override
-		public int run() {
-			final int superTransition = super.run();
-			if (superTransition != NOT_DONE) return superTransition;
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
 
 			switch (SequencesAutonomousTest.this.firstBranchOption.getRawSelectedOption()) {
 				case BRANCH_ONE: return BRANCH_ONE_TRANSITION;
@@ -46,11 +38,20 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 			}
 		}
 	}
+
+	private static final Transition
+			BRANCH_FOUR_TRANSITION = new Transition("Branch four"),
+			END_TRANSITION = new Transition("End");
+	private enum BranchFourOption {
+		RUN_BRANCH_FOUR,
+		NO_BRANCH_FOUR
+	}
+	private ValuesJoystickOption<BranchFourOption> branchFourOption;
 	private class BranchFourChoice extends AutonomousComponentAbstractImpl {
 		@Override
-		public int run() {
-			final int superTransition = super.run();
-			if (superTransition != NOT_DONE) return superTransition;
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
 
 			switch (SequencesAutonomousTest.this.branchFourOption.getRawSelectedOption()) {
 				case RUN_BRANCH_FOUR: return BRANCH_FOUR_TRANSITION;
@@ -81,14 +82,14 @@ public class SequencesAutonomousTest extends VelocityBaseOpMode {
 			SequencesAutonomousTest.this.datalogger.writeLine(this.number, "Setup");
 		}
 		@Override
-		public int run() {
-			final int superTransition = super.run();
-			if (superTransition != NOT_DONE) return superTransition;
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
 
 			this.runCount++;
 			SequencesAutonomousTest.this.datalogger.writeLine(this.number, "Run", this.runCount);
 			if (this.runCount >= this.number) return NEXT_STATE;
-			else return NOT_DONE;
+			else return null;
 		}
 		@Override
 		public void tearDown() {

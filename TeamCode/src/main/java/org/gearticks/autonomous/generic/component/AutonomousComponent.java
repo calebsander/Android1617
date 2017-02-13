@@ -24,9 +24,9 @@ public interface AutonomousComponent {
 	 * Returns the "transition" or id of the "outputPort" through which this AutonomousComponent ends.
 	 * This allows for choice between different transitions/routes to next AutonomousComponents.
 	 *
-	 * @return "outputPort," where AutonomousComponentAbstractImpl.NOT_DONE means that the component is not done
+	 * @return null if not yet done; the transition value if done
 	 */
-	int run();
+	Transition run();
 
 	/**
 	 * Called each time the component ends
@@ -38,4 +38,16 @@ public interface AutonomousComponent {
 	 * @return a display name for this component
 	 */
 	String getId();
+
+	class Transition {
+		private final String name;
+
+		public Transition(String name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return this.name;
+		}
+	}
 }

@@ -18,11 +18,11 @@ public class GiroDriveEncoder extends LinearStateMachine {
 	public GiroDriveEncoder(double targetHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
 		super(id);
 		this.addComponent(new GiroDriveEncoderNoStop(targetHeading, power, encoderTarget, opModeContext, "Driving"));
-		this.addComponent(new AutonomousComponentHardware<HardwareConfiguration>(opModeContext.configuration, "Stopping") {
+		this.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext, "Stopping") {
 			@Override
-			public int run() {
-				final int superTransition = super.run();
-				if (superTransition != NOT_DONE) return superTransition;
+			public Transition run() {
+				final Transition superTransition = super.run();
+				if (superTransition != null) return superTransition;
 
 				this.configuration.stopMotion();
 				return NEXT_STATE;

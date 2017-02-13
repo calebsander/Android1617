@@ -1,0 +1,232 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.opmodes.teleop</span><span class="o">;</span>
+
+<span class="nd">@TeleOp</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VelocityDrive</span> <span class="kd">extends</span> <span class="n">BaseOpMode</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CALVIN</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">JACK</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">VelocityConfiguration</span> <span class="n">configuration</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">DriveDirection</span> <span class="n">direction</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="kd">enum</span> <span class="n">BallState</span> <span class="o">{</span>
+    <span class="c1">//No ball in snake, so trying to put one into it</span>
+    <span class="n">INTAKING</span><span class="o">,</span>
+    <span class="c1">//Ball in snake; prevent another from entering snake</span>
+    <span class="n">HOLDING</span><span class="o">,</span>
+    <span class="c1">//Ball is ready to be loaded into shooter</span>
+    <span class="n">LOADING</span>
+  <span class="o">}</span>
+  <span class="c1">//The current state of the ball loader</span>
+  <span class="kd">private</span> <span class="n">BallState</span> <span class="n">ballState</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">enum</span> <span class="n">ShooterState</span> <span class="o">{</span>
+    <span class="c1">//Going to down position</span>
+    <span class="n">ADVANCING_TO_DOWN</span><span class="o">,</span>
+    <span class="c1">//Going to shooting position</span>
+    <span class="n">ADVANCING_TO_SHOOTING</span>
+  <span class="o">}</span>
+  <span class="c1">//The current state of the shooter control</span>
+  <span class="kd">private</span> <span class="n">ShooterState</span> <span class="n">shooterState</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="kd">enum</span> <span class="n">BeaconState</span> <span class="o">{</span>
+    <span class="n">REST</span><span class="o">,</span>
+    <span class="n">LEFT</span><span class="o">,</span>
+    <span class="n">RIGHT</span>
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="n">BeaconState</span> <span class="n">beaconState</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">ElapsedTime</span> <span class="n">beaconStateTimer</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">beaconButtonLastPressed</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+  <span class="c1">//Keeps track of the amount of time elapsed since the switch to the current BallState</span>
+  <span class="kd">private</span> <span class="n">ElapsedTime</span> <span class="n">ballStateTimer</span><span class="o">;</span>
+  <span class="c1">//Whether we think there is a ball in the shooter</span>
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">ballInShooter</span><span class="o">;</span>
+  <span class="c1">//Whether rollers are deployed</span>
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">rollersDeployed</span><span class="o">;</span>
+
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VelocityConfiguration</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">hardwareMap</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">direction</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DriveDirection</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">ballState</span> <span class="o">=</span> <span class="n">BallState</span><span class="o">.</span><span class="na">values</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterState</span> <span class="o">=</span> <span class="n">ShooterState</span><span class="o">.</span><span class="na">values</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterState</span> <span class="o">=</span> <span class="n">ShooterState</span><span class="o">.</span><span class="na">values</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">beaconState</span> <span class="o">=</span> <span class="n">BeaconState</span><span class="o">.</span><span class="na">values</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">beaconStateTimer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ElapsedTime</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">ballStateTimer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ElapsedTime</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">ballInShooter</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">rollersDeployed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">rollersDown</span><span class="o">();</span>
+  <span class="o">}</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">loopAfterStart</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">driveGamepad</span><span class="o">;</span>
+    <span class="kt">double</span> <span class="n">yScaleFactor</span><span class="o">;</span>
+    <span class="kt">double</span> <span class="n">sScaleFactor</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">((</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getLeftY</span><span class="o">())</span> <span class="o">&lt;</span> <span class="mf">0.1</span> <span class="o">&amp;&amp;</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getRightX</span><span class="o">())</span>  <span class="o">&lt;</span> <span class="mf">0.1</span><span class="o">)</span>
+        <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getLeftY</span><span class="o">())</span> <span class="o">&gt;</span> <span class="mf">0.1</span> <span class="o">||</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getRightX</span><span class="o">())</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="o">)){</span>
+      <span class="n">driveGamepad</span> <span class="o">=</span> <span class="n">JACK</span><span class="o">;</span>
+      <span class="n">yScaleFactor</span> <span class="o">=</span> <span class="mf">0.7</span><span class="o">;</span>
+      <span class="n">sScaleFactor</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="mf">0.3</span><span class="o">,</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">driveGamepad</span><span class="o">].</span><span class="na">getLeftY</span><span class="o">()</span> <span class="o">*</span> <span class="n">yScaleFactor</span><span class="o">));</span> <span class="c1">//if just turning, turn slower for greater accuracy</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="n">driveGamepad</span> <span class="o">=</span> <span class="n">CALVIN</span><span class="o">;</span>
+      <span class="n">yScaleFactor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+      <span class="n">sScaleFactor</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="mf">0.5</span><span class="o">,</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">driveGamepad</span><span class="o">].</span><span class="na">getLeftY</span><span class="o">()</span> <span class="o">*</span> <span class="n">yScaleFactor</span><span class="o">));</span> <span class="c1">//if just turning, turn slower for greater accuracy</span>
+    <span class="o">}</span>
+
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">scaleFactor</span><span class="o">;</span>
+    <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">slowMode</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getLeftBumper</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">slowMode</span><span class="o">)</span> <span class="n">scaleFactor</span> <span class="o">=</span> <span class="mf">0.4</span><span class="o">;</span> <span class="c1">//limit max speed</span>
+    <span class="k">else</span> <span class="n">scaleFactor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">accelLimit</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">slowMode</span><span class="o">)</span> <span class="n">accelLimit</span> <span class="o">=</span> <span class="mf">0.03</span><span class="o">;</span>
+    <span class="k">else</span> <span class="n">accelLimit</span> <span class="o">=</span> <span class="n">MotorWrapper</span><span class="o">.</span><span class="na">NO_ACCEL_LIMIT</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">direction</span><span class="o">.</span><span class="na">drive</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="n">scaleStick</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">driveGamepad</span><span class="o">].</span><span class="na">getLeftY</span><span class="o">())</span> <span class="o">*</span> <span class="n">yScaleFactor</span> <span class="o">*</span> <span class="n">scaleFactor</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">direction</span><span class="o">.</span><span class="na">turn</span><span class="o">(</span><span class="n">scaleStick</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">driveGamepad</span><span class="o">].</span><span class="na">getRightX</span><span class="o">())</span> <span class="o">*</span> <span class="n">sScaleFactor</span> <span class="o">*</span> <span class="n">scaleFactor</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">move</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">direction</span><span class="o">,</span> <span class="n">accelLimit</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">.</span><span class="na">addData</span><span class="o">(</span><span class="s">&quot;Controller&quot;</span><span class="o">,</span> <span class="n">driveGamepad</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">.</span><span class="na">addData</span><span class="o">(</span><span class="s">&quot;Calvin&#39;s left Y&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getLeftY</span><span class="o">());</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">.</span><span class="na">addData</span><span class="o">(</span><span class="s">&quot;Forward power&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">direction</span><span class="o">.</span><span class="na">getY</span><span class="o">());</span>
+
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">intakePower</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getRightBumper</span><span class="o">()</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getRightBumper</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">intakePower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">INTAKE_IN</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getRightTrigger</span><span class="o">()</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getRightTrigger</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">intakePower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">INTAKE_OUT</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="n">intakePower</span> <span class="o">=</span> <span class="n">MotorWrapper</span><span class="o">.</span><span class="na">STOPPED</span><span class="o">;</span> <span class="c1">//leave intake off by default to save battery</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">intake</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">intakePower</span><span class="o">);</span>
+
+    <span class="c1">//Beacon ------------------------------------------------------------------------------</span>
+    <span class="c1">//Beacon button press event</span>
+    <span class="kt">boolean</span> <span class="n">beaconToggle</span> <span class="o">=</span> <span class="o">(!</span><span class="n">beaconButtonLastPressed</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getB</span><span class="o">());</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">beaconState</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="n">REST</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">beaconPresserDisengage</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">beaconToggle</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">nextBeaconState</span><span class="o">();</span>
+        <span class="k">break</span><span class="o">;</span>
+      <span class="k">case</span> <span class="n">LEFT</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">beaconPresserEngageLeft</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">beaconToggle</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">nextBeaconState</span><span class="o">();</span>
+        <span class="k">break</span><span class="o">;</span>
+      <span class="k">case</span> <span class="n">RIGHT</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">beaconPresserEngageRight</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">beaconToggle</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">beaconState</span> <span class="o">=</span> <span class="n">BeaconState</span><span class="o">.</span><span class="na">REST</span><span class="o">;</span>
+        <span class="k">break</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">beaconButtonLastPressed</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getB</span><span class="o">();</span>
+    <span class="c1">//\Beacon ------------------------------------------------------------------------------</span>
+
+    <span class="kt">double</span> <span class="n">snakePosition</span>  <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_V2_HOLDING</span><span class="o">,</span>
+        <span class="n">clutchPosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CLUTCH_V2_CLUTCHED</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getB</span><span class="o">()){</span>
+      <span class="n">snakePosition</span>  <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_V2_DUMPING</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">ballState</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="n">INTAKING</span><span class="o">:</span>
+        <span class="n">clutchPosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CLUTCH_V2_ENGAGED</span><span class="o">;</span> <span class="c1">//this is the only state when it is safe to load a ball into the snake</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">autoShooterUnlessBumper</span><span class="o">();</span>
+        <span class="c1">//Wait for snake to return to holding because it triggers the sensors on the way down</span>
+        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">snakeReturnedToHolding</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">ballStateTimer</span><span class="o">.</span><span class="na">seconds</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_V2_TIME_TO_MOVE</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">snakeReturnedToHolding</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">ballInSnake</span><span class="o">())</span> <span class="k">this</span><span class="o">.</span><span class="na">nextBallState</span><span class="o">();</span>
+        <span class="k">break</span><span class="o">;</span>
+      <span class="k">case</span> <span class="n">HOLDING</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">autoShooterUnlessBumper</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">isShooterDown</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">ballInShooter</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">nextBallState</span><span class="o">();</span>
+        <span class="k">break</span><span class="o">;</span>
+      <span class="k">case</span> <span class="n">LOADING</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">advanceShooterToDown</span><span class="o">();</span> <span class="c1">//hold shooter down</span>
+        <span class="n">snakePosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_V2_DUMPING</span><span class="o">;</span> <span class="c1">//this is the only state when the snake should be up</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">ballStateTimer</span><span class="o">.</span><span class="na">seconds</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_V2_TIME_TO_MOVE</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">ballInShooter</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">nextBallState</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">snake</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">snakePosition</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">clutch</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">clutchPosition</span><span class="o">);</span>
+
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">shooterStopperPower</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">dpadUp</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">shooterStopperPower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_STOPPER_UP</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">dpadDown</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">shooterStopperPower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_STOPPER_DOWN</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="n">shooterStopperPower</span> <span class="o">=</span> <span class="n">MotorWrapper</span><span class="o">.</span><span class="na">STOPPED</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">safeShooterStopper</span><span class="o">(</span><span class="n">shooterStopperPower</span><span class="o">);</span>
+
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">capBallPower</span><span class="o">;</span>
+    <span class="kd">final</span> <span class="n">DcMotor</span><span class="o">.</span><span class="na">RunMode</span> <span class="n">capBallMode</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getY</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">isCapBallUp</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">capBallPower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CAP_BALL_SUPER_SLOW_UP</span><span class="o">;</span>
+        <span class="n">capBallMode</span> <span class="o">=</span> <span class="n">DcMotor</span><span class="o">.</span><span class="na">RunMode</span><span class="o">.</span><span class="na">RUN_WITHOUT_ENCODER</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+        <span class="n">capBallPower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CAP_BALL_UP</span><span class="o">;</span>
+        <span class="n">capBallMode</span> <span class="o">=</span> <span class="n">DcMotor</span><span class="o">.</span><span class="na">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getA</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">capBallPower</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CAP_BALL_DOWN</span><span class="o">;</span>
+      <span class="n">capBallMode</span> <span class="o">=</span> <span class="n">DcMotor</span><span class="o">.</span><span class="na">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="n">capBallPower</span> <span class="o">=</span> <span class="n">MotorWrapper</span><span class="o">.</span><span class="na">STOPPED</span><span class="o">;</span>
+      <span class="n">capBallMode</span> <span class="o">=</span> <span class="n">DcMotor</span><span class="o">.</span><span class="na">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">capBallScaling</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getBack</span><span class="o">())</span> <span class="n">capBallScaling</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CAP_BALL_SLOW_SCALE</span><span class="o">;</span>
+    <span class="k">else</span> <span class="n">capBallScaling</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">capBall</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">capBallPower</span> <span class="o">*</span> <span class="n">capBallScaling</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">capBall</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">capBallMode</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getX</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">CALVIN</span><span class="o">].</span><span class="na">getLast</span><span class="o">().</span><span class="na">getX</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">rollersDeployed</span> <span class="o">=</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">rollersDeployed</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">rollersDeployed</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">rollersDown</span><span class="o">();</span>
+      <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">rollersUp</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="c1">//Move shooter to down unless bumper is pressed, in which case, fire ball</span>
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">autoShooterUnlessBumper</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">shooterState</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="n">ADVANCING_TO_DOWN</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">advanceShooterToDown</span><span class="o">();</span>
+        <span class="c1">//Require ball to be newly loaded (unless overridden)</span>
+        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">shotRequested</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getLeftBumper</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">ballInShooter</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">[</span><span class="n">JACK</span><span class="o">].</span><span class="na">getX</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">isShooterDown</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">shotRequested</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooterState</span> <span class="o">=</span> <span class="n">ShooterState</span><span class="o">.</span><span class="na">ADVANCING_TO_SHOOTING</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">break</span><span class="o">;</span>
+      <span class="k">case</span> <span class="n">ADVANCING_TO_SHOOTING</span><span class="o">:</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">advanceShooterToShooting</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">isShooterAtTarget</span><span class="o">())</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">ballInShooter</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">resetAutoShooter</span><span class="o">();</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooterState</span> <span class="o">=</span> <span class="n">ShooterState</span><span class="o">.</span><span class="na">ADVANCING_TO_DOWN</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//Advance to next BallState (wrapping around) and reset state timer</span>
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">nextBallState</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">ballStateTimer</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+    <span class="kd">final</span> <span class="n">BallState</span><span class="o">[]</span> <span class="n">ballStates</span> <span class="o">=</span> <span class="n">BallState</span><span class="o">.</span><span class="na">values</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">ballState</span> <span class="o">=</span> <span class="n">ballStates</span><span class="o">[(</span><span class="k">this</span><span class="o">.</span><span class="na">ballState</span><span class="o">.</span><span class="na">ordinal</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">%</span> <span class="n">ballStates</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">nextBeaconState</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">beaconStateTimer</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+    <span class="kd">final</span> <span class="n">BeaconState</span><span class="o">[]</span> <span class="n">beaconStates</span> <span class="o">=</span> <span class="n">BeaconState</span><span class="o">.</span><span class="na">values</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">beaconState</span> <span class="o">=</span> <span class="n">beaconStates</span><span class="o">[(</span><span class="k">this</span><span class="o">.</span><span class="na">ballState</span><span class="o">.</span><span class="na">ordinal</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">%</span> <span class="n">beaconStates</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">double</span> <span class="nf">scaleStick</span><span class="o">(</span><span class="kt">double</span> <span class="n">stick</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">stick</span> <span class="o">*</span> <span class="n">stick</span> <span class="o">*</span> <span class="n">stick</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

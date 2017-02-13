@@ -8,7 +8,7 @@ import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration.BeaconColorCounts;
 
 public class CheckPicture extends AutonomousComponentAbstractImpl {
-	public static final int CORRECT = newTransition(), WRONG = newTransition();
+	public static final Transition CORRECT = new Transition("Correct"), WRONG = new Transition("Wrong");
 
 	private final PictureResult pictureResult;
 	private final VuforiaConfiguration vuforiaConfiguration;
@@ -19,9 +19,9 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		final BeaconColorCounts oldColorCounts = pictureResult.colorCounts;
 		final int oldBlue = oldColorCounts.leftBlue + oldColorCounts.rightBlue;

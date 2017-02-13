@@ -48,7 +48,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public VelocityConfiguration(HardwareMap hardwareMap, boolean v2) {
 		this.v2 = v2;
 		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorType.NEVEREST_20);
-		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_60);
+		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
 		this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.resetAutoShooter();
@@ -136,11 +136,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.drive.commitPowers();
 	}
 
-	private boolean shooterFarTriggered() {
+	public boolean shooterFarTriggered() {
 		return !this.shooterFar.getState();
 	}
 
-	private boolean shooterNearTriggered() {
+	public boolean shooterNearTriggered() {
 		return !this.shooterNear.getState();
 	}
 
@@ -195,17 +195,24 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
 	}
+	public void shootFast() {
+		this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+	}
 
 	public void advanceShooterToDown() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-				this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-				final int ticksToDown;
-				if (this.v2) ticksToDown = MotorConstants.SHOOTER_V2_TICKS_TO_DOWN;
-				else ticksToDown = MotorConstants.SHOOTER_TICKS_TO_DOWN;
-				this.shooter.setTarget(ticksToDown);
-				this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				if (this.v2) {
+					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+					this.shooter.stop();
+				}
+				else {
+					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+					this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				}
 				this.shooterWasDown = true;
 			}
 			else this.shootSlow();
@@ -216,13 +223,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooterWasDown = false;
 	}
 
-	public void advanceShooterToShooting() {
-		this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-		final int ticksToShooting;
-		if (this.v2) ticksToShooting = MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING;
-		else ticksToShooting = MotorConstants.SHOOTER_TICKS_TO_SHOOTING;
-		this.shooter.setTarget(ticksToShooting);
-		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+	public boolean hasShot() {
+		return Math.signum(this.shooter.encoderValue() - MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING) == Math.signum(MotorConstants.SHOOTER_V2_TICKS_TO_SHOOTING);
 	}
 
 	public boolean isShooterAtTarget() {
@@ -230,7 +232,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public boolean isShooterDown() {
-		return this.shooterWasDown && this.isShooterAtTarget();
+		if (this.v2) return this.shooterWasDown;
+		else return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
 	public void beaconPresserEngageLeft() {
@@ -297,11 +300,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.4;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.6;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
-		public static final int SHOOTER_V2_TICKS_TO_DOWN = -15;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_SHOOTING = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.2);
 		public static final int SHOOTER_V2_TICKS_TO_SHOOTING = -150;
@@ -311,18 +313,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SNAKE_V2_HOLDING = 0.25;
 		@Deprecated
 		public static final double SNAKE_DUMPING = 0.7;
-		public static final double SNAKE_V2_DUMPING = 0.53;
-		public static final double SNAKE_V2_TIME_TO_MOVE = 0.4; //seconds for snake to switch positions
+		public static final double SNAKE_V2_DUMPING = 0.8;
+		public static final double SNAKE_V2_TIME_TO_MOVE = 0.2; //seconds for snake to switch positions
 
 		@Deprecated
 		public static final double BEACON_PRESSER_DISENGAGED = 0.81;
-		public static final double PRESSER_V2_NEUTRAL = 0.58;
+		public static final double PRESSER_V2_NEUTRAL = 0.5;
 		@Deprecated
 		public static final double BEACON_PRESSER_RIGHT_ENGAGED = 1.0;
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_LEFT = PRESSER_V2_NEUTRAL - (PRESSER_V2_RIGHT - PRESSER_V2_NEUTRAL);
+		public static final double PRESSER_V2_LEFT = 0.0;
 		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
 
 		@Deprecated

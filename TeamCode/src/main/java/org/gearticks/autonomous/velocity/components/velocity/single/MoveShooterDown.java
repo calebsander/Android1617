@@ -10,7 +10,7 @@ public class MoveShooterDown extends AutonomousComponentHardware<VelocityConfigu
      * @param id - descriptive name for logging
      */
     public MoveShooterDown(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
     }
 
     @Override
@@ -20,13 +20,13 @@ public class MoveShooterDown extends AutonomousComponentHardware<VelocityConfigu
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         this.configuration.advanceShooterToDown();
         if (this.configuration.isShooterDown()) return NEXT_STATE;
-        else return NOT_DONE;
+        else return null;
     }
 
     @Override

@@ -16,7 +16,7 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
 
 
     public GiroDriveToRangeDistance(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.targetHeading = targetHeading;
@@ -32,9 +32,9 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         //control giro drive
         this.direction.drive(0.0, this.power);
@@ -53,7 +53,7 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
             return NEXT_STATE;
         }
-        else return NOT_DONE;
+        else return null;
     }
 
     @Override

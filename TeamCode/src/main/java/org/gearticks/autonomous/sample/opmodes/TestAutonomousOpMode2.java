@@ -14,14 +14,14 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
         private final DriveDirection direction;
 
         public GyroDriveEncoderInner(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-            super(opModeContext.configuration, id);
+            super(opModeContext, id);
             this.direction = new DriveDirection();
         }
 
         @Override
-        public int run() {
-            final int superTransition = super.run();
-            if (superTransition != NOT_DONE) return superTransition;
+        public Transition run() {
+            final Transition superTransition = super.run();
+            if (superTransition != null) return superTransition;
 
             //control gyro drive
             this.direction.drive(0.0, 0.7); //you can access the attribute of the enclosing class
@@ -29,7 +29,7 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
             this.configuration.move(this.direction, 0.06);
 
             if (this.configuration.encoderPositive() > 2000) return NEXT_STATE;
-            else return NOT_DONE;
+            else return null;
         }
     }
 
@@ -37,13 +37,13 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
         final LinearStateMachine sm = new LinearStateMachine();
         sm.addComponent(new GyroDriveEncoder(0.0, 1.0, 2000, opModeContext, "stage1"));
         sm.addComponent(new GyroDriveEncoderInner(opModeContext, "gyro drive inner"));
-        sm.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext.configuration, "giro drive anonymous") { //Anonymous class
+        sm.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext, "giro drive anonymous") { //Anonymous class
             private final DriveDirection direction = new DriveDirection();
 
             @Override
-            public int run() {
-                final int superTransition = super.run();
-                if (superTransition != NOT_DONE) return superTransition;
+            public Transition run() {
+                final Transition superTransition = super.run();
+                if (superTransition != null) return superTransition;
 
                 //control gyro drive
                 this.direction.drive(0.0, 0.7); //you can access the attribute of the enclosing class
@@ -51,7 +51,7 @@ public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
                 this.configuration.move(this.direction, 0.06);
 
                 if (this.configuration.encoderPositive() > 2000) return NEXT_STATE;
-                else return NOT_DONE;
+                else return null;
             }
         });
         return sm;

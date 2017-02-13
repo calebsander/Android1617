@@ -12,7 +12,9 @@ import org.gearticks.opmodes.utility.Utils;
  * Please add some comments on this component.
  */
 public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfiguration> {
-    private static final int LINE_FOUND = newTransition(), ENCODER_TIMEOUT = newTransition();
+    private static final Transition
+        LINE_FOUND = new Transition("Found line"),
+        ENCODER_TIMEOUT = new Transition("Encoder timeout");
     private final DriveDirection direction;
     private final double power;
     private final double targetHeading;
@@ -28,7 +30,7 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
      * @param id - descriptive name for logging
      */
     public GiroDriveToLine(double targetHeading, double power, long maxEncoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.targetHeading = targetHeading;
@@ -42,13 +44,12 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
         if (allianceColorIsBlue) this.angleMultiplier = 1.0; //angles were calculated for blue side
         else this.angleMultiplier = -1.0; //invert all angles for red side
         this.configuration.resetEncoder();
-//        this.configuration.activateWhiteLineColor();
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         //control giro drive
         this.direction.drive(0.0, this.power);
@@ -66,13 +67,12 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
             Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             return ENCODER_TIMEOUT;
         }
-        return NOT_DONE;
+        return null;
     }
 
     @Override
     public void tearDown() {
         super.tearDown();
-//        this.configuration.deactivateWhiteLineColor();
         //stop motors
         this.configuration.stopMotion();
     }

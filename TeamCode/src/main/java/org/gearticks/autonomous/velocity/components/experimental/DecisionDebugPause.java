@@ -7,15 +7,16 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.opmodes.utility.Utils;
 
 public class DecisionDebugPause extends AutonomousComponentHardware<VelocityConfiguration> {
-	public static final int X_TRANSITION = newTransition(), Y_TRANSITION = newTransition();
+	public static final Transition X_TRANSITION = new Transition("X"), Y_TRANSITION = new Transition("Y");
 	private final OpModeContext opModeContext;
+
 	/**
 	 *
 	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
 	public DecisionDebugPause(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext.configuration, id);
+		super(opModeContext, id);
 		this.opModeContext = opModeContext;
 	}
 
@@ -27,9 +28,9 @@ public class DecisionDebugPause extends AutonomousComponentHardware<VelocityConf
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		this.opModeContext.telemetry.addData("heading:", this.configuration.imu.getHeading());
 		this.opModeContext.telemetry.addData("drive left:", this.configuration.driveLeft.encoderValue());
@@ -42,7 +43,7 @@ public class DecisionDebugPause extends AutonomousComponentHardware<VelocityConf
 			Log.d(Utils.TAG, "Transition 2 at DecisionDebugPause: Y pressed");
 			return Y_TRANSITION;
 		}
-		else return NOT_DONE;
+		else return null;
 	}
 
 	@Override

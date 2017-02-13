@@ -1,0 +1,96 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="c1">//Represents a desired set of movement with a variety of input methods that compute to x, y, and spin powers</span>
+<span class="kn">package</span> <span class="nn">org.gearticks.hardware.drive</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DriveDirection</span> <span class="o">{</span>
+  <span class="c1">//Horizontal movement relative to the robot (positive is to the right)</span>
+  <span class="kd">private</span> <span class="kt">double</span> <span class="n">x</span><span class="o">;</span>
+  <span class="c1">//Vertical movement relative to the robot (positive is forwards)</span>
+  <span class="kd">private</span> <span class="kt">double</span> <span class="n">y</span><span class="o">;</span>
+  <span class="c1">//Spin movement (positive is clockwise)</span>
+  <span class="kd">private</span> <span class="kt">double</span> <span class="n">s</span><span class="o">;</span>
+
+  <span class="c1">//For gyroCorrect()</span>
+  <span class="kd">private</span> <span class="kt">double</span> <span class="n">numOffGyro</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">correctCount</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">DriveDirection</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">numOffGyro</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">correctCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="c1">//Sets desired direction as coefficients of unit vectors</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">drive</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Adds another movement vector to the drive vector</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">incrementDrive</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">+=</span> <span class="n">x</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">+=</span> <span class="n">y</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Sets desired spin power</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">turn</span><span class="o">(</span><span class="kt">double</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Adds spin to the spin power</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">incrementTurn</span><span class="o">(</span><span class="kt">double</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">+=</span> <span class="n">s</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Indicates no desired movement</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stopDrive</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Rotates x and y values based on desired movement direction and current heading</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">correctView</span><span class="o">(</span><span class="kt">double</span> <span class="n">curDir</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">*</span> <span class="n">MathSupplement</span><span class="o">.</span><span class="na">cosDegrees</span><span class="o">(</span><span class="n">curDir</span><span class="o">)</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">*</span> <span class="n">MathSupplement</span><span class="o">.</span><span class="na">sinDegrees</span><span class="o">(</span><span class="n">curDir</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">*</span> <span class="n">MathSupplement</span><span class="o">.</span><span class="na">sinDegrees</span><span class="o">(</span><span class="n">curDir</span><span class="o">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">*</span> <span class="n">MathSupplement</span><span class="o">.</span><span class="na">cosDegrees</span><span class="o">(</span><span class="n">curDir</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="c1">//Increments the spin variable to try to correct to a certain heading, returns how many times in a row the robot has been sufficiently close to it</span>
+  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">gyroCorrect</span><span class="o">(</span><span class="kt">double</span> <span class="n">gyroTarget</span><span class="o">,</span> <span class="kt">double</span> <span class="n">gyroRange</span><span class="o">,</span> <span class="kt">double</span> <span class="n">gyroActual</span><span class="o">,</span> <span class="kt">double</span> <span class="n">minSpeed</span><span class="o">,</span> <span class="kt">double</span> <span class="n">addSpeed</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">double</span> <span class="n">delta</span> <span class="o">=</span> <span class="o">(</span><span class="n">gyroTarget</span> <span class="o">-</span> <span class="n">gyroActual</span> <span class="o">+</span> <span class="mf">360.0</span><span class="o">)</span> <span class="o">%</span> <span class="mf">360.0</span><span class="o">;</span> <span class="c1">//the difference between target and actual mod 360</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">delta</span> <span class="o">&gt;</span> <span class="mf">180.0</span><span class="o">)</span> <span class="n">delta</span> <span class="o">-=</span> <span class="mf">360.0</span><span class="o">;</span> <span class="c1">//makes delta between -180 and 180</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">gyroMod</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">delta</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">45</span><span class="o">)</span> <span class="n">gyroMod</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">delta</span><span class="o">);</span> <span class="c1">//set gyromod to 1 or -1 if the error is more than 45 degrees</span>
+    <span class="k">else</span> <span class="n">gyroMod</span> <span class="o">=</span> <span class="n">delta</span> <span class="o">/</span> <span class="mf">45.0</span><span class="o">;</span> <span class="c1">//or set it to scale up to 1 if it&#39;s less than 45 degrees</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">delta</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">gyroRange</span><span class="o">)</span> <span class="o">{</span> <span class="c1">//checks if delta is out of range</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">numOffGyro</span> <span class="o">+=</span> <span class="mf">0.25</span><span class="o">;</span> <span class="c1">//increase this correction the longer we are out of range</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">numOffGyro</span> <span class="o">&gt;</span> <span class="mf">25.0</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">numOffGyro</span> <span class="o">=</span> <span class="mf">25.0</span><span class="o">;</span> <span class="c1">//don&#39;t let this correction get too big</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">correctCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">turn</span><span class="o">(</span><span class="n">minSpeed</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">gyroMod</span><span class="o">)</span> <span class="o">+</span> <span class="n">addSpeed</span> <span class="o">*</span> <span class="n">gyroMod</span><span class="cm">/* + this.numOffGyro * Math.signum(gyroMod) / 200.0*/</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">numOffGyro</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span> <span class="c1">//reset the time-based correction</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">correctCount</span><span class="o">++;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">turn</span><span class="o">(</span><span class="mf">0.0</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">correctCount</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Returns the calculated x value</span>
+  <span class="kd">public</span> <span class="kt">double</span> <span class="nf">getX</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">x</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Returns the calculated y value</span>
+  <span class="kd">public</span> <span class="kt">double</span> <span class="nf">getY</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">y</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Returns the calculated s value</span>
+  <span class="kd">public</span> <span class="kt">double</span> <span class="nf">getS</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">s</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">//Returns whether no movement has been requested</span>
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isStopped</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">==</span> <span class="mf">0.0</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;%.2f, %.2f, %.2f&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">s</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

@@ -19,8 +19,8 @@ import org.gearticks.opmodes.utility.Utils;
  * Keep in mind that no state is aware of the prior states, specifically the state that transitioned to it.
  */
 public class NetworkedStateMachine extends StateMachineBase {
-	private Map<AutonomousComponent, Map<Integer, AutonomousComponent>> connections;
-	private Map<AutonomousComponent, Map<Integer, Integer>> exitConnections;
+	private Map<AutonomousComponent, Map<Transition, AutonomousComponent>> connections;
+	private Map<AutonomousComponent, Map<Transition, Transition>> exitConnections;
 
 	public NetworkedStateMachine() {
 		super(new HashSet<AutonomousComponent>());
@@ -40,19 +40,19 @@ public class NetworkedStateMachine extends StateMachineBase {
 	/**
 	 * Indicates that an output port on one component should switch to a specified state
 	 * @param originComponent the component being switched from
-	 * @param originPortNumber the output port on originComponent this applies to
+	 * @param originPort the output port on originComponent this applies to
 	 * @param destinationComponent the component to switch to when the output port is triggered
 	 */
 	public void addConnection(AutonomousComponent originComponent,
-			int originPortNumber, AutonomousComponent destinationComponent) {
+			Transition originPort, AutonomousComponent destinationComponent) {
 		this.components.add(originComponent);
 		this.components.add(destinationComponent);
-		Map<Integer, AutonomousComponent> componentConnections = this.connections.get(originComponent);
+		Map<Transition, AutonomousComponent> componentConnections = this.connections.get(originComponent);
 		if (componentConnections == null) {
 			componentConnections = new HashMap<>();
 			this.connections.put(originComponent, componentConnections);
 		}
-		componentConnections.put(originPortNumber, destinationComponent);
+		componentConnections.put(originPort, destinationComponent);
 	}
 	/**
 	 * Indicates that an output port on one component should terminate the state machine
@@ -60,9 +60,9 @@ public class NetworkedStateMachine extends StateMachineBase {
 	 * @param portNumber the output port for which component is the final component
 	 * @param exitPort the output port of the state machine to trigger in this case
 	 */
-	public void addExitConnection(AutonomousComponent component, int portNumber, int exitPort) {
+	public void addExitConnection(AutonomousComponent component, Transition portNumber, Transition exitPort) {
 		this.components.add(component);
-		Map<Integer, Integer> componentConnections = this.exitConnections.get(component);
+		Map<Transition, Transition> componentConnections = this.exitConnections.get(component);
 		if (componentConnections == null) {
 			componentConnections = new HashMap<>();
 			this.exitConnections.put(component, componentConnections);
@@ -75,7 +75,7 @@ public class NetworkedStateMachine extends StateMachineBase {
 	 * @param component the final component
 	 * @param portNumber the output port for which component is the final component
 	 */
-	public void addExitConnection(AutonomousComponent component, int portNumber) {
+	public void addExitConnection(AutonomousComponent component, Transition portNumber) {
 		this.addExitConnection(component, portNumber, NEXT_STATE);
 	}
 
@@ -86,20 +86,22 @@ public class NetworkedStateMachine extends StateMachineBase {
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		if (this.currentState == null) return NEXT_STATE;
 
-		final int transition = this.currentState.run();
-		if (transition == NOT_DONE) return transition;
+		//Delegate run() to current state
+		final Transition transition = this.currentState.run();
+		//If no transition, we're done
+		if (transition == null) return null;
 
 		this.currentState.tearDown();
 
-		final Map<Integer, Integer> exitPorts = this.exitConnections.get(this.currentState);
+		final Map<Transition, Transition> exitPorts = this.exitConnections.get(this.currentState);
 		if (exitPorts != null) {
-			final Integer exitPort = exitPorts.get(transition);
+			final Transition exitPort = exitPorts.get(transition);
 			if (exitPort != null) {
 				Log.i(Utils.TAG, "Exiting from " + this.currentState + " on port " + transition);
 				this.currentState = null;
@@ -107,13 +109,13 @@ public class NetworkedStateMachine extends StateMachineBase {
 			}
 		}
 
-		final Map<Integer, AutonomousComponent> componentConnections = this.connections.get(this.currentState);
+		final Map<Transition, AutonomousComponent> componentConnections = this.connections.get(this.currentState);
 		Utils.assertNotNull(componentConnections, "No transitions defined for " + this.currentState);
 		final AutonomousComponent nextState = componentConnections.get(transition);
 		Utils.assertNotNull(nextState, "No transition defined for " + this.currentState + " on port " + transition);
-		Log.i(Utils.TAG, "Transition from " + this.currentState + " => " + nextState);
+		Log.i(Utils.TAG, "Transition from " + this.currentState + " => " + nextState + " on port " + transition);
 		this.currentState = nextState;
 		nextState.setup();
-		return NOT_DONE;
+		return null;
 	}
 }

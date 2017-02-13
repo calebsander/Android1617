@@ -3,6 +3,7 @@ package org.gearticks.autonomous.generic.opmode;
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
 import org.gearticks.opmodes.utility.Utils;
@@ -31,8 +32,8 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	}
 	protected void loopAfterStart() {
 		if (!this.done) {
-			final int transition = this.component.run();
-			if (transition != AutonomousComponentAbstractImpl.NOT_DONE) {
+			final Transition transition = this.component.run();
+			if (transition != null) {
 				Log.i(Utils.TAG, "Component finished");
 				this.done = true;
 				this.component.tearDown();

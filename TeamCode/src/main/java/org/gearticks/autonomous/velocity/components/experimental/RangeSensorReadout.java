@@ -10,7 +10,7 @@ public class RangeSensorReadout extends AutonomousComponentHardware<VelocityConf
     public final double timeLimit;
 
     public RangeSensorReadout(double timeLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
         this.timeLimit = timeLimit;
     }
 
@@ -22,9 +22,9 @@ public class RangeSensorReadout extends AutonomousComponentHardware<VelocityConf
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         double ultrasonicDistance = this.configuration.rangeSensor.cmUltrasonic();
         double opticalDistance = this.configuration.rangeSensor.cmOptical();
@@ -32,12 +32,6 @@ public class RangeSensorReadout extends AutonomousComponentHardware<VelocityConf
         Log.d(Utils.TAG, "Optical distance = " + opticalDistance + ", Ultrasonic distance = " + ultrasonicDistance);
 
         if (this.stageTimer.seconds() > this.timeLimit) return NEXT_STATE;
-        else return NOT_DONE;
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
-        //Custom code here
+        else return null;
     }
 }

@@ -51,9 +51,9 @@ public class LinearStateMachine extends StateMachineBase {
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         if (this.currentState == null) {
             //If there is no (more) current state, then end this state-machine
@@ -61,19 +61,20 @@ public class LinearStateMachine extends StateMachineBase {
             return NEXT_STATE;
         }
 
-        //regular 'run':
-        final int transition = this.currentState.run();
-        //Check for transition:
-        if (transition == NOT_DONE) return NOT_DONE;
+        //Delegate run() to current state
+        final Transition transition = this.currentState.run();
+        //If no transition, we're done
+        if (transition == null) return null;
 
-        //Get next component
+        //If the component is done, get the next component
         if (this.iterator.hasNext()) {
             this.transitionToNextStage();
-            return NOT_DONE;
+            return null;
         }
         else {
             this.currentState.tearDown();
             //No more components -> end of this state-machine
+            Log.i(Utils.TAG, "Exiting " + this + " with transition: " + transition);
             this.currentState = null;
             return transition;
         }

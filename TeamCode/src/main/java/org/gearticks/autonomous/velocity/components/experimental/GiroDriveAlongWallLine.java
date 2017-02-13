@@ -27,7 +27,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
 
 
     public GiroDriveAlongWallLine(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.distanceFromWall = distanceFromWall;
@@ -46,9 +46,9 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
         this.direction.drive(0.0, this.power);
         this.direction.gyroCorrect(this.controlledHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
@@ -83,7 +83,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
             return NEXT_STATE; //TODO returning LIMIT_REACHED
         }
-        return NOT_DONE;
+        return null;
     }
 
 }

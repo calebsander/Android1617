@@ -11,7 +11,10 @@ import org.gearticks.opmodes.units.SideOfButton;
 import org.gearticks.opmodes.utility.Utils;
 
 public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfiguration> {
-	public static final int LEFT_TRANSITION = newTransition(), RIGHT_TRANSITION = newTransition(), UNKNOWN_TRANSITION = newTransition();
+	public static final Transition
+		LEFT_TRANSITION = new Transition("Left"),
+		RIGHT_TRANSITION = new Transition("Right"),
+		UNKNOWN_TRANSITION = new Transition("Unknown");
 
 	private final VuforiaConfiguration vuforiaConfiguration;
 	private boolean allianceColorIsBlue;
@@ -23,7 +26,7 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 	 * @param id - descriptive name for logging
 	 */
 	public SelectBeaconSide(PictureResult pictureResult, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext.configuration, id);
+		super(opModeContext, id);
 		this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
 		this.pictureResult = pictureResult;
 	}
@@ -37,9 +40,9 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		final BeaconColorCounts colorCounts = this.vuforiaConfiguration.getColorCounts();
 		this.pictureResult.colorCounts = colorCounts;

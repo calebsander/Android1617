@@ -10,7 +10,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.opmodes.utility.Utils;
 
 /**
- * Sample to create a composite autonomous component that will consist of a linear state-machine of 2 or more AutonomousComponents
+ * Sample to create a composite autonomous component that will consist of a non-linear state-machine of 2 or more AutonomousComponents
  */
 public class SimpleNetworkCompositeAutonomousComponent extends NetworkedStateMachine {
 

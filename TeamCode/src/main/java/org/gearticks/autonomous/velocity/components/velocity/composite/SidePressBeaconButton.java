@@ -11,7 +11,6 @@ import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeacon
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class SidePressBeaconButton extends NetworkedStateMachine {
-
     public SidePressBeaconButton(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(id);
         final PictureResult pictureResult = new PictureResult();

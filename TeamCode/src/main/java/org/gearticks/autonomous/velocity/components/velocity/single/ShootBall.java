@@ -10,21 +10,21 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
      * @param id - descriptive name for logging
      */
     public ShootBall(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext.configuration, id);
+        super(opModeContext, id);
     }
 
     @Override
     public void setup() {
         super.setup();
-        this.configuration.advanceShooterToShooting();
+        this.configuration.shootSlow();
     }
 
     @Override
-    public int run() {
-        final int superTransition = super.run();
-        if (superTransition != NOT_DONE) return superTransition;
+    public Transition run() {
+        final Transition superTransition = super.run();
+        if (superTransition != null) return superTransition;
 
-        if (this.configuration.isShooterAtTarget()) return NEXT_STATE;
-        else return NOT_DONE;
+        if (this.configuration.hasShot()) return NEXT_STATE;
+        else return null;
     }
 }

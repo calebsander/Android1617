@@ -20,7 +20,7 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 	 * @param id - descriptive name for logging
 	 */
 	public GyroDriveEncoder(double targetHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext.configuration, id);
+		super(opModeContext, id);
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.targetHeading = targetHeading;
@@ -34,9 +34,9 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 	}
 
 	@Override
-	public int run() {
-		final int superTransition = super.run();
-		if (superTransition != NOT_DONE) return superTransition;
+	public Transition run() {
+		final Transition superTransition = super.run();
+		if (superTransition != null) return superTransition;
 
 		//control gyro drive
 		this.direction.drive(0.0, this.power);
@@ -44,6 +44,6 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 		this.configuration.move(this.direction, 0.06);
 
 		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
-		else return NOT_DONE;
+		else return null;
 	}
 }
