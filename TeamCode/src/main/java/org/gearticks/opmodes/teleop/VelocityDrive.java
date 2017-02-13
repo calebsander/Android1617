@@ -64,6 +64,7 @@ public class VelocityDrive extends BaseOpMode {
 			else return null;
 		}
 		public void tearDown() {
+			super.tearDown();
 			ballInShooter = true;
 		}
 	}

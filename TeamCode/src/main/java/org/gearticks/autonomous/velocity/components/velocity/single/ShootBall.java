@@ -27,4 +27,10 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
         if (this.configuration.hasShot()) return NEXT_STATE;
         else return null;
     }
+
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        this.configuration.shooter.stop();
+    }
 }
