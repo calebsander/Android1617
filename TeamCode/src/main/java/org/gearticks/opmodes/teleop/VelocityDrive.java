@@ -52,7 +52,7 @@ public class VelocityDrive extends BaseOpMode {
 			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
 			else return NOT_DONE;
 		}
-		public void teardown() {
+		public void tearDown() {
 			ballInShooter = true;
 		}
 	}
