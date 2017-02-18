@@ -23,12 +23,12 @@ public class NetworkedStateMachine extends StateMachineBase {
 	private Map<AutonomousComponent, Map<Transition, Transition>> exitConnections;
 
 	public NetworkedStateMachine() {
-		super(new HashSet<AutonomousComponent>());
+		super(new HashSet<>());
 		this.connections = new HashMap<>();
 		this.exitConnections = new HashMap<>();
 	}
 	public NetworkedStateMachine(String id) {
-		super(new HashSet<AutonomousComponent>(), id);
+		super(new HashSet<>(), id);
 		this.connections = new HashMap<>();
 		this.exitConnections = new HashMap<>();
 	}
@@ -103,17 +103,17 @@ public class NetworkedStateMachine extends StateMachineBase {
 		if (exitPorts != null) {
 			final Transition exitPort = exitPorts.get(transition);
 			if (exitPort != null) {
-				Log.i(Utils.TAG, "Exiting from " + this.currentState + " on port " + transition);
+				Log.i(Utils.TAG, "Exiting from \"" + this.currentState + "\" on port \"" + transition + "\"");
 				this.currentState = null;
 				return exitPort;
 			}
 		}
 
 		final Map<Transition, AutonomousComponent> componentConnections = this.connections.get(this.currentState);
-		Utils.assertNotNull(componentConnections, "No transitions defined for " + this.currentState);
+		Utils.assertNotNull(componentConnections, "No transitions defined for \"" + this.currentState + "\"");
 		final AutonomousComponent nextState = componentConnections.get(transition);
-		Utils.assertNotNull(nextState, "No transition defined for " + this.currentState + " on port " + transition);
-		Log.i(Utils.TAG, "Transition from " + this.currentState + " => " + nextState + " on port " + transition);
+		Utils.assertNotNull(nextState, "No transition defined for \"" + this.currentState + "\" on port \"" + transition + "\"");
+		Log.i(Utils.TAG, "Transition from \"" + this.currentState + "\" => \"" + nextState + "\" on port \"" + transition + "\"");
 		this.currentState = nextState;
 		nextState.setup();
 		return null;
