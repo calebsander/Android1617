@@ -1,9 +1,13 @@
-package org.gearticks.autonomous.velocity.components.velocity.composite;
+package org.gearticks.autonomous.velocity.opmode;
 
 import android.support.annotation.NonNull;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
+import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallEncoder;
@@ -12,17 +16,26 @@ import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
+import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
+import org.gearticks.autonomous.velocity.components.velocity.composite.FixBeacon;
+import org.gearticks.autonomous.velocity.components.velocity.composite.SidePressBeaconButton;
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
+import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageSideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
+import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
 import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide;
+import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
+import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration;
 
-public class BlueSideAutonomous extends LinearStateMachine {
-    public BlueSideAutonomous(int distanceFromWall, @NonNull GamepadWrapper[] gamepads, Telemetry telemetry, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration) {
+@Autonomous
+
+public class SideAutonomousBeaconTester extends LinearStateMachine {
+    public SideAutonomousBeaconTester(int distanceFromWall, @NonNull GamepadWrapper[] gamepads, Telemetry telemetry, @NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration) {
 
         super();
 
@@ -37,24 +50,14 @@ public class BlueSideAutonomous extends LinearStateMachine {
         //Press beacon
         addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.17, 500, configuration, "Adjust to white line"));
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.17, 25, configuration, "Align"));
-	    //addComponent(new DebugPause(gamepads, telemetry, configuration, "pause"));
+        //addComponent(new DebugPause(gamepads, telemetry, configuration, "pause"));
         addComponent(new SidePressBeaconButton(vuforiaConfiguration, configuration, "Press Button"));
         SelectBeaconSide.PictureResult pictureResult = new SelectBeaconSide.PictureResult();
+        addComponent(new FixBeacon(pictureResult, configuration, vuforiaConfiguration));
 
-        //Go to second beacon
-        addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.8, 3000, configuration, "Range sensor drive along wall"));
-        addComponent(new GiroDriveAlongWallLine(distanceFromWall+1, 180.0, -0.25, 2000, configuration, "Range sensor drive along wall to line"));
-        //sm.addComponent(new GiroDriveToLine(180, 0.7, 8000, this.configuration, "Drive to white line"));
 
-        //Press second beacon
-        addComponent(new GiroDriveToLine(180, 0.05, 500, configuration, "Adjust to white line"));
-	    //addComponent(new DebugPause(gamepads, telemetry, configuration, "pause"));
-        addComponent(new SidePressBeaconButton(vuforiaConfiguration, configuration, "Press Button"));
-
-        //Cap ball
-        addComponent(new DisengageSideRollers(configuration, "Raise rollers"));
-        //addComponent(new GiroTurn(225.0, configuration, "Turn to cap ball"));
-        addComponent(new GiroBananaTurnEncoder(180.0, 235.0, 0.6, 400, configuration, "BTR 235 - 400"));
-        addComponent(new GiroDriveEncoder(235.0, 1.0, 6000, configuration, "Hit cap ball and park"));
     }
+
+
+
 }
