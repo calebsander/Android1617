@@ -1,12 +1,14 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class GiroDriveEncoderNoStop extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
+	private final VelocityConfiguration configuration;
 	private final DriveDirection direction;
 	private final double power;
 	private final double targetHeading;
@@ -21,7 +23,8 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentHardware<Velocity
 	 * @param id - descriptive name for logging
 	 */
 	public GiroDriveEncoderNoStop(double targetHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(id);
+		this.configuration = opModeContext.configuration;
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.targetHeading = targetHeading;

@@ -56,7 +56,6 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 		if (dPrime > this.d) {
 			this.direction.drive(0.0, 0.0);
 			this.direction.gyroCorrect(this.endHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
-			Log.d(Utils.TAG, "Angle: " + this.configuration.imu.getRelativeYaw());
 		}
 		else {
 			this.direction.drive(0.0, this.y_0);
@@ -65,7 +64,6 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 			final double error = dPrimeLeft - this.configuration.driveLeft.encoderValue();
 			double sOverS_0 = K * error;
 			if (Math.abs(sOverS_0) > 1.0) sOverS_0 = MAX_S_OVER_S0 * Math.signum(sOverS_0); //cap at +/- MAX_S_OVER_S0
-			Log.d(Utils.TAG, "error: " + error);
 			final double s = this.s_0 + sOverS_0 * this.s_0;
 			this.direction.turn(s);
 		}
