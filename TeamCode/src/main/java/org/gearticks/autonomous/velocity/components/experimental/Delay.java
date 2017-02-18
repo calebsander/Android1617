@@ -8,7 +8,7 @@ import org.gearticks.joystickoptions.IncrementOption;
 public class Delay extends AutonomousComponentHardware<HardwareConfiguration> {
 	private final IncrementOption delayOption;
 
-	public Delay(OpModeContext opModeContext, IncrementOption delayOption) {
+	public Delay(OpModeContext<HardwareConfiguration> opModeContext, IncrementOption delayOption) {
 		super(opModeContext);
 		this.delayOption = delayOption;
 	}

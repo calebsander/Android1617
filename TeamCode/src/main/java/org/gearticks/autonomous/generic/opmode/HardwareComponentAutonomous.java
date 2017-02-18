@@ -21,7 +21,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	protected void initialize() {
 		Log.i(Utils.TAG, "Start OpMode initialize");
 		this.configuration = this.newConfiguration();
-		this.component = this.getComponent(new OpModeContext<HARDWARE_TYPE>(this.configuration, this.gamepads, this.telemetry));
+		this.component = this.getComponent(new OpModeContext<>(this.configuration, this.gamepads, this.telemetry, this.matchTime));
 	}
 	protected void matchStart() {
 		Log.i(Utils.TAG, "Starting OpMode matchStart");
