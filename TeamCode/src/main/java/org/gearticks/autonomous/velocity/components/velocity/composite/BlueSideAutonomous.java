@@ -39,7 +39,6 @@ public class BlueSideAutonomous extends LinearStateMachine {
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.17, 25, configuration, "Align"));
 	    //addComponent(new DebugPause(gamepads, telemetry, configuration, "pause"));
         addComponent(new SidePressBeaconButton(vuforiaConfiguration, configuration, "Press Button"));
-        SelectBeaconSide.PictureResult pictureResult = new SelectBeaconSide.PictureResult();
 
         //Go to second beacon
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.8, 3000, configuration, "Range sensor drive along wall"));
