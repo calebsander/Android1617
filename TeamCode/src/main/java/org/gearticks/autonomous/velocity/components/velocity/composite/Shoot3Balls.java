@@ -3,9 +3,8 @@ package org.gearticks.autonomous.velocity.components.velocity.composite;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
-import org.gearticks.autonomous.velocity.components.velocity.single.ClutchClutch;
 import org.gearticks.autonomous.velocity.components.velocity.single.EngageClutch;
+import org.gearticks.autonomous.velocity.components.velocity.single.IntakeUntilBadBoy;
 import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
 import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
 import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
@@ -22,14 +21,28 @@ public class Shoot3Balls extends LinearStateMachine {
      */
     public Shoot3Balls(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(id);
-        ParallelComponent shootingAndIntake = new ParallelComponent();
-        shootingAndIntake.addComponent(new Shoot2Balls(true, opModeContext, "Shoot 2 balls"));
-        shootingAndIntake.addComponent(new IntakeClutched(3.0, opModeContext, "Run intake clutched"));
+        final LinearStateMachine shoot = new LinearStateMachine("Shoot");
+        shoot.addComponent(new ShootBall(opModeContext, "Shoot 1st ball"));
+        shoot.addComponent(new MoveShooterDown(opModeContext, "Move Shooter Down"));
+        shoot.addComponent(new LoadBall(opModeContext, "Load 2nd ball"));
+        shoot.addComponent(new ResetSnake(false, opModeContext, "Reset Snake"));
+        final ParallelComponent shootingAndIntaking = new ParallelComponent();
+        shootingAndIntaking.addComponent(shoot);
+        shootingAndIntaking.addComponent(new RunIntake(2.0, true, opModeContext, "Pull in third ball"));
 
+        final LinearStateMachine shootAndReset = new LinearStateMachine("Shoot and reset");
+        shootAndReset.addComponent(new ShootBall(opModeContext, "Shoot 2nd ball"));
+        shootAndReset.addComponent(new MoveShooterDown(opModeContext, "Reset for third shot"));
+        final LinearStateMachine thirdBallIntoSnake = new LinearStateMachine("Third ball into snake");
+        thirdBallIntoSnake.addComponent(new EngageClutch(opModeContext, "Engage clutch"));
+        thirdBallIntoSnake.addComponent(new IntakeUntilBadBoy(2.0, opModeContext));
+        final ParallelComponent shootingAndLoading = new ParallelComponent();
+        shootingAndLoading.addComponent(shootAndReset);
+        shootingAndLoading.addComponent(thirdBallIntoSnake);
 
         //State machine
-        addComponent(shootingAndIntake);
-        addComponent(new IntakeEngaged(2.0, opModeContext, "Run intake"));
+        addComponent(shootingAndIntaking);
+        addComponent(shootingAndLoading);
         addComponent(new LoadBall(opModeContext, "Load 3nd ball"));
         addComponent(new ResetSnake(false, opModeContext, "Reset Snake"));
         addComponent(new ShootBall(opModeContext, "Shoot 3nd ball"));

@@ -8,21 +8,11 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEncoder;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
-import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
-import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
-import org.gearticks.autonomous.velocity.components.velocity.composite.SidePressBeaconButton;
 import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
-import org.gearticks.autonomous.velocity.components.velocity.single.LoadBall;
-import org.gearticks.autonomous.velocity.components.velocity.single.MoveShooterDown;
-import org.gearticks.autonomous.velocity.components.velocity.single.ResetSnake;
 import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
-import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
@@ -36,14 +26,14 @@ public class ThreeBallAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new DisengageBeaconServo(opModeContext, "Disengage beacon button"));
 
         //Pickup ball
-        sm.addComponent(new RunIntake(3.0, opModeContext, "Run intake"));
+        sm.addComponent(new RunIntake(3.0, false, opModeContext, "Run intake"));
 
-        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
+        sm.addComponent(new DebugPause(opModeContext));
 
 
         //Shoot balls
         sm.addComponent(new GiroDriveEncoder(18.5, 0.5, 1000, opModeContext, "Drive Forward"));
-        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
+        sm.addComponent(new DebugPause(opModeContext));
 
         sm.addComponent(new Shoot2Balls(true, opModeContext, "MoveShooterDown"));
 

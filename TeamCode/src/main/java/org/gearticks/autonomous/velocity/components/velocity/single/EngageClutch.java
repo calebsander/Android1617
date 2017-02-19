@@ -25,7 +25,6 @@ public class EngageClutch extends AutonomousComponentHardware<VelocityConfigurat
         final Transition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
-        if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
-        else return null;
+        return NEXT_STATE;
     }
 }

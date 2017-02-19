@@ -27,7 +27,7 @@ public class AutonRBNF extends VelocityBaseOpMode {
 			put(AllianceOption.BLUE, new BlueSideAutonomousNF(DISTANCE_FROM_WALL, opModeContext));
 			put(AllianceOption.RED, new RedSideAutonomous(DISTANCE_FROM_WALL, opModeContext));
 		}}));
-		sm.addComponent(new DebugPause(opModeContext, "Debug pause"));
+		sm.addComponent(new DebugPause(opModeContext));
 		return sm;
 	}
 	protected boolean isV2() {

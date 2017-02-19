@@ -134,7 +134,7 @@ public class MotorWrapper {
 	}
 	//Actually sets the motor's power to an acceleration-limited value of desiredPower
 	public void accelLimit(double desiredPower, double maxDiff) {
-		this.setPower(MotorWrapper.accelLimit(this.lastPower, desiredPower, maxDiff));
+		this.setPower(MotorWrapper.accelLimit(this.getPower(), desiredPower, maxDiff));
 	}
 	//Limits acceleration unless trying to stop the motor
 	public void startupLimit(double desiredPower, double maxDiff) {

@@ -10,10 +10,10 @@ public class DebugPause extends AutonomousComponentHardware<VelocityConfiguratio
 	/**
 	 * waits until A is released
 	 * @param opModeContext - the OpModeContext this is running in
-	 * @param id - descriptive name for logging
+	 *
 	 */
-	public DebugPause(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+	public DebugPause(OpModeContext<VelocityConfiguration> opModeContext) {
+		super(opModeContext);
 		this.opModeContext = opModeContext;
 	}
 

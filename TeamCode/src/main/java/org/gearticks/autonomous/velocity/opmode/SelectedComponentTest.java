@@ -23,7 +23,7 @@ public class SelectedComponentTest extends VelocityBaseOpMode {
 			put(AllianceOption.BLUE, new GiroDriveEncoder(0.0, 1.0, 2000, opModeContext, "Blue: Drive forward"));
 			put(AllianceOption.RED, new GiroTurn(90.0, 1.0, 10, opModeContext, "Red: turn"));
 		}}));
-		sm.addComponent(new DebugPause(opModeContext, "Debug pause"));
+		sm.addComponent(new DebugPause(opModeContext));
 		return sm;
 	}
 	protected boolean isV2() {

@@ -54,7 +54,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
         //sm.addComponent(new GiroBananaTurnEncoder(90.0, 180.0, 0.15, 1000, this.configuration, "Banana Turn left"));
 
-        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
+        sm.addComponent(new DebugPause(opModeContext));
 
         sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.20, 6000, opModeContext, "Range sensor drive along wall"));
 
@@ -63,7 +63,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         //sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
         sm.addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
-        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
+        sm.addComponent(new DebugPause(opModeContext));
 
 
         //sm.addComponent(new DebugPause(gamepads, telemetry ,this.configuration, "Press A to continue"));
@@ -78,7 +78,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         sm.addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
         sm.addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
-        sm.addComponent(new DebugPause(opModeContext, "Press A to continue"));
+        sm.addComponent(new DebugPause(opModeContext));
 
 
 
