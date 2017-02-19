@@ -17,11 +17,10 @@ public class Shoot3Balls extends LinearStateMachine {
 
     /**
      *
-     * @param alreadyDown - if shooter is already down
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public Shoot3Balls(boolean alreadyDown, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+    public Shoot3Balls(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(id);
         ParallelComponent shootingAndIntake = new ParallelComponent();
         shootingAndIntake.addComponent(new Shoot2Balls(true, opModeContext, "Shoot 2 balls"));

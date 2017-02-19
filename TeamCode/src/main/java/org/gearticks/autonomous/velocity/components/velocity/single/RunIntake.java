@@ -39,6 +39,7 @@ public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration
     @Override
     public void tearDown() {
         super.tearDown();
+        this.configuration.intake.stop();
         //Custom code here
     }
 }
