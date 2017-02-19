@@ -10,11 +10,7 @@ public class GearTicksTextToSpeech {
 	private boolean ready;
 
 	public GearTicksTextToSpeech(Context context) {
-		this.tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-			public void onInit(int status) {
-				GearTicksTextToSpeech.this.ready = true;
-			}
-		});
+		this.tts = new TextToSpeech(context, status -> GearTicksTextToSpeech.this.ready = true);
 		this.tts.setLanguage(Locale.US);
 		this.ready = false;
 	}

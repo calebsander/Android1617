@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class AutonomousDatalogger {
 	private static final char COMMA = ',';
 	private static final File DATALOG_DIR = new File(Environment.getExternalStorageDirectory(), "Datalogs");

@@ -2,15 +2,8 @@ package org.gearticks.autonomous.velocity.components.velocity.composite.BlueSide
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEncoder;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
-import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
-import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
-import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class BlueWallFar extends LinearStateMachine {

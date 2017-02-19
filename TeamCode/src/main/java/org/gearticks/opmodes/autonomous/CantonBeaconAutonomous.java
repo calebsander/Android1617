@@ -141,6 +141,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		this.stageTimer = new ElapsedTime();
 		this.configuration.imu.resetHeading();
 	}
+	@SuppressWarnings("EmptyCatchBlock")
 	protected void loopAfterStart() {
 		final double angleMultiplier;
 		if (this.allianceColorIsBlue) angleMultiplier = 1.0; //angles were calculated for blue side

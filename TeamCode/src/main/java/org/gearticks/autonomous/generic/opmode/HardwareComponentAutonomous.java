@@ -7,7 +7,6 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
 import org.gearticks.opmodes.utility.Utils;
-import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 
 /**
  * An OpMode that instantiates a configuration

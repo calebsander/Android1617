@@ -15,13 +15,13 @@ public class LinearStateMachine extends StateMachineBase {
     private Iterator<AutonomousComponent> iterator;
 
     public LinearStateMachine() {
-        this(new ArrayList<AutonomousComponent>());
+        this(new ArrayList<>());
     }
     public LinearStateMachine(List<AutonomousComponent> components) {
         super(components);
     }
     public LinearStateMachine(String id) {
-        this(new ArrayList<AutonomousComponent>(), id);
+        this(new ArrayList<>(), id);
     }
     public LinearStateMachine(List<AutonomousComponent> components, String id) {
         super(components, id);

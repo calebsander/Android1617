@@ -5,7 +5,7 @@ package org.gearticks.opmodes.units;
  * Includes unknown to represent an unknown button location
  */
 
-public enum SideOfButton{
+public enum SideOfButton {
     LEFT,
     RIGHT,
     UNKNOWN;
@@ -13,7 +13,7 @@ public enum SideOfButton{
     /**
      * Returns the inverse of left and right
      * Keeps unknown the same
-     * @return
+     * @return the inverse side
      */
     public SideOfButton getInverse() {
         switch (this) {

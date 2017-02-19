@@ -49,11 +49,7 @@ public class DisplayDatalogs extends BaseOpMode {
 		final File[] datalogFiles = AutonomousDatalogger.listDatalogFiles();
 		final Filename[] datalogFilenames = new Filename[datalogFiles.length];
 		for (int i = 0; i < datalogFiles.length; i++) datalogFilenames[i] = new Filename(datalogFiles[i]);
-		Arrays.sort(datalogFilenames, new Comparator<Filename>() { //sort by filename (creation date) in inverse order
-			public int compare(Filename lhs, Filename rhs) {
-				return -lhs.toString().compareTo(rhs.toString());
-			}
-		});
+		Arrays.sort(datalogFilenames, (lhs, rhs) -> -lhs.toString().compareTo(rhs.toString()));
 		this.datalogOption = new ValuesJoystickOption<>("Datalog", datalogFilenames);
 		this.addOption(this.datalogOption);
 		this.goToStart();

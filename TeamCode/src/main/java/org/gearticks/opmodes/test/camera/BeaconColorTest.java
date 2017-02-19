@@ -36,6 +36,7 @@ public class BeaconColorTest extends BaseOpMode {
 		vuforia.setFrameQueueCapacity(1);
 		this.frameQueue = vuforia.getFrameQueue();
 	}
+	@SuppressWarnings("EmptyCatchBlock")
 	protected void loopAfterStart() {
 		CloseableFrame frame = null;
 		try { frame = this.frameQueue.take(); }

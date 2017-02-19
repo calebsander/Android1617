@@ -17,6 +17,7 @@ public class MotorPowers extends BaseOpMode {
 	private DcMotorSimple selectedMotor;
 	private boolean locking;
 
+	@SuppressWarnings("Convert2streamapi")
 	protected void initialize() {
 		final DeviceMapping<DcMotor> motorMap = this.hardwareMap.dcMotor;
 		final DeviceMapping<CRServo> crServoMap = this.hardwareMap.crservo;

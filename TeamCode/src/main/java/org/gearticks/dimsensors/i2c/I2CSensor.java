@@ -157,7 +157,7 @@ public abstract class I2CSensor implements I2cController.I2cPortReadyCallback {
 		this.lastRead = null;
 	}
 	public I2CSensor(I2cDevice device) {
-		this(device, new ArrayDeque<SensorRequest>());
+		this(device, new ArrayDeque<>());
 		this.device.registerForI2cPortReadyCallback(this);
 	}
 	public I2CSensor(I2cDevice device, I2CSwitcher switcher, int port) {

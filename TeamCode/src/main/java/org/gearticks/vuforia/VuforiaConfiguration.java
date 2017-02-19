@@ -54,6 +54,7 @@ public class VuforiaConfiguration {
      * Capture an image from Vuforia as a 720p (1280 x 720) bitmap
      * @return can be null if Vuforia didn't return a usable frame
      */
+    @SuppressWarnings("ConstantConditions")
     public @Nullable Bitmap getBitmap() {
         Bitmap bitmap = null;
         CloseableFrame frame = null;

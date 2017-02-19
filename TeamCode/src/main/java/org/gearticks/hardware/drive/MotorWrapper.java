@@ -121,6 +121,7 @@ public class MotorWrapper {
 		else return scaledTarget;
 	}
 	//Returns whether or not the motor is still trying to reach the target position (wrapper for DcMotor)
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean notAtTarget() {
 		return this.motor.isBusy();
 	}

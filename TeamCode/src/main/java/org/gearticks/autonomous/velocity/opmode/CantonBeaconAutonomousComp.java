@@ -20,7 +20,6 @@ import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.autonomous.velocity.components.velocity.single.VuforiaIn;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.vuforia.VuforiaConfiguration;
 
 @Autonomous
 @Disabled

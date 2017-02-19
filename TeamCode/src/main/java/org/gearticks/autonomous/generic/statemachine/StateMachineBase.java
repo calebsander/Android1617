@@ -24,6 +24,7 @@ public abstract class StateMachineBase extends AutonomousComponentAbstractImpl {
 		this.components = components;
 	}
 
+	@SuppressWarnings("Convert2streamapi")
 	@Override
 	public void onMatchStart() {
 		super.onMatchStart();

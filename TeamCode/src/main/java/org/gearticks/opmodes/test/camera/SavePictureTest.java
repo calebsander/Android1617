@@ -21,6 +21,7 @@ public class SavePictureTest extends BaseOpMode {
         this.vuforiaConfiguration = new VuforiaConfiguration();
     }
 
+    @SuppressWarnings({"EmptyCatchBlock", "ConstantConditions"})
     @Override
     protected void loopAfterStart() {
         if (this.gamepads[0].getA() && !this.gamepads[0].getLast().getA()) {

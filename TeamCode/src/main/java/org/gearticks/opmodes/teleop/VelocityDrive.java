@@ -165,6 +165,7 @@ public class VelocityDrive extends BaseOpMode {
 	protected void matchStart() {
 		this.configuration.rollersDown();
 	}
+	@SuppressWarnings("ConstantConditions")
 	protected void loopAfterStart() {
 		int driveGamepad;
 		double yScaleFactor;
