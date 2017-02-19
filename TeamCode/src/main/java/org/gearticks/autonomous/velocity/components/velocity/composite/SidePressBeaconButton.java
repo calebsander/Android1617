@@ -13,6 +13,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class SidePressBeaconButton extends NetworkedStateMachine {
     public SidePressBeaconButton(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(id);
+
         final PictureResult pictureResult = new PictureResult();
         final AutonomousComponent selectSide = new SelectBeaconSide(pictureResult, opModeContext, "Select beacon side");
         final AutonomousComponent leftButton = new LeftPressBeaconServo(opModeContext, "Left press beacon");
@@ -25,8 +26,7 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
         this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, rightButton);
         this.addConnection(leftButton, NEXT_STATE, resetButton);
         this.addConnection(rightButton, NEXT_STATE, resetButton);
-        //this.addConnection(resetButton, NEXT_STATE, fixBeacon);
-        //this.addExitConnection(fixBeacon, NEXT_STATE);
-        this.addExitConnection(resetButton, NEXT_STATE);
+        this.addConnection(resetButton, NEXT_STATE, fixBeacon);
+        this.addExitConnection(fixBeacon, NEXT_STATE);
     }
 }
