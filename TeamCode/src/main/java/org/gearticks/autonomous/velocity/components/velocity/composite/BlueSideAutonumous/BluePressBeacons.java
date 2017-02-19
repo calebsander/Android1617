@@ -17,6 +17,7 @@ public class BluePressBeacons extends LinearStateMachine {
         super();
 
         //Press beacon
+
         addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.17, 500, opModeContext, "Adjust to white line"));
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.17, 25, opModeContext, "Align"));
         addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));

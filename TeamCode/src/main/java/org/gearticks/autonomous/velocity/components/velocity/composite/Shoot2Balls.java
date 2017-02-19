@@ -9,6 +9,13 @@ import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class Shoot2Balls extends LinearStateMachine {
+
+    /**
+     *
+     * @param alreadyDown - if shooter is already down
+     * @param opModeContext - the OpModeContext this is running in
+     * @param id - descriptive name for logging
+     */
     public Shoot2Balls(boolean alreadyDown, OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(id);
         if (!alreadyDown) addComponent(new MoveShooterDown(opModeContext, "MoveShooterDown"));
