@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -40,6 +41,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private final DigitalChannel capBallLimit;
 	public final TCS34725 whiteLineColorSensor;
 	public final LED whiteLineColorLed;
+	public final DeviceInterfaceModule dim;
 
 	public VelocityConfiguration(HardwareMap hardwareMap) {
 		this(hardwareMap, false);
@@ -116,6 +118,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		else this.capBallLimit = null;
 		this.whiteLineColorSensor = new TCS34725((I2cDevice) hardwareMap.get("whiteLineColor"));
 		this.whiteLineColorLed = (LED) hardwareMap.get("whiteLineColorLed");
+
+		this.dim = (DeviceInterfaceModule)hardwareMap.get("DIM");
 	}
 
 	public void teardown() {

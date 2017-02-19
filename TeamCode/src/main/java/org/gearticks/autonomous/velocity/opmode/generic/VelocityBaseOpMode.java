@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode.generic;
 
 import org.gearticks.autonomous.generic.opmode.HardwareComponentAutonomous;
+import org.gearticks.dimsensors.DimLed;
 import org.gearticks.dimsensors.i2c.GearticksBNO055.EulerAngle;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
@@ -25,10 +26,30 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 				this.hasResetHeading = true;
 				this.configuration.imu.resetHeading();
 			}
+			final boolean redOn, blueOn;
 			if (this.hasResetHeading) {
-				this.telemetry.addData("Relative to wall", this.configuration.imu.getRelativeYaw());
+				final double yaw = this.configuration.imu.getRelativeYaw();
+				this.telemetry.addData("Relative to wall", yaw);
+				final double headingDiff = ((yaw - this.targetHeading() + 540.0) % 360.0) - 180.0;
+				if (Math.abs(headingDiff) < 0.5) {
+					redOn = false;
+					blueOn = false;
+				}
+				else if (headingDiff > 0.0) {
+					redOn = false;
+					blueOn = true;
+				}
+				else { //headingDiff < 0.0
+					redOn = true;
+					blueOn = false;
+				}
 			}
-			else this.telemetry.addData("To reset heading", "Press A");
+			else {
+				this.telemetry.addData("To reset heading", "Press A");
+				redOn = blueOn = true;
+			}
+			this.configuration.dim.setLED(DimLed.RED.id, redOn);
+			this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
 		}
 	}
 
@@ -36,4 +57,7 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 		return new VelocityConfiguration(this.hardwareMap, this.isV2());
 	}
 	protected abstract boolean isV2();
+	protected double targetHeading() {
+		return 0.0;
+	}
 }
