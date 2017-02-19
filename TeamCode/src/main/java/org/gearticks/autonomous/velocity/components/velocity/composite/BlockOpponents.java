@@ -25,7 +25,7 @@ public class BlockOpponents extends LinearStateMachine {
 		this.addComponent(new BananaTurnNoGiro(LINE_ANGLE/2.0, 0.7, 4000, opModeContext, "Drive into center"));
 		this.addComponent(new BananaTurnNoGiro(LINE_ANGLE, -0.7, 4000, opModeContext, "Drive past ball"));
 		this.addComponent(new WaitToCrossLine(opModeContext));
-		this.addComponent(new DebugPause(opModeContext, "Debug pause"));
+		this.addComponent(new DebugPause(opModeContext));
 		this.addComponent(new GiroDriveEncoder(BEACON_TARGET_ANGLE, 0.5, 2000, opModeContext, "Drive to beacons"));
 	}
 }
