@@ -41,12 +41,12 @@ public class LinearStateMachine extends StateMachineBase {
         //Set currentState to first component
         this.iterator = this.components.iterator();
         if (this.iterator.hasNext()) {
-            Log.i(Utils.TAG, "Starting with " + this.currentState);
+            Log.i(Utils.TAG, "Starting with \"" + this.currentState + "\"");
             this.transitionToNextStage();
         }
         else {
             this.currentState = null;
-            Log.w(Utils.TAG, "LinearStateMachine has no components. Cannot start " + this);
+            Log.w(Utils.TAG, "LinearStateMachine has no components. Cannot start \"" + this + "\"");
         }
     }
 
@@ -57,7 +57,7 @@ public class LinearStateMachine extends StateMachineBase {
 
         if (this.currentState == null) {
             //If there is no (more) current state, then end this state-machine
-            Log.w(Utils.TAG, "LinearStateMachine in run() has no currentState " + this);
+            Log.w(Utils.TAG, "LinearStateMachine in run() has no currentState \"" + this + "\"");
             return NEXT_STATE;
         }
 
@@ -74,7 +74,7 @@ public class LinearStateMachine extends StateMachineBase {
         else {
             this.currentState.tearDown();
             //No more components -> end of this state-machine
-            Log.i(Utils.TAG, "Exiting " + this + " with transition: " + transition);
+            Log.i(Utils.TAG, "Exiting \"" + this + "\" with transition \"" + transition + "\"");
             this.currentState = null;
             return transition;
         }
@@ -82,7 +82,7 @@ public class LinearStateMachine extends StateMachineBase {
 
     private void transitionToNextStage() {
         final AutonomousComponent nextState = this.iterator.next();
-        Log.i(Utils.TAG, "Transition from " + this.currentState + " => " + nextState);
+        Log.i(Utils.TAG, "Transition from \"" + this.currentState + "\" => \"" + nextState + "\"");
         if (this.currentState != null) this.currentState.tearDown();
         this.currentState = nextState;
         nextState.setup();

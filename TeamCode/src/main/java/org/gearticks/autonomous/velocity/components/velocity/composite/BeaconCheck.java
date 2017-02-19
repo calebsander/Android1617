@@ -11,8 +11,8 @@ import org.gearticks.autonomous.velocity.components.velocity.single.LeftPressBea
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide.PictureResult;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class FixBeacon extends NetworkedStateMachine {
-	public FixBeacon(PictureResult pictureResult, OpModeContext<VelocityConfiguration> opModeContext) {
+public class BeaconCheck extends NetworkedStateMachine {
+	public BeaconCheck(PictureResult pictureResult, OpModeContext<VelocityConfiguration> opModeContext) {
 		super("Fix beacon");
 		final AutonomousComponent checkPicture = new CheckPicture(pictureResult, opModeContext);
 		final LinearStateMachine fixBeacon = new LinearStateMachine();
