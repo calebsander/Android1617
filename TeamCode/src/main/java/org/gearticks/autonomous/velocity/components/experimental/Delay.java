@@ -8,6 +8,7 @@ import org.gearticks.joystickoptions.IncrementOption;
 public class Delay extends AutonomousComponentHardware<HardwareConfiguration> {
 	private final IncrementOption delayOption;
 
+	@SuppressWarnings("unchecked")
 	public Delay(OpModeContext opModeContext, IncrementOption delayOption) {
 		super(opModeContext);
 		this.delayOption = delayOption;

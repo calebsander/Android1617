@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="ResQ2">
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="ResQ2"
+       tools:ignore="UnusedResources">
     <ServoController name="New Servos" serialNumber="AL00VDKY">
         <Servo name="hook" port="1" />
         <Servo name="zipLeft" port="2" />

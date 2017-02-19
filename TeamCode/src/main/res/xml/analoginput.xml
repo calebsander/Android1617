@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="Analog Input Test">
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="Analog Input Test"
+       tools:ignore="UnusedResources">
     <DeviceInterfaceModule name="DIM" serialNumber="AI02RKCO">
         <AnalogInput name="in" port="0" />
     </DeviceInterfaceModule>

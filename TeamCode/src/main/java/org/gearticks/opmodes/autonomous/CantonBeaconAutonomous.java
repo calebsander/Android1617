@@ -31,6 +31,7 @@ import org.gearticks.joystickoptions.IncrementOption;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
+@SuppressWarnings("deprecation")
 @Autonomous
 @Disabled
 public class CantonBeaconAutonomous extends BaseOpMode {

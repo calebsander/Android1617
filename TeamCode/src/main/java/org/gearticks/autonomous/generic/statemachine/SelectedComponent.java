@@ -49,7 +49,7 @@ public class SelectedComponent<E> extends NetworkedStateMachine {
 			final Transition transition = transitions.get(valueComponent.getKey());
 			final AutonomousComponent component = valueComponent.getValue();
 			this.addConnection(switcher, transition, component);
-			this.addExitConnection(component, NEXT_STATE, transition);
+			this.addExitConnection(component, NEXT_STATE);
 		}
 	}
 }

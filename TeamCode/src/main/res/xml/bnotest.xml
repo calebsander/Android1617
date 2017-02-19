@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="BNO Test">
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="BNO Test"
+       tools:ignore="UnusedResources">
     <DeviceInterfaceModule name="DIM" serialNumber="AL00VDXN">
         <I2cDevice name="bno" port="0" />
     </DeviceInterfaceModule>

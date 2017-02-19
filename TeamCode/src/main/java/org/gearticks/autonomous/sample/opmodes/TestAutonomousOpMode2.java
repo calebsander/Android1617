@@ -9,6 +9,7 @@ import org.gearticks.autonomous.velocity.components.deprecated.GyroDriveEncoder;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 
+@SuppressWarnings("deprecation")
 public class TestAutonomousOpMode2 extends VelocityBaseOpMode {
     private class GyroDriveEncoderInner extends AutonomousComponentHardware<VelocityConfiguration> {
         private final DriveDirection direction;

@@ -6,6 +6,7 @@ package org.gearticks.dimsensors.i2c;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import java.nio.ByteBuffer;
+import java.util.Locale;
 
 public class GearticksBNO055 extends I2CSensor {
 	private static final int DEFAULT_ADDRESS = 0x28;
@@ -219,7 +220,7 @@ public class GearticksBNO055 extends I2CSensor {
 		}
 
 		public String toString() { //useful for logging to Telemetry
-			return String.format("%.2f, %.2f, %.2f", this.yaw, this.pitch, this.roll);
+			return String.format(Locale.ENGLISH, "%.2f, %.2f, %.2f", this.yaw, this.pitch, this.roll);
 		}
 		//Returns whether all the have a weird value - indicative of a sensor connection issue
 		public boolean seemsInvalid() {

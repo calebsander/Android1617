@@ -55,6 +55,7 @@ public class MonochromeDisplay extends I2CSensor {
 	private byte[] pixels;
 	private SensorWriteRequest[] pixelRunRequests;
 
+	@SuppressWarnings("PointlessBitwiseExpression")
 	public MonochromeDisplay(I2cDevice device) {
 		super(device);
 		this.pixels = new byte[WIDTH * HEIGHT];

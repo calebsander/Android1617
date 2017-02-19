@@ -1,2 +1,4 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="Null"></Robot>
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="Null"
+       tools:ignore="UnusedResources"></Robot>

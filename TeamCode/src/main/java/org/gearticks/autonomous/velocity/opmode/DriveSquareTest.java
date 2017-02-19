@@ -11,6 +11,7 @@ import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
+@SuppressWarnings("deprecation")
 @Autonomous
 @Disabled
 public class DriveSquareTest extends VelocityBaseOpMode {

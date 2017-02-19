@@ -1,8 +1,6 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
 import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;

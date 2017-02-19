@@ -1,12 +1,10 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
-import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-import org.gearticks.opmodes.utility.Utils;
 
 public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfiguration> {
 	//Width of robot in encoder ticks

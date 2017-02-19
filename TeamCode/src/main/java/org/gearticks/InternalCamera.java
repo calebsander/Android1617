@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class InternalCamera implements Camera.PreviewCallback {
 	//Stores an image at a given time
 	public class Image {
@@ -74,6 +75,7 @@ public class InternalCamera implements Camera.PreviewCallback {
 	//The camera being used
 	private Camera camera;
 	//Used to capture the camera's preview
+	@SuppressWarnings("FieldCanBeLocal")
 	private SurfaceTexture surfaceTexture;
 	//The last image taken
 	private Bitmap image;

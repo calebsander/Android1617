@@ -1,6 +1,7 @@
 //Represents a desired set of movement with a variety of input methods that compute to x, y, and spin powers
 package org.gearticks.hardware.drive;
 
+import java.util.Locale;
 import org.gearticks.MathSupplement;
 
 public class DriveDirection {
@@ -91,6 +92,6 @@ public class DriveDirection {
 		return this.x == 0.0 && this.y == 0.0 && this.s == 0.0;
 	}
 	public String toString() {
-		return String.format("%.2f, %.2f, %.2f", this.x, this.y, this.s);
+		return String.format(Locale.ENGLISH, "%.2f, %.2f, %.2f", this.x, this.y, this.s);
 	}
 }

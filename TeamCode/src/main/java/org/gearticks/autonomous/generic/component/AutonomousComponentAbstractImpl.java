@@ -2,7 +2,6 @@ package org.gearticks.autonomous.generic.component;
 
 import android.util.Log;
 import org.gearticks.opmodes.utility.Utils;
-import java.util.logging.Logger;
 
 /**
  * Implements the AutonomousComponent interface.

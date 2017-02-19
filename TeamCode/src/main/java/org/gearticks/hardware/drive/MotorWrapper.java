@@ -33,6 +33,7 @@ public class MotorWrapper {
 	//Point where encoder was "reset"
 	private int encoderResetPoint;
 	//The desired StopMode for this motor
+	@SuppressWarnings("unused")
 	private ZeroPowerBehavior lastStopMode;
 	//The current RunMode for this motor
 	private RunMode lastRunMode;

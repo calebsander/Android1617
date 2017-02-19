@@ -38,8 +38,8 @@ public class ResQAutononomous extends BaseOpMode {
 	private VuforiaTrackables beaconImages;
 	private VuforiaTrackableDefaultListener imageListener;
 	private AutonomousDatalogger datalogger;
-	private static double TICKS_PER_MM = 4.83;
-	private static double TICKS_PER_RADIAN = 1200.0;
+	private static final double TICKS_PER_MM = 4.83;
+	private static final double TICKS_PER_RADIAN = 1200.0;
 
 	private enum Stage {
 		DRIVE_OUT,

@@ -8,6 +8,7 @@ import org.gearticks.autonomous.velocity.components.deprecated.GyroTurn;
 import org.gearticks.autonomous.velocity.components.deprecated.GyroDriveEncoder;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
+@SuppressWarnings("deprecation")
 public class TestAutonomousOpMode1 extends VelocityBaseOpMode {
     private static final double NEW_TARGET = 100.0;
 

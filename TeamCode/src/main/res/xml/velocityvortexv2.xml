@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="Velocity Drive V2">
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="Velocity Drive V2"
+       tools:ignore="UnusedResources">
     <MotorController name="Drive" serialNumber="AI049N7Y">
         <Motor name="right" port="1" />
         <Motor name="left" port="2" />

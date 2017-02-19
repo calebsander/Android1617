@@ -20,6 +20,7 @@ public class GearTicksTextToSpeech {
 	}
 
 	//Queues the text to be spoken
+	@SuppressWarnings("deprecation")
 	public void speak(String text) {
 		this.tts.speak(text, TextToSpeech.QUEUE_ADD, null);
 	}

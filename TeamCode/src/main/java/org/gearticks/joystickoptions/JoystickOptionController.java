@@ -1,11 +1,8 @@
 //An interface for selecting a list of settings with the joystick, such as an autonomous configuration
 package org.gearticks.joystickoptions;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
-
 import java.util.LinkedList;
 import java.util.ListIterator;
 

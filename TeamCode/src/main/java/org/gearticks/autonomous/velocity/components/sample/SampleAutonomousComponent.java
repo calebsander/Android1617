@@ -15,6 +15,7 @@ public class SampleAutonomousComponent extends AutonomousComponentHardware<Veloc
         //Custom code here
     }
 
+    @SuppressWarnings({"ConstantIfStatement", "ConstantConditions"})
     @Override
     public Transition run() {
         final Transition superTransition = super.run();

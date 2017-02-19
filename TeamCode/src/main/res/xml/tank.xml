@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<Robot type="FirstInspires-FTC" name="Tank">
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="Tank"
+       tools:ignore="UnusedResources">
     <MotorController name="Right" serialNumber="AL00VD65">
         <Motor name="RightTop" port="1" />
         <Motor name="RightBottom" port="2" />

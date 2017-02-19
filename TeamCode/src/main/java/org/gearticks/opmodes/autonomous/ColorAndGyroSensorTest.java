@@ -3,15 +3,10 @@ package org.gearticks.opmodes.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.gearticks.AutonomousDatalogger;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.joystickoptions.AllianceOption;
-import org.gearticks.joystickoptions.IncrementOption;
 import org.gearticks.opmodes.BaseOpMode;
-
 
 //old, look in components for new one
 @Autonomous(name = "Color and Gyro Sensor Test Autonomous")
@@ -156,9 +151,4 @@ public class ColorAndGyroSensorTest extends BaseOpMode {
 	protected void matchEnd() {
 		this.datalogger.close();
 	}
-	private void setStage(Stage newStage) {
-		this.stage = newStage;
-		this.stageTimer.reset();
-	}
-
 }

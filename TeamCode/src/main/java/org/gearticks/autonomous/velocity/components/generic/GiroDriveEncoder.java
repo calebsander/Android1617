@@ -3,7 +3,6 @@ package org.gearticks.autonomous.velocity.components.generic;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class GiroDriveEncoder extends LinearStateMachine {
