@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
@@ -12,6 +14,14 @@ import org.gearticks.joystickoptions.IncrementOption;
 
 @Autonomous
 public class BlockingAutonomous extends VelocityBaseOpMode {
+
+	@Override
+	protected void loopBeforeStart() {
+		super.loopBeforeStart();
+		this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
+		this.configuration.advanceShooterToDown();
+	}
+
 	protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final IncrementOption delayOption = new IncrementOption("Delay", 20.0);
 		this.addOption(delayOption);

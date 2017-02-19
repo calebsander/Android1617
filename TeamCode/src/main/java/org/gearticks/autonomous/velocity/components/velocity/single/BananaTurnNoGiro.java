@@ -42,7 +42,7 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 		//We'll still end up at the right heading
 		final double startHeading = this.configuration.imu.getRelativeYaw();
 		this.theta = Math.toRadians(this.endHeading - startHeading);
-		this.s_0 = this.y_0 * HALF_W * this.theta / this.d;
+		this.s_0 = this.y_0 * HALF_W * this.theta / this.d * Math.signum(this.theta);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 			final double thetaPrime = (dPrime / this.d) * this.theta * this.angleMultiplier;
 			final double dPrimeLeft = dPrime + HALF_W * thetaPrime;
 			final double error = dPrimeLeft - this.configuration.driveLeft.encoderValue();
-			double sOverS_0 = K * error;
+			double sOverS_0 = K * error * Math.signum(this.theta);
 			if (Math.abs(sOverS_0) > 1.0) sOverS_0 = MAX_S_OVER_S0 * Math.signum(sOverS_0); //cap at +/- MAX_S_OVER_S0
 			final double s = this.s_0 + sOverS_0 * this.s_0;
 			this.direction.turn(s);
