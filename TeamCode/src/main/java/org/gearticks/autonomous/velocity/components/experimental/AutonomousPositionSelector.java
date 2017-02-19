@@ -24,10 +24,10 @@ public class AutonomousPositionSelector extends AutonomousComponentHardware<Velo
 		if (superTransition != null) return superTransition;
 
 		switch (PositionOption.positionOption.getRawSelectedOption()) {
-			case POSITION_1:
+			case NEAR:
 				Log.d(Utils.TAG, "Position 1");
 				return POSITION_1;
-			case POSITION_2:
+			case FAR:
 				Log.d(Utils.TAG, "Position 2");
 				return POSITION_2;
 			default: throw new RuntimeException("Position option is not 1 or 2");

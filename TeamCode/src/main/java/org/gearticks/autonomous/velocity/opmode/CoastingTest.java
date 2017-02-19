@@ -7,16 +7,9 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
-import org.gearticks.autonomous.velocity.components.experimental.GiroDriveAlongWallEncoder;
-import org.gearticks.autonomous.velocity.components.experimental.GiroDriveToRangeDistance;
-import org.gearticks.autonomous.velocity.components.experimental.RangeSensorReadout;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine;
-import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.vuforia.VuforiaConfiguration;
 
 @Autonomous
 @Disabled

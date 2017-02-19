@@ -18,8 +18,7 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
         final AutonomousComponent leftButton = new LeftPressBeaconServo(opModeContext, "Left press beacon");
         final AutonomousComponent rightButton = new RightPressBeaconServo(opModeContext, "Right press beacon");
         final AutonomousComponent resetButton = new DisengageBeaconServo(opModeContext, "Disengage beacon presser");
-        final AutonomousComponent fixBeacon = new FixBeacon(pictureResult, opModeContext);
-
+        final AutonomousComponent fixBeacon = new BeaconCheck(pictureResult, opModeContext);
         this.setInitialComponent(selectSide);
         this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, leftButton);
         this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, rightButton);

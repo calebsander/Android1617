@@ -1,8 +1,6 @@
-package org.gearticks.autonomous.velocity.components.experimental;
+package org.gearticks.autonomous.velocity.components.generic;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
-
 import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
@@ -13,26 +11,26 @@ import org.gearticks.opmodes.utility.Utils;
 /**
  * drives with gyro and range sensor along the wall at a set distance for encoder ticks
  */
-public class GiroDriveAlongWallLine extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
     private final DriveDirection direction;
     private final double power;
     private final double distanceFromWall;
     private final double targetHeading;
     private double controlledHeading;
-    private final long encoderLimit;
+    private final long encoderTarget;
     private final double p = 1.5;
-    private final double i = 0.0;
-    private final double d = 0.0;
+    private final double i = 0;
+    private final double d = 0;
     private MiniPID pidController;
 
 
-    public GiroDriveAlongWallLine(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+    public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(opModeContext, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.distanceFromWall = distanceFromWall;
         this.targetHeading = targetHeading;
-        this.encoderLimit = encoderLimit;
+        this.encoderTarget = encoderLimit;
     }
 
     @Override
@@ -42,7 +40,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         this.configuration.rangeSensor.ultrasonicRequest.startReading();
         this.configuration.resetEncoder();
         this.pidController = new MiniPID(p, i, d);
-        this.pidController.setOutputLimits(10);
+        this.pidController.setOutputLimits(20);
     }
 
     @Override
@@ -69,21 +67,11 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
             this.controlledHeading = this.targetHeading - headingDeviation;
         }
 
+        //this.controlledHeading = this.targetHeading + headingDeviation;
+
         Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
-
-
-        Log.v(Utils.TAG, "white line sensor = " + this.configuration.isWhiteLineIR());
-        if (this.configuration.isWhiteLineIR()){
-            Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
-            Log.d(Utils.TAG, "Transitioning because found white line");
-            return NEXT_STATE; //TODO returning LINE_FOUND
-        }
-        if (this.configuration.encoderPositive() > this.encoderLimit) {
-            Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
-            Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
-            return NEXT_STATE; //TODO returning LIMIT_REACHED
-        }
-        return null;
+        if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
+        else return null;
     }
 
 }
