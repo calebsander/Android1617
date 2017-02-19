@@ -15,7 +15,6 @@ import org.gearticks.vuforia.VuforiaConfiguration;
 public class SidePressBeaconButton extends NetworkedStateMachine {
 
     public SidePressBeaconButton(@NonNull VuforiaConfiguration vuforiaConfiguration, @NonNull VelocityConfiguration configuration, String id) {
-        super();
         final PictureResult pictureResult = new PictureResult();
         final AutonomousComponent selectSide = new SelectBeaconSide(pictureResult, vuforiaConfiguration, configuration, "Select beacon side");
         final AutonomousComponent leftButton = new LeftPressBeaconServo(configuration, "Left press beacon");
@@ -28,8 +27,7 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
         this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, rightButton);
         this.addConnection(leftButton, NEXT_STATE, resetButton);
         this.addConnection(rightButton, NEXT_STATE, resetButton);
-        //this.addConnection(resetButton, NEXT_STATE, fixBeacon);
-        //this.addExitConnection(fixBeacon, NEXT_STATE);
-        this.addExitConnection(resetButton, NEXT_STATE);
+        this.addConnection(resetButton, NEXT_STATE, fixBeacon);
+        this.addExitConnection(fixBeacon, NEXT_STATE);
     }
 }

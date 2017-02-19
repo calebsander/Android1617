@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.velocity.opmode.generic;
 
 import org.gearticks.autonomous.generic.opmode.HardwareComponentAutonomous;
-import org.gearticks.autonomous.velocity.opmode.SideAutonomousBeaconTester;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 /**
