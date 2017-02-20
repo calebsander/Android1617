@@ -7,6 +7,7 @@ import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEn
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
+import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.single.BananaTurnNoGiro;
 import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
@@ -44,8 +45,10 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 		//addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
 
 		//Shoot and Cap ball
-		addComponent(new BananaTurnNoGiro(225.0, -0.4, 3500, opModeContext, "Banana turn to shoot"));
+		addComponent(new BananaTurnNoGiro(-90.0, -0.4, 3500, opModeContext, "Banana turn to 90"));
+		addComponent(new Wait(0.3, "Wait for 0.3 seconds"));
+		addComponent(new GiroTurn(225.0, opModeContext, "Turn to shoot"));
 		//addComponent(new Shoot3Balls(true, opModeContext, "Shoot"));
-		addComponent(new GiroDriveEncoder(270.0, 0.4, 3000, opModeContext, "Drive to cap ball"));
+		addComponent(new GiroDriveEncoder(225.0, 0.4, 3000, opModeContext, "Drive to cap ball"));
 	}
 }
