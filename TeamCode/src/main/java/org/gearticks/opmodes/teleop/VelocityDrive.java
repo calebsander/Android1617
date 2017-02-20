@@ -229,7 +229,7 @@ public class VelocityDrive extends BaseOpMode {
 
 		final double capBallPower;
 		final DcMotor.RunMode capBallMode;
-		if (this.gamepads[JACK].getY()) {
+		if (this.gamepads[JACK].getA()) {
 			if(this.configuration.isCapBallUp()) {
 				capBallPower = MotorConstants.CAP_BALL_SUPER_SLOW_UP;
 				capBallMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
@@ -239,7 +239,7 @@ public class VelocityDrive extends BaseOpMode {
 				capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
 			}
 		}
-		else if (this.gamepads[JACK].getA()) {
+		else if (this.gamepads[JACK].getY()) {
 			capBallPower = MotorConstants.CAP_BALL_DOWN;
 			capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
 		}
