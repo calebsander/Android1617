@@ -41,8 +41,8 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 		//Correction is based off actual start heading, so even if we are off at the start,
 		//We'll still end up at the right heading
 		final double startHeading = this.configuration.imu.getRelativeYaw();
-		this.theta = Math.toRadians(this.endHeading - startHeading);
-		this.s_0 = this.y_0 * HALF_W * this.theta / this.d * Math.signum(this.theta);
+		this.theta = Math.toRadians((this.endHeading - startHeading + 540.0) % 360.0 - 180.0);
+		this.s_0 = Math.abs(this.y_0) * HALF_W * this.theta / this.d;
 	}
 
 	@Override

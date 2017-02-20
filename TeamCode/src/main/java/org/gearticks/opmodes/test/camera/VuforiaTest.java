@@ -17,7 +17,7 @@ import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
 @TeleOp
-@Disabled
+//@Disabled
 public class VuforiaTest extends BaseOpMode {
 	private static final String[] IMAGE_NAMES = new String[]{"Wheels", "Tools", "Legos", "Gears"};
 	private VuforiaTrackables beaconImages;

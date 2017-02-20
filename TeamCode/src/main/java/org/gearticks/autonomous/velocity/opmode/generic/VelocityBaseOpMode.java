@@ -22,7 +22,7 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 		final EulerAngle heading = this.configuration.imu.getHeading();
 		this.telemetry.addData("Heading", heading);
 		if (heading != null) {
-			if (this.gamepads[0].getA()) {
+			if (this.gamepads[0].getY()) {
 				this.hasResetHeading = true;
 				this.configuration.imu.resetHeading();
 			}
@@ -45,12 +45,16 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 				}
 			}
 			else {
-				this.telemetry.addData("To reset heading", "Press A");
+				this.telemetry.addData("To reset heading", "Press Y");
 				redOn = blueOn = true;
 			}
 			this.configuration.dim.setLED(DimLed.RED.id, redOn);
 			this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
 		}
+	}
+	protected void matchStart() {
+		super.matchStart();
+		if (!this.hasResetHeading) this.configuration.imu.resetHeading();
 	}
 
 	protected VelocityConfiguration newConfiguration() {

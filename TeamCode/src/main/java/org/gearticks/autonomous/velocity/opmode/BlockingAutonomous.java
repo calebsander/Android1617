@@ -1,13 +1,11 @@
 package org.gearticks.autonomous.velocity.opmode;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.Delay;
-import org.gearticks.autonomous.velocity.components.velocity.composite.BlockOpponents;
+import org.gearticks.autonomous.velocity.components.velocity.composite.BlockingBlueNear;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.IncrementOption;
@@ -28,7 +26,7 @@ public class BlockingAutonomous extends VelocityBaseOpMode {
 
 		final LinearStateMachine sm = new LinearStateMachine();
 		sm.addComponent(new Delay(opModeContext, delayOption));
-		sm.addComponent(new BlockOpponents(opModeContext));
+		sm.addComponent(new BlockingBlueNear(opModeContext));
 		return sm;
 	}
 	protected boolean isV2() {
