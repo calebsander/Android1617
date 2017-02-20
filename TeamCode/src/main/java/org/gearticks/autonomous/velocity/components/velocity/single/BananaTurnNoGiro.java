@@ -21,10 +21,21 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 	private double angleMultiplier;
 	private double s_0;
 	private final DriveDirection direction;
+	private final boolean gyroCorrect;
 
 	public BananaTurnNoGiro(double endHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
 		super(opModeContext, id);
 		if (encoderTarget == 0) throw new RuntimeException("encoderTarget == 0; use GiroTurn instead");
+		this.gyroCorrect = true;
+		this.endHeading = endHeading;
+		this.y_0 = power;
+		this.d = Math.abs(encoderTarget);
+		this.direction = new DriveDirection();
+	}
+	public BananaTurnNoGiro(boolean gyroCorrect, double endHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext, id);
+		if (encoderTarget == 0) throw new RuntimeException("encoderTarget == 0; use GiroTurn instead");
+		this.gyroCorrect = gyroCorrect;
 		this.endHeading = endHeading;
 		this.y_0 = power;
 		this.d = Math.abs(encoderTarget);
@@ -51,9 +62,13 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 		if (superTransition != null) return superTransition;
 
 		final int dPrime = this.configuration.encoderPositive();
-		if (dPrime > this.d) {
+		if (dPrime > this.d && gyroCorrect) {
 			this.direction.drive(0.0, 0.0);
 			this.direction.gyroCorrect(this.endHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.1, 0.1);
+		}
+		else if (dPrime > this.d && !gyroCorrect) {
+			this.direction.drive(0.0, 0.0);
+			this.direction.turn(0.0);
 		}
 		else {
 			this.direction.drive(0.0, this.y_0);
