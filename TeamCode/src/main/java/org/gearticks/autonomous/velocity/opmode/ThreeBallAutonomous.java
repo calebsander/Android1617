@@ -36,7 +36,7 @@ public class ThreeBallAutonomous extends VelocityBaseOpMode {
         int distanceFromWall = 10;
 
         //Shoot 3 balls
-        //sm.addComponent(new Shoot3Balls(opModeContext, "Shoot 3 balls"));
+        //sm.addComponent(new Shoot3Balls(false, opModeContext, "Shoot 3 balls"));
         //sm.addComponent(new DebugPause(opModeContext));
 
         //sm.addComponent(new GiroDriveEncoder(25.0, 0.75, 2000, opModeContext, "Drive forward"));

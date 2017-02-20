@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.velocity.single.EngageClutch;
@@ -19,7 +20,7 @@ public class Shoot3Balls extends LinearStateMachine {
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public Shoot3Balls(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+    public Shoot3Balls(boolean ballAlreadyIn, OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(id);
         final LinearStateMachine shoot = new LinearStateMachine("Shoot");
         shoot.addComponent(new ShootBall(opModeContext, "Shoot 1st ball"));
@@ -41,7 +42,8 @@ public class Shoot3Balls extends LinearStateMachine {
         shootingAndLoading.addComponent(thirdBallIntoSnake);
 
         //State machine
-        addComponent(shootingAndIntaking);
+        if(ballAlreadyIn) addComponent(shoot);
+        else addComponent(shootingAndIntaking);
         addComponent(shootingAndLoading);
         addComponent(new LoadBall(opModeContext, "Load 3nd ball"));
         addComponent(new ResetSnake(false, opModeContext, "Reset Snake"));

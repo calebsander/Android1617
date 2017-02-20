@@ -67,8 +67,7 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 			this.direction.gyroCorrect(this.endHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.1, 0.1);
 		}
 		else if (dPrime > this.d && !gyroCorrect) {
-			this.direction.drive(0.0, 0.0);
-			this.direction.turn(0.0);
+			this.direction.stopDrive();
 		}
 		else {
 			this.direction.drive(0.0, this.y_0);
