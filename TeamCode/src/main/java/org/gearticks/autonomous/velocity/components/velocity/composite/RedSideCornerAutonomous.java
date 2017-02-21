@@ -6,13 +6,8 @@ import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEn
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
-import org.gearticks.autonomous.velocity.components.velocity.single.BananaTurnNoGiro;
-import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
+import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-
-/**
- * Created by BenMorris on 2/20/2017.
- */
 
 public class RedSideCornerAutonomous extends LinearStateMachine {
 	final double DISTANCE_FROM_WALL = 10.0;

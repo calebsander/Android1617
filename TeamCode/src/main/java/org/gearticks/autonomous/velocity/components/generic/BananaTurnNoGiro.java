@@ -1,10 +1,13 @@
-package org.gearticks.autonomous.velocity.components.velocity.single;
+package org.gearticks.autonomous.velocity.components.generic;
+
+import android.util.Log;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
+import org.gearticks.opmodes.utility.Utils;
 
 public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfiguration> {
 	//Width of robot in encoder ticks
@@ -78,6 +81,7 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 			if (Math.abs(sOverS_0) > 1.0) sOverS_0 = MAX_S_OVER_S0 * Math.signum(sOverS_0); //cap at +/- MAX_S_OVER_S0
 			final double s = this.s_0 + sOverS_0 * this.s_0;
 			this.direction.turn(s);
+			Log.v(Utils.TAG, "Distance traveled = " + dPrime + " Theta prime = " + thetaPrime + " Error = " + error + " Spin = " + s);
 		}
 		this.configuration.move(this.direction, 0.06);
 		if (this.direction.isStopped()) return NEXT_STATE;

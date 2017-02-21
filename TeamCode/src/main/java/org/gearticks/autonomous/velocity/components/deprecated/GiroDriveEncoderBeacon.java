@@ -1,4 +1,4 @@
-package org.gearticks.autonomous.velocity.components.velocity.single;
+package org.gearticks.autonomous.velocity.components.deprecated;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;

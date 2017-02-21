@@ -2,7 +2,7 @@ package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
+import org.gearticks.autonomous.velocity.components.generic.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;

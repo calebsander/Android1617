@@ -12,9 +12,6 @@ import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-/**
- * Created by Kevin on 1/17/2017.
- */
 @Autonomous
 @Disabled
 public class TicksToCentimeters extends VelocityBaseOpMode {

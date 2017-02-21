@@ -1,4 +1,4 @@
-package org.gearticks.autonomous.velocity.components.experimental;
+package org.gearticks.autonomous.velocity.components.generic;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;

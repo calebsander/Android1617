@@ -1,4 +1,4 @@
-package org.gearticks.autonomous.velocity.opmode;
+package org.gearticks.autonomous.velocity.opmode.depricated;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
+import org.gearticks.autonomous.velocity.components.generic.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;

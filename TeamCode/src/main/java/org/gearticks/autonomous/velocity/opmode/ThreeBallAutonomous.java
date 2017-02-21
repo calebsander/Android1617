@@ -1,20 +1,13 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.experimental.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
-import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
-import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot3Balls;
-import org.gearticks.autonomous.velocity.components.velocity.single.BananaTurnNoGiro;
-import org.gearticks.autonomous.velocity.components.velocity.single.DisengageBeaconServo;
-import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
+import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 

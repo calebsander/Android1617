@@ -2,11 +2,10 @@ package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.WaitToCrossLine;
-import org.gearticks.autonomous.velocity.components.velocity.single.BananaTurnNoGiro;
+import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
 import org.gearticks.autonomous.velocity.components.velocity.single.ShootBall;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 

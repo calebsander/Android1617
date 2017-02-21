@@ -1,8 +1,8 @@
 package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.velocity.components.velocity.single.GiroDriveEncoderBeacon;
-import org.gearticks.autonomous.velocity.components.velocity.single.GiroTurnBeacon;
+import org.gearticks.autonomous.velocity.components.deprecated.GiroDriveEncoderBeacon;
+import org.gearticks.autonomous.velocity.components.deprecated.GiroTurnBeacon;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
