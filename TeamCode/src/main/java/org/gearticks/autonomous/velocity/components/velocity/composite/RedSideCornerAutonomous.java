@@ -2,11 +2,13 @@ package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
+import org.gearticks.autonomous.velocity.components.generic.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
+import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class RedSideCornerAutonomous extends LinearStateMachine {
@@ -16,11 +18,15 @@ public class RedSideCornerAutonomous extends LinearStateMachine {
 		super();
 
 		//Get to far beacon
-		addComponent(new GiroDriveEncoder(0.0, 0.2, 100, opModeContext, "Drive forwards"));
+		addComponent(new GiroDriveEncoder(45.0, 0.4, 1000, opModeContext, "Drive forward"));
+		addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers")); //Todo: fix deployment
+		addComponent(new GiroBananaTurnEncoder(45.0, 0.0, 0.4, 8000, opModeContext, "Banana turn to wall"));
+		addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
+		/*addComponent(new GiroDriveEncoder(0.0, 0.2, 100, opModeContext, "Drive forwards"));
 		addComponent(new GiroTurn(45.0, opModeContext, "Turn to 45 degrees"));
 		addComponent(new GiroDriveEncoder(45.0, 0.4, 3000, opModeContext, "Drive to wall"));
 		addComponent(new BananaTurnNoGiro(false, 0.0, 0.4, 1500, opModeContext, "Banana turn parallel to wall"));
-		addComponent(new GiroDriveEncoder(3.0, 0.8, 4000, opModeContext, "Drive towards far beacon"));
+		addComponent(new GiroDriveEncoder(3.0, 0.8, 4000, opModeContext, "Drive towards far beacon"));*/
 		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.25, 2000, opModeContext, "Get to far beacon"));
 
 		//Press beacon

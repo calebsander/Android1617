@@ -1,27 +1,29 @@
-package org.gearticks.autonomous.velocity.opmode.depricated;
+package org.gearticks.autonomous.velocity.opmode.deprecated;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.deprecated.GyroDriveEncoder;
-import org.gearticks.autonomous.velocity.components.deprecated.GyroTurn;
-import org.gearticks.autonomous.velocity.components.generic.Wait;
+import org.gearticks.autonomous.velocity.components.generic.GiroBananaTurnEncoder;
+import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-@SuppressWarnings("deprecation")
 @Autonomous
 @Disabled
-public class DriveSquareTest extends VelocityBaseOpMode {
+public class CoastingTest extends VelocityBaseOpMode {
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
-        for (int side = 0; side < 4; side++) {
-            sm.addComponent(new GyroDriveEncoder(90.0 * side, 0.2, 4000, opModeContext, "Drive for 2000 ticks heading forward"));
-            sm.addComponent(new Wait(0.5, "Wait for 0.5 sec"));
-            sm.addComponent(new GyroTurn(90.0 * (side + 1), opModeContext, "Turn right 90"));
-        }
+
+        sm.addComponent(new GiroBananaTurnEncoder(0.0, -90.0, 0.25, 2000, opModeContext, "Banana Turn"));
+        //sm.addComponent(new GiroDriveEncoder(0.0, 0.25, 1000, this.configuration, "Drive forward"));
+
+
+
+        sm.addComponent(new Stopped(opModeContext));
+
         return sm;
     }
     protected boolean isV2() {
