@@ -150,15 +150,15 @@ public class VelocityDrive extends BaseOpMode {
 		this.shooterState = ShooterState.values()[0];
 
 		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
-		final AutonomousComponent neutral = new PresserNeutral();
-		final AutonomousComponent left = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT);
-		final AutonomousComponent right = new PresserEngaged(MotorConstants.PRESSER_V2_RIGHT);
-		this.beaconStateMachine.setInitialComponent(neutral);
-		this.beaconStateMachine.addConnection(neutral, NEXT_STATE, left);
-		this.beaconStateMachine.addConnection(left, SWITCH, right);
-		this.beaconStateMachine.addConnection(right, SWITCH, left);
-		this.beaconStateMachine.addConnection(left, STOP, neutral);
-		this.beaconStateMachine.addConnection(right, STOP, neutral);
+		//final AutonomousComponent neutral = new PresserNeutral();
+		final AutonomousComponent in = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT_IN);
+		final AutonomousComponent out = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT_OUT);
+		this.beaconStateMachine.setInitialComponent(in);
+		this.beaconStateMachine.addConnection(in, NEXT_STATE, out);
+		this.beaconStateMachine.addConnection(out, SWITCH, in);
+		this.beaconStateMachine.addConnection(in, SWITCH, out);
+		this.beaconStateMachine.addConnection(in, STOP, in);
+		this.beaconStateMachine.addConnection(out, STOP, in);
 
 		this.rollersDeployed = true;
 	}
@@ -229,7 +229,7 @@ public class VelocityDrive extends BaseOpMode {
 
 		final double capBallPower;
 		final DcMotor.RunMode capBallMode;
-		if (this.gamepads[JACK].getA()) {
+		if (this.gamepads[JACK].getY()) {
 			if(this.configuration.isCapBallUp()) {
 				capBallPower = MotorConstants.CAP_BALL_SUPER_SLOW_UP;
 				capBallMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
@@ -239,7 +239,7 @@ public class VelocityDrive extends BaseOpMode {
 				capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
 			}
 		}
-		else if (this.gamepads[JACK].getY()) {
+		else if (this.gamepads[JACK].getA()) {
 			capBallPower = MotorConstants.CAP_BALL_DOWN;
 			capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
 		}
@@ -258,13 +258,18 @@ public class VelocityDrive extends BaseOpMode {
 			if (this.rollersDeployed) this.configuration.rollersDown();
 			else this.configuration.rollersUp();
 		}
+		if (this.gamepads[CALVIN].getX()){
+
+		}
 	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
 	private void autoShooterUnlessBumper() {
+		this.telemetry.addData("shooterEncoder", this.configuration.shooter.encoderValue());
+		this.telemetry.addData("passedEncoder", this.configuration.isShooterPassedEncoder());
 		switch (this.shooterState) {
 			case ADVANCING_TO_DOWN:
-				this.configuration.advanceShooterToDown();
+				this.configuration.advanceShooterToDownWithEncoder();
 				//Require ball to be newly loaded (unless overridden)
 				final boolean shotRequested = this.gamepads[JACK].getLeftBumper() && (this.ballInShooter || this.gamepads[JACK].getX());
 				if (this.configuration.isShooterDown() && shotRequested) {

@@ -27,6 +27,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final MotorWrapper intake, shooter;
 	public final MotorWrapper capBall;
 	private boolean shooterWasDown;
+	private boolean shooterPassedEncoder;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
 	public final Servo clutch, snake, beaconPresser;
@@ -222,8 +223,36 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		}
 	}
 
+	public void advanceShooterToDownWithEncoder() {
+		if (!this.shooterWasDown) {
+			if (this.isShooterAtSensor()) {
+				this.shooterPassedEncoder = true;
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				if (this.v2) {
+					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+					this.shooter.stop();
+				}
+				else {
+					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+					this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				}
+				this.shooterWasDown = true;
+			}
+			else if (this.shooter.encoderValue() > (MotorConstants.SHOOTER_TICKS_PER_ROTATION + 450)){
+				this.shooterPassedEncoder = false;
+				this.shootSlow();
+			}
+			else {
+				this.shooterPassedEncoder = true;
+				this.shootFast();
+			}
+		}
+	}
+
 	public void resetAutoShooter() {
 		this.shooterWasDown = false;
+		this.shooterPassedEncoder = false;
 	}
 
 	public boolean hasShot() {
@@ -235,12 +264,19 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public boolean isShooterDown() {
-		if (this.v2) return this.shooterWasDown;
+		if (this.v2) return this.shooterPassedEncoder;
 		else return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
-	public void beaconPresserEngageLeft() {
-		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_LEFT);
+	public boolean isShooterPassedEncoder() {
+		return this.shooterPassedEncoder;
+	}
+
+	public void beaconPresserLeftIn() {
+		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_LEFT_IN);
+	}
+	public void beaconPresserLeftOut() {
+		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_LEFT_OUT);
 	}
 	public void beaconPresserEngageRight() {
 		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_RIGHT);
@@ -303,8 +339,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.6;
-		public static final int SHOOTER_TICKS_PER_ROTATION = -1870;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.8;
+		public static final int SHOOTER_TICKS_PER_ROTATION = -700;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
 		@Deprecated
@@ -327,7 +363,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_LEFT = 0.0;
+		public static final double PRESSER_V2_LEFT_IN = 0.7;
+		public static final double PRESSER_V2_LEFT_OUT = 0.4;
 		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
 
 		@Deprecated
@@ -345,8 +382,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
 
-		public static final double CAP_BALL_UP = -1.0;
-		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.2;
+		public static final double CAP_BALL_UP = 1.0;
+		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.05;
 		public static final double CAP_BALL_SLOW_SCALE = 0.3, CAP_BALL_SUPER_SLOW_UP = CAP_BALL_UP * 0.1;
 		public static final int CAP_BALL_TOP = -6800;
 		public static final int CAP_BALL_BOTTOM = 0;
