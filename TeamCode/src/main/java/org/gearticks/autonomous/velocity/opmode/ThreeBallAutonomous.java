@@ -5,11 +5,21 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
+import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
+import org.gearticks.autonomous.velocity.components.experimental.AutonomousSideSelector;
 import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
 import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
+import org.gearticks.autonomous.velocity.components.velocity.composite.BlueSideCornerAutonomous;
+import org.gearticks.autonomous.velocity.components.velocity.composite.BlueThreeBallAutonomous;
+import org.gearticks.autonomous.velocity.components.velocity.composite.RedSideCornerAutonomous;
+import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
+import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot3Balls;
+import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+
+import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
 @Autonomous
 public class ThreeBallAutonomous extends VelocityBaseOpMode {
@@ -24,25 +34,29 @@ public class ThreeBallAutonomous extends VelocityBaseOpMode {
     }
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
-        final LinearStateMachine sm = new LinearStateMachine();
+        final NetworkedStateMachine sm = new NetworkedStateMachine();
 
-        int distanceFromWall = 10;
+        //int distanceFromWall = 10;
 
-        //Shoot 3 balls
-        //sm.addComponent(new Shoot3Balls(false, opModeContext, "Shoot 3 balls"));
-        //sm.addComponent(new DebugPause(opModeContext));
+        final AutonomousComponent shoot3Balls = new Shoot3Balls(true, opModeContext, "Shoot 3 balls");
+        final AutonomousComponent sideSelector = new AutonomousSideSelector(opModeContext);
+        final AutonomousComponent blueSide = new BlueThreeBallAutonomous(opModeContext);
+        final AutonomousComponent redSide = new RedSideCornerAutonomous(opModeContext);
+        final LinearStateMachine teardown = new LinearStateMachine("Teardown");
+        teardown.addComponent(new Stopped(opModeContext));
 
-        //sm.addComponent(new GiroDriveEncoder(25.0, 0.75, 2000, opModeContext, "Drive forward"));
-        sm.addComponent(new BananaTurnNoGiro(40.0, 0.25, 3000, opModeContext, "Banana Turn right"));
+        //Run
+        sm.setInitialComponent(shoot3Balls);
+        sm.addConnection(shoot3Balls, NEXT_STATE, sideSelector);
+        sm.addConnection(sideSelector, AutonomousSideSelector.BLUE, blueSide);
+        sm.addConnection(sideSelector, AutonomousSideSelector.RED, redSide);
+        sm.addConnection(blueSide, NEXT_STATE, teardown);
+        sm.addConnection(redSide, NEXT_STATE, teardown);
 
 
-        sm.addComponent(new DebugPause(opModeContext));
-        sm.addComponent(new BananaTurnNoGiro(180.0, 0.25, 10000, opModeContext, "Banana Turn right"));
 
 
-
-
-        sm.addComponent(new Stopped(opModeContext));
+        //sm.addComponent(new Stopped(opModeContext));
 
         return sm;
     }
@@ -51,6 +65,6 @@ public class ThreeBallAutonomous extends VelocityBaseOpMode {
     }
 
     protected double targetHeading() {
-        return 25.0;
+        return 26.0;
     }
 }

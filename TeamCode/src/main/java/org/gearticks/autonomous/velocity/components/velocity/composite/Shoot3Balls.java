@@ -17,6 +17,7 @@ public class Shoot3Balls extends LinearStateMachine {
 
     /**
      *
+     * @param ballAlreadyIn - ball is already in intake
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
