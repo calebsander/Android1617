@@ -247,11 +247,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			}
 			else if (this.shooter.encoderValue() > (MotorConstants.SHOOTER_TICKS_PER_ROTATION + 450)){
 				this.shooterPassedEncoder = false;
-				this.shootSlow();
+				this.shootFast();
 			}
 			else {
 				this.shooterPassedEncoder = true;
-				this.shootFast();
+				this.shootSlow();
 			}
 		}
 	}
@@ -270,7 +270,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	}
 
 	public boolean isShooterDown() {
-		if (this.v2) return this.shooterPassedEncoder;
+		if (this.v2) return this.shooterWasDown;
 		else return this.shooterWasDown && this.isShooterAtTarget();
 	}
 
@@ -346,7 +346,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.8;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -700;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
@@ -370,9 +370,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_FRONT_IN = 0.8;
-		public static final double PRESSER_V2_FRONT_OUT = 0.5;
+		public static final double PRESSER_V2_FRONT_IN = 0.73;
+		public static final double PRESSER_V2_FRONT_IN_STRAIN = 0.8;
+		public static final double PRESSER_V2_FRONT_OUT = 0.4;
 		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
+		public static final int PRESSER_V2_TIMES_PULL_IN = 3; //number of times the presser pulls to straining position until in place
 
 		@Deprecated
 		public static final double CLUTCH_CLUTCHED = 0.7;

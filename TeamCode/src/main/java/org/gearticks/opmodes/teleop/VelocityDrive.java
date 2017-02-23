@@ -6,7 +6,9 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
+import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
+import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -59,7 +61,7 @@ public class VelocityDrive extends BaseOpMode {
 
 			if (isManualSnakeOn()) return MANUAL_SNAKE;
 
-			if (!ballInShooter && configuration.isShooterDown()) return NEXT_STATE;
+			if (!ballInShooter && configuration.isShooterPassedEncoder()) return NEXT_STATE;
 			else return null;
 		}
 	}
@@ -151,14 +153,22 @@ public class VelocityDrive extends BaseOpMode {
 
 		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
 		//final AutonomousComponent neutral = new PresserNeutral();
-		final AutonomousComponent in = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
+		final LinearStateMachine in = new LinearStateMachine();
+		for(int pullIn = 0; pullIn < MotorConstants.PRESSER_V2_TIMES_PULL_IN; pullIn++) {
+			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN_STRAIN));
+			in.addComponent(new Wait(0.05, "Wait to go out"));
+			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN));
+			in.addComponent(new Wait(0.05, "Wait to go out"));
+		}
+		final AutonomousComponent stayIn = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
 		final AutonomousComponent out = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_OUT);
-		this.beaconStateMachine.setInitialComponent(in);
-		this.beaconStateMachine.addConnection(in, NEXT_STATE, out);
+		this.beaconStateMachine.setInitialComponent(stayIn);
+		this.beaconStateMachine.addConnection(stayIn, NEXT_STATE, out);
 		this.beaconStateMachine.addConnection(out, SWITCH, in);
-		this.beaconStateMachine.addConnection(in, SWITCH, out);
-		this.beaconStateMachine.addConnection(in, STOP, in);
+		this.beaconStateMachine.addConnection(stayIn, SWITCH, out);
+		this.beaconStateMachine.addConnection(stayIn, STOP, stayIn);
 		this.beaconStateMachine.addConnection(out, STOP, in);
+		this.beaconStateMachine.addConnection(in, NEXT_STATE, stayIn);
 
 		this.rollersDeployed = true;
 	}
