@@ -1,22 +1,23 @@
-package org.gearticks.autonomous.velocity.components.velocity.single;
+package org.gearticks.autonomous.velocity.components.deprecated;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class RightPressBeaconServo extends AutonomousComponentHardware<VelocityConfiguration> {
+@Deprecated
+public class LeftPressBeaconServo extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public RightPressBeaconServo(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+    public LeftPressBeaconServo(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(opModeContext, id);
     }
 
     @Override
     public void setup() {
         super.setup();
-        configuration.beaconPresserEngageRight();
+        //configuration.beaconPresserEngageLeft();
     }
 
     @Override

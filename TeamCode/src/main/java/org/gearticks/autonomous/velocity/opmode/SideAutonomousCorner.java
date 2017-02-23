@@ -26,7 +26,8 @@ public class SideAutonomousCorner extends VelocityBaseOpMode {
 		super.loopBeforeStart();
 		this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
 		this.configuration.advanceShooterToDown();
-		this.configuration.beaconPresserDisengage();
+		this.configuration.beaconPresserFrontIn();
+		this.configuration.beaconPresserBackIn();
 		//this.configuration.rollersDown();
 	}
 

@@ -97,7 +97,7 @@ public class VelocityDrive extends BaseOpMode {
 			final Transition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
-			configuration.beaconPresser.setPosition(MotorConstants.PRESSER_V2_NEUTRAL);
+			configuration.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
 			if (gamepads[CALVIN].getB()) return NEXT_STATE;
 			else return null;
 		}
@@ -116,7 +116,7 @@ public class VelocityDrive extends BaseOpMode {
 			final Transition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
-			configuration.beaconPresser.setPosition(this.position);
+			configuration.frontBeaconPresser.setPosition(this.position);
 			if (gamepads[CALVIN].getB()) {
 				if (this.stageTimer.seconds() > MotorConstants.PRESSER_V2_TIME_TO_MOVE) return SWITCH;
 				else return null;
@@ -151,8 +151,8 @@ public class VelocityDrive extends BaseOpMode {
 
 		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
 		//final AutonomousComponent neutral = new PresserNeutral();
-		final AutonomousComponent in = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT_IN);
-		final AutonomousComponent out = new PresserEngaged(MotorConstants.PRESSER_V2_LEFT_OUT);
+		final AutonomousComponent in = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
+		final AutonomousComponent out = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_OUT);
 		this.beaconStateMachine.setInitialComponent(in);
 		this.beaconStateMachine.addConnection(in, NEXT_STATE, out);
 		this.beaconStateMachine.addConnection(out, SWITCH, in);

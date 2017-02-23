@@ -4,19 +4,19 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class LeftPressBeaconServo extends AutonomousComponentHardware<VelocityConfiguration> {
+public class BackPressBeacon extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public LeftPressBeaconServo(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+    public BackPressBeacon(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(opModeContext, id);
     }
 
     @Override
     public void setup() {
         super.setup();
-        configuration.beaconPresserEngageLeft();
+        configuration.beaconPresserBackOut();
     }
 
     @Override

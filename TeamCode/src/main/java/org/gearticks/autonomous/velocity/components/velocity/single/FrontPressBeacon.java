@@ -4,20 +4,19 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class DisengageBeaconServo extends AutonomousComponentHardware<VelocityConfiguration> {
+public class FrontPressBeacon extends AutonomousComponentHardware<VelocityConfiguration> {
     /**
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-    public DisengageBeaconServo(OpModeContext<VelocityConfiguration> opModeContext, String id) {
+    public FrontPressBeacon(OpModeContext<VelocityConfiguration> opModeContext, String id) {
         super(opModeContext, id);
     }
 
     @Override
     public void setup() {
         super.setup();
-        configuration.beaconPresserFrontIn();
-        configuration.beaconPresserBackIn();
+        configuration.beaconPresserFrontOut();
     }
 
     @Override

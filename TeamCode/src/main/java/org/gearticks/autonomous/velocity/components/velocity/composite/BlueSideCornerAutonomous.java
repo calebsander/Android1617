@@ -36,7 +36,7 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, 0.15, 500, opModeContext, "Adjust to white line"));
 		addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
 		addComponent(new DebugPause(opModeContext));
-		//addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+		addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
 
 		//Get to near beacon
 		addComponent(new GiroDriveAlongWallEncoder(DISTANCE_FROM_WALL, 180.0, 0.5, 3000, opModeContext, "Range sensor drive along wall"));
@@ -46,7 +46,7 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, -0.15, 500, opModeContext, "Adjust to white line"));
 		addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
 		addComponent(new DebugPause(opModeContext));
-		//addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+		addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
 
 		//Shoot and Cap ball
 		//addComponent(new BananaTurnNoGiro(-45.0, 0.4, 3500, opModeContext, "Banana turn to 45"));

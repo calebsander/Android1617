@@ -14,9 +14,9 @@ public class PresserV2Test extends BaseOpMode {
     }
     protected void loopAfterStart() {
         final double presserPosition;
-        if (this.gamepads[0].getX()) presserPosition = MotorConstants.PRESSER_V2_LEFT;
+        if (this.gamepads[0].getX()) presserPosition = MotorConstants.PRESSER_V2_FRONT_OUT;
         else if (this.gamepads[0].getB()) presserPosition = MotorConstants.PRESSER_V2_RIGHT;
         else presserPosition = MotorConstants.PRESSER_V2_NEUTRAL;
-        this.configuration.beaconPresser.setPosition(presserPosition);
+        this.configuration.frontBeaconPresser.setPosition(presserPosition);
     }
 }

@@ -30,7 +30,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	private boolean shooterPassedEncoder;
 	public final MotorWrapper driveLeft, driveRight;
 	public final TankDrive drive;
-	public final Servo clutch, snake, beaconPresser;
+	public final Servo clutch, snake, frontBeaconPresser;
 	private final Servo frontRoller, rearRoller;
 	private final CRServo shooterStopper;
 	public final GearticksBNO055 imu;
@@ -77,11 +77,17 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		if (v2) initialClutchPosition = MotorConstants.CLUTCH_V2_ENGAGED;
 		else initialClutchPosition = MotorConstants.CLUTCH_ENGAGED;
 		this.clutch.setPosition(initialClutchPosition);
-		this.beaconPresser = (Servo) hardwareMap.get("beacon");
+		this.frontBeaconPresser = (Servo) hardwareMap.get("frontBeacon");
+		final double frontInitialPresserPosition;
+		if (v2) frontInitialPresserPosition = MotorConstants.PRESSER_V2_NEUTRAL;
+		else frontInitialPresserPosition = MotorConstants.BEACON_PRESSER_DISENGAGED;
+		this.frontBeaconPresser.setPosition(frontInitialPresserPosition);
+		//Back beacon
+		/*this.backBeaconPresser = (Servo) hardwareMap.get("backBeacon");
 		final double initialPresserPosition;
-		if (v2) initialPresserPosition = MotorConstants.PRESSER_V2_NEUTRAL;
-		else initialPresserPosition = MotorConstants.BEACON_PRESSER_DISENGAGED;
-		this.beaconPresser.setPosition(initialPresserPosition);
+		if (v2) backInitialPresserPosition = MotorConstants.PRESSER_V2_NEUTRAL;
+		else backInitialPresserPosition = MotorConstants.BEACON_PRESSER_DISENGAGED;
+		this.backBeaconPresser.setPosition(backInitialPresserPosition);*/
 		this.snake = (Servo) hardwareMap.get("snake");
 		final double initialSnakePosition;
 		if (v2) initialSnakePosition = MotorConstants.SNAKE_V2_HOLDING;
@@ -272,17 +278,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return this.shooterPassedEncoder;
 	}
 
-	public void beaconPresserLeftIn() {
-		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_LEFT_IN);
+	public void beaconPresserFrontIn() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
 	}
-	public void beaconPresserLeftOut() {
-		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_LEFT_OUT);
+	public void beaconPresserFrontOut() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT);
 	}
-	public void beaconPresserEngageRight() {
-		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_RIGHT);
+	//TODO: connect actual back beacon servo
+	public void beaconPresserBackIn() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
 	}
-	public void beaconPresserDisengage() {
-		this.beaconPresser.setPosition(MotorConstants.PRESSER_V2_NEUTRAL);
+	public void beaconPresserBackOut() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT);
 	}
 	/**
 	 *
@@ -363,8 +370,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double PRESSER_V2_RIGHT = 1.0;
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
-		public static final double PRESSER_V2_LEFT_IN = 0.7;
-		public static final double PRESSER_V2_LEFT_OUT = 0.4;
+		public static final double PRESSER_V2_FRONT_IN = 0.8;
+		public static final double PRESSER_V2_FRONT_OUT = 0.5;
 		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
 
 		@Deprecated
@@ -376,8 +383,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double FRONT_ROLLER_V2_UP = 0.4;
 		public static final double FRONT_ROLLER_V2_DOWN = 0.88;
-		public static final double REAR_ROLLER_V2_UP = 0.6;
-		public static final double REAR_ROLLER_V2_DOWN = 0.1;
+		public static final double REAR_ROLLER_V2_UP = 1.0;
+		public static final double REAR_ROLLER_V2_DOWN = 0.5;
 
 		public static final double SHOOTER_STOPPER_UP = 1.0;
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
