@@ -183,7 +183,11 @@ public class VelocityDrive extends BaseOpMode {
 
 		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
 		final double maxPower;
-		if (slowMode) maxPower = 0.4;
+		if (slowMode) {
+			maxPower = 0.4;
+			sScaleFactor = Math.max(0.2, Math.abs(this.gamepads[driveGamepad].getLeftY() * maxPower));
+			yScaleFactor = -yScaleFactor;
+		}
 		else maxPower = 1.0;
 		final double accelLimit;
 		if (slowMode) accelLimit = 0.03;
