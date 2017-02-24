@@ -16,8 +16,7 @@ public class DisengageBeaconServo extends AutonomousComponentHardware<VelocityCo
     @Override
     public void setup() {
         super.setup();
-        configuration.beaconPresserFrontIn();
-        configuration.beaconPresserBackIn();
+        configuration.beaconPressersStrainIn();
     }
 
     @Override
@@ -25,7 +24,10 @@ public class DisengageBeaconServo extends AutonomousComponentHardware<VelocityCo
         final Transition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
-        if (this.stageTimer.seconds() > VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE) return NEXT_STATE;
+        if (this.stageTimer.seconds() > VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE) {
+	        configuration.beaconPressersIn();
+            return NEXT_STATE;
+        }
         else return null;
     }
 }

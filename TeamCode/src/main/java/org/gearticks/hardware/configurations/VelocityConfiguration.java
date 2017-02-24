@@ -284,6 +284,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void beaconPresserFrontOut() {
 		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT);
 	}
+	public void beaconPresserFrontOutPartial() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT_PARTIAL);
+	}
 	//TODO: connect actual back beacon servo
 	public void beaconPresserBackIn() {
 		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
@@ -291,6 +294,15 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void beaconPresserBackOut() {
 		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT);
 	}
+	public void beaconPressersStrainIn() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN_STRAIN);
+//		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN); // make back beacon presser
+	}
+	public void beaconPressersIn() {
+		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
+//		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN); // make back beacon presser
+	}
+
 	/**
 	 *
 	 * @return true if white line detected
@@ -371,9 +383,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		@Deprecated
 		public static final double BEACON_PRESSER_LEFT_ENGAGED = 0.54;
 		public static final double PRESSER_V2_FRONT_IN = 0.73;
-		public static final double PRESSER_V2_FRONT_IN_STRAIN = 0.8;
-		public static final double PRESSER_V2_FRONT_OUT = 0.4;
-		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
+		public static final double PRESSER_V2_FRONT_IN_STRAIN = 0.95;
+		public static final double PRESSER_V2_FRONT_OUT_PARTIAL = 0.7;
+		public static final double PRESSER_V2_FRONT_OUT = 0.0;
+		public static final double PRESSER_V2_TIME_TO_MOVE = 1.0; //seconds for beacon presser to switch positions
 		public static final int PRESSER_V2_TIMES_PULL_IN = 3; //number of times the presser pulls to straining position until in place
 
 		@Deprecated

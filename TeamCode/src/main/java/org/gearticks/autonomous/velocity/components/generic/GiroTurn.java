@@ -13,6 +13,7 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	private final double targetHeading;
 	private double angleMultiplier;
 	private final double power;
+	private final double range;
 	private final int correctTimes;
 
 	/**
@@ -27,6 +28,15 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 		super(opModeContext, id);
 		this.targetHeading = targetHeading;
 		this.power = power;
+		this.range = 1.0;
+		this.correctTimes = correctTimes;
+	}
+
+	public GiroTurn(double targetHeading, double power, int correctTimes, double range, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext, id);
+		this.targetHeading = targetHeading;
+		this.power = power;
+		this.range = range;
 		this.correctTimes = correctTimes;
 	}
 
@@ -45,7 +55,7 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 		if (superTransition != null) return superTransition;
 
 		final Transition transition;
-		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), this.power, 0.1) > this.correctTimes) {
+		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, this.range, this.configuration.imu.getRelativeYaw(), this.power, 0.1) > this.correctTimes) {
 			Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
 			transition = NEXT_STATE;
 		}
