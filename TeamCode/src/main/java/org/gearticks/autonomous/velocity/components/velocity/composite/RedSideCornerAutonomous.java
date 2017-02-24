@@ -13,6 +13,7 @@ import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
+@Deprecated
 public class RedSideCornerAutonomous extends LinearStateMachine {
 	final double DISTANCE_FROM_WALL = 10.0;
 

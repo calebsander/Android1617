@@ -14,6 +14,7 @@ import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRo
 import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
+@Deprecated
 public class BlueSideCornerAutonomous extends LinearStateMachine {
 	final double DISTANCE_FROM_WALL = 10.0;
 
