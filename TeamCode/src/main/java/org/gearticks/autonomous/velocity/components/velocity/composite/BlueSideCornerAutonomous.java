@@ -22,15 +22,8 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 
 		//Get to far beacon
 		addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers")); //Todo: fix deployment
-//		addComponent(new GiroDriveEncoder(225.0, -1.0, 700, opModeContext, "Drive backwards"));
-		//addComponent(new BananaTurnNoGiro(180.0, -0.4, 8000, opModeContext, "Banana turn to 180"));
-//		addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers")); //Todo: fix deployment
 		addComponent(new GiroBananaTurnEncoder(225.0, 180.0, -0.7, 8000, opModeContext, "Banana turn to 180.0"));
-		//addComponent(new GiroTurn(180.0, 0.1, 5, opModeContext, "Straighten out"));
-
-		//addComponent(new GiroTurn(180.0, opModeContext, "Turn parallel to wall"));
-		//addComponent(new GiroDriveAlongWallEncoder(DISTANCE_FROM_WALL, 180.0, -0.4, 4000, opModeContext, "Drive towards far beacon"));
-		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, -0.4, 4000, opModeContext, "Get to far beacon"));
+		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, -0.3, 4000, opModeContext, "Get to far beacon"));
 
 		//Press beacon
 		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, 0.15, 500, opModeContext, "Adjust to white line"));
@@ -48,17 +41,11 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 
 		//Shoot
 		addComponent(new RaiseSideRollers(opModeContext, "Raise rollers"));
-		addComponent(new GiroBananaTurnEncoder(180.0, 187.0, 0.6, 250, opModeContext, "Banana turn to 187"));
-		addComponent(new GiroTurn(167.0, 0.1, 5, opModeContext, "Turn to 165"));
-		addComponent(new GiroDriveEncoder(167.0, -0.8, 950, opModeContext, "Drive backwards"));
-		addComponent(new GiroTurn(267.0, 0.1, 5, opModeContext, "Turn to shoot"));
+		addComponent(new GiroBananaTurnEncoder(180.0, 187.0, -0.4, 400, opModeContext, "Banana turn to 187"));
+		addComponent(new GiroBananaTurnEncoder(187, 270.0, 0.5, 500, 0.1, 0.2, 1.0, opModeContext, "banana turn to shoot"));
 		addComponent(new Shoot3Balls(true, opModeContext, "Shoot"));
-
 		//Cap ball
-		//addComponent(new GiroTurn(270.0, 0.15, 3, 3.0, opModeContext, "Turn to cap ball"));
-		addComponent(new GiroDriveEncoder(270.0, 1.0, 2800, opModeContext, "Drive to cap ball"));
-		addComponent(new GiroTurn(240.0, 0.5, 3, 5.0, opModeContext, "Hit cap ball"));
-		addComponent(new GiroTurn(250.0, 0.4, 3, 5.0, opModeContext, "Straighten out"));
-		addComponent(new GiroDriveEncoder(270.0, 1.0, 1000, opModeContext, "Park"));
+		addComponent(new GiroTurn(290.0, 0.1, 3, 2.0, opModeContext, "turn to cap ball"));
+		addComponent(new GiroBananaTurnEncoder(300.0, 230.0, 1.0, 5000, 0.25, 0.3, 3.0, opModeContext, "Hit cap ball"));
 	}
 }

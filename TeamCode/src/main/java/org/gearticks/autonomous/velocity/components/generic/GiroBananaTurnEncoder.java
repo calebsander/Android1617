@@ -11,6 +11,9 @@ import org.gearticks.opmodes.utility.Utils;
 public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
 	private final DriveDirection direction;
 	private final double power;
+	private final double turnPower;
+	private final double turnAccel;
+	private final double turnRange;
 	private final double startHeading;
 	private final double endHeading;
 	private final double headingSlope;
@@ -30,6 +33,21 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		super(opModeContext, id);
 		this.direction = new DriveDirection();
 		this.power = power;
+		this.turnPower = 0.05;
+		this.turnAccel = 0.1;
+		this.turnRange = 1.0;
+		this.startHeading = startHeading;
+		this.endHeading = endHeading;
+		this.encoderTarget = Math.abs(encoderTarget);
+		this.headingSlope = (this.endHeading - this.startHeading) / this.encoderTarget;
+	}
+	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, double turnPower, double turnAccel, double turnRange, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+		super(opModeContext, id);
+		this.direction = new DriveDirection();
+		this.power = power;
+		this.turnPower = turnPower;
+		this.turnAccel = turnAccel;
+		this.turnRange = turnRange;
 		this.startHeading = startHeading;
 		this.endHeading = endHeading;
 		this.encoderTarget = Math.abs(encoderTarget);
@@ -55,7 +73,7 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		final double targetHeading = getHeading(distance);
 
 		double currentHeading = this.configuration.imu.getRelativeYaw();
-		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, this.turnRange, this.configuration.imu.getRelativeYaw(), this.turnPower, this.turnAccel);
 
 		final Transition transition;
 		if (distance > this.encoderTarget) {
