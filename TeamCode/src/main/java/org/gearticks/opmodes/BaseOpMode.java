@@ -23,7 +23,6 @@ public abstract class BaseOpMode extends OpMode {
 		this.optionController = new JoystickOptionController();
 		this.gamepads[0] = new GamepadWrapper(this.gamepad1);
 		this.gamepads[1] = new GamepadWrapper(this.gamepad2);
-		this.addOption(AllianceOption.allianceOption);
 		this.initialize();
 	}
 	public void init_loop() {

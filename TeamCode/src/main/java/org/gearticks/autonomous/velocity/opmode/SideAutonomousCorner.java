@@ -25,7 +25,7 @@ public class SideAutonomousCorner extends VelocityBaseOpMode {
 	protected void loopBeforeStart() {
 		super.loopBeforeStart();
 		this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-		this.configuration.advanceShooterToDown();
+		this.configuration.advanceShooterToDownWithEncoder(true);
 		this.configuration.beaconPresserFrontIn();
 		this.configuration.beaconPresserBackIn();
 		//this.configuration.rollersDown();
@@ -36,7 +36,7 @@ public class SideAutonomousCorner extends VelocityBaseOpMode {
 
 		//Components
 		//final AutonomousComponent sideRollers = new DeploySideRollers(opModeContext, "Deploy side rollers");
-		final AutonomousComponent intake = new RunIntake(1.3, true, opModeContext, "Intake particle");
+		//final AutonomousComponent intake = new RunIntake(1.3, true, opModeContext, "Intake particle");
 		final AutonomousComponent sideSelector = new AutonomousSideSelector(opModeContext);
 		final AutonomousComponent blueSide = new BlueSideCornerAutonomous(opModeContext);
 		final AutonomousComponent redSide = new RedSideCornerAutonomous(opModeContext);
@@ -44,8 +44,9 @@ public class SideAutonomousCorner extends VelocityBaseOpMode {
 		teardown.addComponent(new Stopped(opModeContext));
 
 		//Run
-		sm.setInitialComponent(intake);
-		sm.addConnection(intake, NEXT_STATE, sideSelector);
+		// sm.setInitialComponent(intake);
+		//sm.addConnection(intake, NEXT_STATE, sideSelector);
+		sm.setInitialComponent(sideSelector);
 		sm.addConnection(sideSelector, AutonomousSideSelector.BLUE, blueSide);
 		sm.addConnection(sideSelector, AutonomousSideSelector.RED, redSide);
 		sm.addConnection(blueSide, NEXT_STATE, teardown);

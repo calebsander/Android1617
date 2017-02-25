@@ -74,4 +74,10 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         else return null;
     }
 
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        this.configuration.rangeSensor.ultrasonicRequest.stopReading();
+    }
+
 }

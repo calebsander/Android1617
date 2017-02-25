@@ -18,7 +18,7 @@ public class AutoShooterTest extends BaseOpMode {
 	protected void loopAfterStart() {
 		if (this.gamepads[0].getA()) {
 			if (!this.gamepads[0].getLast().getA()) this.configuration.resetAutoShooter();
-			this.configuration.advanceShooterToDown();
+			this.configuration.advanceShooterToDownWithEncoder(false);
 		}
 		else {
 			this.configuration.shooter.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);

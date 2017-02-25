@@ -72,7 +72,7 @@ public class VelocityDrive extends BaseOpMode {
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(MotorConstants.SNAKE_V2_DUMPING);
-			configuration.advanceShooterToDown();
+			configuration.advanceShooterToDownWithEncoder(false);
 			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
 			else return null;
 		}
@@ -129,6 +129,46 @@ public class VelocityDrive extends BaseOpMode {
 	//The state machine controlling manually pressing the beacon
 	private NetworkedStateMachine beaconStateMachine;
 
+	private class BumperDown extends AutonomousComponentTimer {
+		@SuppressWarnings("ConstantConditions")
+		@Override
+		public void setup() {
+			super.setup();
+			configuration.frontBumper.setPower(MotorConstants.FRONT_BUMPER_DOWN);
+		}
+
+		@Override
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
+			else return null;
+		}
+
+		@Override
+		public void tearDown() {
+			super.tearDown();
+			configuration.frontBumper.setPower(0.0);
+		}
+	}
+	private class BumperUpWhenTrigger extends AutonomousComponentAbstractImpl {
+		@Override
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			final double power;
+			if (gamepads[CALVIN].getLeftTrigger()) power = MotorConstants.FRONT_BUMPER_UP;
+			else power = 0.0;
+			configuration.frontBumper.setPower(power);
+
+			if (gamepads[CALVIN].dpadDown()) return NEXT_STATE;
+			else return null;
+		}
+	}
+	private NetworkedStateMachine bumperStateMachine;
+
 	//Whether rollers are deployed
 	private boolean rollersDeployed;
 
@@ -169,6 +209,13 @@ public class VelocityDrive extends BaseOpMode {
 		this.beaconStateMachine.addConnection(stayIn, STOP, stayIn);
 		this.beaconStateMachine.addConnection(out, STOP, in);
 		this.beaconStateMachine.addConnection(in, NEXT_STATE, stayIn);
+
+		this.bumperStateMachine = new NetworkedStateMachine("Front bumper state");
+		final AutonomousComponent bumperUp = new BumperUpWhenTrigger();
+		final AutonomousComponent bumperDown = new BumperDown();
+		this.bumperStateMachine.setInitialComponent(bumperUp);
+		this.bumperStateMachine.addConnection(bumperUp, NEXT_STATE, bumperDown);
+		this.bumperStateMachine.addConnection(bumperDown, NEXT_STATE, bumperUp);
 
 		this.rollersDeployed = true;
 	}
@@ -228,6 +275,7 @@ public class VelocityDrive extends BaseOpMode {
 
 		this.ballStateMachine.run();
 		this.beaconStateMachine.run();
+		this.bumperStateMachine.run();
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
@@ -272,9 +320,6 @@ public class VelocityDrive extends BaseOpMode {
 			if (this.rollersDeployed) this.configuration.rollersDown();
 			else this.configuration.rollersUp();
 		}
-		if (this.gamepads[CALVIN].getX()){
-
-		}
 	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
@@ -283,7 +328,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.telemetry.addData("passedEncoder", this.configuration.isShooterPassedEncoder());
 		switch (this.shooterState) {
 			case ADVANCING_TO_DOWN:
-				this.configuration.advanceShooterToDownWithEncoder();
+				this.configuration.advanceShooterToDownWithEncoder(false);
 				//Require ball to be newly loaded (unless overridden)
 				final boolean shotRequested = this.gamepads[JACK].getLeftBumper() && (this.ballInShooter || this.gamepads[JACK].getX());
 				if (this.configuration.isShooterDown() && shotRequested) {

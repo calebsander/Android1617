@@ -84,4 +84,10 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         return null;
     }
 
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        this.configuration.rangeSensor.ultrasonicRequest.stopReading();
+    }
+
 }

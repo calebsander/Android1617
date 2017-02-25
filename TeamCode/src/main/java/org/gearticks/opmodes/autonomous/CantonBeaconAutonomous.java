@@ -125,7 +125,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 	protected void loopBeforeStart() {
 		this.configuration.safeShooterStopper(MotorConstants.SHOOTER_STOPPER_UP); //make sure shooter stopper is at top
 		this.telemetry.addData("Heading", String.valueOf(this.configuration.imu.getHeading()));
-		this.configuration.advanceShooterToDown(); //make sure shooter begins in down position, ready to shoot
+		this.configuration.advanceShooterToDownWithEncoder(true); //make sure shooter begins in down position, ready to shoot
 	}
 	protected void matchStart() {
 		this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
@@ -161,7 +161,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 				if (!this.configuration.shooter.notAtTarget()) this.nextStage();
 				break;
 			case MOVE_SHOOTER_DOWN:
-				this.configuration.advanceShooterToDown();
+				this.configuration.advanceShooterToDownWithEncoder(true);
 				if (this.configuration.isShooterDown()) {
 					this.configuration.resetAutoShooter();
 					this.nextStage();
@@ -354,7 +354,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 			case STOPPED:
 				this.configuration.stopMotion();
 		}
-		if (this.stage.ordinal() >= Stage.DRIVE_OFF_WALL.ordinal()) this.configuration.advanceShooterToDown();
+		if (this.stage.ordinal() >= Stage.DRIVE_OFF_WALL.ordinal()) this.configuration.advanceShooterToDownWithEncoder(true);
 		if (this.stage != Stage.STOPPED) this.configuration.move(this.direction, 0.06);
 		this.telemetry.addData("Stage", this.stage);
 	}

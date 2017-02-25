@@ -1,17 +1,15 @@
 package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
-import org.gearticks.autonomous.velocity.components.generic.Wait;
-import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
+import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Deprecated
@@ -22,8 +20,11 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 		super();
 
 		//Get to far beacon
-		addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers")); //Todo: fix deployment
-		addComponent(new GiroBananaTurnEncoder(225.0, 180.0, -0.7, 8000, opModeContext, "Banana turn to 180.0"));
+		addComponent(new RunIntake(1.3, true, opModeContext, "Intake particle"));
+		final ParallelComponent driveAndDeployRollers = new ParallelComponent();
+		driveAndDeployRollers.addComponent(new GiroBananaTurnEncoder(225.0, 180.0, -0.7, 8000, opModeContext, "Banana turn to 180.0"));
+		driveAndDeployRollers.addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers"));
+		addComponent(driveAndDeployRollers);
 		addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, -0.3, 4000, opModeContext, "Get to far beacon"));
 
 		//Press beacon

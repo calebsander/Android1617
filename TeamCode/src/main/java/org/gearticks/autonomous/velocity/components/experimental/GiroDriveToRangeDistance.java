@@ -59,6 +59,6 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
     @Override
     public void tearDown() {
         super.tearDown();
-        //Custom code here
+        this.configuration.rangeSensor.ultrasonicRequest.stopReading();
     }
 }

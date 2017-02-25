@@ -33,6 +33,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final Servo clutch, snake, frontBeaconPresser, backBeaconPresser;
 	private final Servo frontRoller, rearRoller;
 	private final CRServo shooterStopper;
+	public final CRServo frontBumper;
 	public final GearticksBNO055 imu;
 	public final GearticksMRRangeSensor rangeSensor;
 	private final DigitalChannel shooterDown;
@@ -105,6 +106,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		}
 		this.shooterStopper = (CRServo) hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
+		if (v2) {
+			this.frontBumper = (CRServo)hardwareMap.get("frontBumper");
+			this.frontBumper.setPower(0.0);
+		}
+		else this.frontBumper = null;
 
 		this.imu = new GearticksBNO055((I2cDevice) hardwareMap.get("bno"));
 		this.rangeSensor = new GearticksMRRangeSensor((I2cDevice) hardwareMap.get("range"));
@@ -203,32 +209,19 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return !this.shooterDown.getState();
 	}
 
-	public void shootSlow() {
+	public void shootSlow(boolean autonomous) {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
-		this.shooter.setPower(MotorConstants.SHOOTER_BACK_SLOW);
+		final double power;
+		if (autonomous) power = MotorConstants.SHOOTER_BACK_SLOW_AUTONOMOUS;
+		else power = MotorConstants.SHOOTER_BACK_SLOW;
+		this.shooter.setPower(power);
 	}
 	public void shootFast() {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 	}
 
-	public void advanceShooterToDown() {
-//		if (!this.shooterWasDown) {
-//			if (this.isShooterAtSensor()) {
-//				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-//				if (this.v2) {
-//					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
-//					this.shooter.stop();
-//				}
-//				else {
-//					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-//					this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
-//					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
-//				}
-//				this.shooterWasDown = true;
-//			}
-//			else this.shootFast();
-//		}
+	public void advanceShooterToDownWithEncoder(boolean autonomous) {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
 				this.shooterPassedEncoder = true;
@@ -244,40 +237,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				}
 				this.shooterWasDown = true;
 			}
-			else if (this.shooter.encoderValue() > (MotorConstants.SHOOTER_TICKS_PER_ROTATION + 450)){
+			else if (this.shooter.encoderValue() > MotorConstants.SHOOTER_TICKS_PER_ROTATION - 250 * Math.signum(MotorConstants.SHOOTER_TICKS_PER_ROTATION)){
 				this.shooterPassedEncoder = false;
 				this.shootFast();
 			}
 			else {
 				this.shooterPassedEncoder = true;
-				this.shootSlow();
-			}
-		}
-	}
-
-	public void advanceShooterToDownWithEncoder() {
-		if (!this.shooterWasDown) {
-			if (this.isShooterAtSensor()) {
-				this.shooterPassedEncoder = true;
-				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-				if (this.v2) {
-					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
-					this.shooter.stop();
-				}
-				else {
-					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
-					this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
-					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
-				}
-				this.shooterWasDown = true;
-			}
-			else if (this.shooter.encoderValue() > (MotorConstants.SHOOTER_TICKS_PER_ROTATION + 450)){
-				this.shooterPassedEncoder = false;
-				this.shootFast();
-			}
-			else {
-				this.shooterPassedEncoder = true;
-				this.shootSlow();
+				this.shootSlow(autonomous);
 			}
 		}
 	}
@@ -387,6 +353,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
+		public static final double SHOOTER_BACK_SLOW_AUTONOMOUS = SHOOTER_BACK * 0.3;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -700;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
@@ -441,5 +408,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double CAP_BALL_SLOW_SCALE = 0.3, CAP_BALL_SUPER_SLOW_UP = CAP_BALL_UP * 0.1;
 		public static final int CAP_BALL_TOP = -6800;
 		public static final int CAP_BALL_BOTTOM = 0;
+
+		public static final double FRONT_BUMPER_UP = 1.0;
+		public static final double FRONT_BUMPER_DOWN = -1.0;
 	}
 }

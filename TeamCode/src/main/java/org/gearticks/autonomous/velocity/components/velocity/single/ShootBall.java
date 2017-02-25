@@ -16,7 +16,7 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
     @Override
     public void setup() {
         super.setup();
-        this.configuration.shootSlow();
+        this.configuration.shootFast();
     }
 
     @Override

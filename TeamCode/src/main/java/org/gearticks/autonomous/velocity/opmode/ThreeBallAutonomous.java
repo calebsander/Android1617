@@ -7,15 +7,10 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.experimental.AutonomousSideSelector;
-import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
-import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
-import org.gearticks.autonomous.velocity.components.velocity.composite.BlueSideCornerAutonomous;
 import org.gearticks.autonomous.velocity.components.velocity.composite.BlueThreeBallAutonomous;
 import org.gearticks.autonomous.velocity.components.velocity.composite.RedSideCornerAutonomous;
-import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
 import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot3Balls;
-import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
@@ -30,7 +25,7 @@ public class ThreeBallAutonomous extends VelocityBaseOpMode {
         super.loopBeforeStart();
         this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
         this.configuration.clutch.setPosition(VelocityConfiguration.MotorConstants.CLUTCH_V2_CLUTCHED);
-        this.configuration.advanceShooterToDown();
+        this.configuration.advanceShooterToDownWithEncoder(true);
     }
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
