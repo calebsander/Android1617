@@ -12,7 +12,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class ShooterDownAndLoadSnake extends ParallelComponent {
 	public ShooterDownAndLoadSnake(OpModeContext<VelocityConfiguration> opModeContext, String id) {
 		super(id);
-		this.addComponent(new MoveShooterDown(opModeContext, id));
+		this.addComponent(new MoveShooterDown(opModeContext, "Move Shooter Down"));
 		final LinearStateMachine handleSnakeLoad = new LinearStateMachine("Load snake");
 		handleSnakeLoad.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext, "Wait for shooter down") {
 			@Override
@@ -20,7 +20,7 @@ public class ShooterDownAndLoadSnake extends ParallelComponent {
 				final Transition superTransition = super.run();
 				if (superTransition != null) return superTransition;
 
-				if (this.configuration.isShooterPassedEncoder()) return NEXT_STATE;
+				if (this.configuration.isShooterPassedEncoder() || this.configuration.isShooterDown()) return NEXT_STATE;
 				else return null;
 			}
 		});

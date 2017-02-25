@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
@@ -17,6 +18,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
+@Disabled
 @Autonomous
 public class SideAutonomousRB extends VelocityBaseOpMode {
     private static final int DISTANCE_FROM_WALL = 9;

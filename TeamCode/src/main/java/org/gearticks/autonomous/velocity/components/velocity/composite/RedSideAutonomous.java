@@ -26,7 +26,7 @@ public class RedSideAutonomous extends LinearStateMachine {
         //Press beacon
         addComponent(new GiroDriveEncoder(0.0, -0.1, 300, opModeContext, "Center on beacon"));
         addComponent(new GiroTurn(0.0, opModeContext, "Straighten out"));
-        addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));
 
         //Go to second beacon
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall+1, 0.0, -0.7, 3000, opModeContext, "Range sensor drive along wall"));
@@ -36,7 +36,7 @@ public class RedSideAutonomous extends LinearStateMachine {
         //Press beacon
         addComponent(new GiroDriveToLine(0, 0.05, 500, opModeContext, "Adjust to white line"));
         addComponent(new GiroTurn(0.0, opModeContext, "Straighten out"));
-        addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));
 
         //Cap ball
         addComponent(new RaiseSideRollers(opModeContext, "Disengage rollers"));

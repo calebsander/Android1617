@@ -28,7 +28,7 @@ public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration
         if (superTransition != null) return superTransition;
 
         final double accelLimit;
-        if (this.rampUp) accelLimit = 0.05;
+        if (this.rampUp) accelLimit = 0.02;
         else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
         this.configuration.intake.accelLimit(MotorConstants.INTAKE_IN, accelLimit);
 

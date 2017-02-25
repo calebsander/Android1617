@@ -14,7 +14,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class NonLinearPressBeaconButton extends NetworkedStateMachine {
 
     public NonLinearPressBeaconButton(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        final AutonomousComponent selectSide = new SelectBeaconSide(opModeContext, "Press beacon button");
+        final AutonomousComponent selectSide = new SelectBeaconSide(true, "Press beacon button", opModeContext);
         final AutonomousComponent pushLeftButton = new GiroTurnBeacon(10.0, opModeContext, "Turn left");
         final AutonomousComponent pushRightButton = new GiroTurnBeacon(-10.0, opModeContext, "Turn right");
         final AutonomousComponent driveInLeftButton = new GiroDriveEncoderBeacon(10.0, 0.3, 200, opModeContext, "Press left button");

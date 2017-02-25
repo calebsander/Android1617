@@ -27,7 +27,7 @@ public class Shoot3Balls extends LinearStateMachine {
         //Shooting
         final LinearStateMachine shoot = new LinearStateMachine("Shoot");
         shoot.addComponent(new ShootBall(opModeContext, "Shoot 1st ball"));
-        shoot.addComponent(new ShooterDownAndLoadSnake(opModeContext, "Move Shooter Down"));
+        shoot.addComponent(new ShooterDownAndLoadSnake(opModeContext, "Shooter and Snake"));
         shoot.addComponent(new ResetSnake(false, opModeContext, "Reset Snake"));
 
         //Shooting and intake

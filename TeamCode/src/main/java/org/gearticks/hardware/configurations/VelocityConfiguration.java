@@ -32,6 +32,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public final TankDrive drive;
 	public final Servo clutch, snake, frontBeaconPresser, backBeaconPresser;
 	private final Servo frontRoller, rearRoller;
+	public final Servo topLatch;
 	private final CRServo shooterStopper;
 	public final CRServo frontBumper;
 	public final GearticksBNO055 imu;
@@ -78,19 +79,18 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		if (v2) initialClutchPosition = MotorConstants.CLUTCH_V2_ENGAGED;
 		else initialClutchPosition = MotorConstants.CLUTCH_ENGAGED;
 		this.clutch.setPosition(initialClutchPosition);
-		this.frontBeaconPresser = (Servo) hardwareMap.get("frontBeacon");
-		this.backBeaconPresser = (Servo) hardwareMap.get("backBeacon");
-		final double frontInitialPresserPosition, backInitialPresserPosition;
-		if (v2) {
+		if(v2) {
+			this.frontBeaconPresser = (Servo) hardwareMap.get("frontBeacon");
+			this.backBeaconPresser = (Servo) hardwareMap.get("backBeacon");
+			final double frontInitialPresserPosition, backInitialPresserPosition;
 			frontInitialPresserPosition = MotorConstants.PRESSER_V2_FRONT_IN;
 			backInitialPresserPosition = MotorConstants.PRESSER_V2_BACK_IN;
+			this.frontBeaconPresser.setPosition(frontInitialPresserPosition);
+			this.backBeaconPresser.setPosition(backInitialPresserPosition);
+		} else {
+			this.frontBeaconPresser = null;
+			this.backBeaconPresser = null;
 		}
-		else {
-			frontInitialPresserPosition = MotorConstants.BEACON_PRESSER_DISENGAGED;
-			backInitialPresserPosition = MotorConstants.BEACON_PRESSER_DISENGAGED;
-		}
-		this.frontBeaconPresser.setPosition(frontInitialPresserPosition);
-		this.backBeaconPresser.setPosition(backInitialPresserPosition);
 		this.snake = (Servo) hardwareMap.get("snake");
 		final double initialSnakePosition;
 		if (v2) initialSnakePosition = MotorConstants.SNAKE_V2_HOLDING;
@@ -104,6 +104,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		else {
 			this.frontRoller = this.rearRoller = null;
 		}
+
+		if(v2) {
+			this.topLatch = (Servo)hardwareMap.get("topLatch");
+			this.disengageTopLatch();
+		}
+		else this.topLatch = null;
+
 		this.shooterStopper = (CRServo) hardwareMap.get("shooterStopper");
 		this.shooterStopper.setPower(0.0);
 		if (v2) {
@@ -221,7 +228,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 	}
 
-	public void advanceShooterToDownWithEncoder(boolean autonomous) {
+	public void advanceShooterToDownSlowly() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
 				this.shooterPassedEncoder = true;
@@ -237,12 +244,32 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				}
 				this.shooterWasDown = true;
 			}
+			else {
+				this.shooterPassedEncoder = true;
+				this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SUPER_SLOW);
+			}
+		}
+	}
+	public void advanceShooterToDownWithEncoder(boolean autonomous) {
+		if (!this.shooterWasDown) {
+			if (this.isShooterAtSensor()) {
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				if (this.v2) {
+					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+					this.shooter.stop();
+				}
+				else {
+					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+					this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				}
+				this.shooterWasDown = true;
+			}
 			else if (this.shooter.encoderValue() > MotorConstants.SHOOTER_TICKS_PER_ROTATION - 250 * Math.signum(MotorConstants.SHOOTER_TICKS_PER_ROTATION)){
-				this.shooterPassedEncoder = false;
 				this.shootFast();
 			}
 			else {
-				this.shooterPassedEncoder = true;
 				this.shootSlow(autonomous);
 			}
 		}
@@ -342,6 +369,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.rearRoller.setPosition(MotorConstants.REAR_ROLLER_V2_DOWN);
 	}
 
+	public void engageTopLatch() {
+		this.topLatch.setPosition(MotorConstants.TOP_LATCH_ENGAGED);
+	}
+	public void disengageTopLatch() {
+		this.topLatch.setPosition(MotorConstants.TOP_LATCH_DISENGAGED);
+	}
+
 	public boolean isCapBallUp() {
 		return !capBallLimit.getState();
 	}
@@ -354,6 +388,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
 		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
 		public static final double SHOOTER_BACK_SLOW_AUTONOMOUS = SHOOTER_BACK * 0.3;
+		public static final double SHOOTER_BACK_SUPER_SLOW = SHOOTER_BACK * 0.15;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -700;
 		@Deprecated
 		public static final int SHOOTER_TICKS_TO_DOWN = (int)(MotorConstants.SHOOTER_TICKS_PER_ROTATION * 0.1);
@@ -411,5 +446,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double FRONT_BUMPER_UP = 1.0;
 		public static final double FRONT_BUMPER_DOWN = -1.0;
+
+		public static final double TOP_LATCH_ENGAGED = 0.55;
+		public static final double TOP_LATCH_DISENGAGED = 0.0;
 	}
 }

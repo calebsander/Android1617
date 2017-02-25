@@ -21,22 +21,19 @@ public class SelectBeaconSide extends AutonomousComponentHardware<VelocityConfig
 	private final PictureResult pictureResult;
 
 	/**
-	 * @param pictureResult - the object to store the beacon color counts in
+	 * @param isBlue
 	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
+	 * @param pictureResult - the object to store the beacon color counts in
 	 */
-	public SelectBeaconSide(PictureResult pictureResult, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public SelectBeaconSide(boolean isBlue, OpModeContext<VelocityConfiguration> opModeContext, String id, PictureResult pictureResult) {
 		super(opModeContext, id);
 		this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
 		this.pictureResult = pictureResult;
+		this.allianceColorIsBlue = isBlue;
 	}
-	public SelectBeaconSide(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		this(new PictureResult(), opModeContext, id);
-	}
-
-	@Override
-	public void onMatchStart() {
-		this.allianceColorIsBlue = AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.BLUE;
+	public SelectBeaconSide(boolean isBlue, String id, OpModeContext<VelocityConfiguration> opModeContext) {
+		this(isBlue, opModeContext, id, new PictureResult());
 	}
 
 	@Override

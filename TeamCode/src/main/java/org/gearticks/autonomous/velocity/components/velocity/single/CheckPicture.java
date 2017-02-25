@@ -12,8 +12,10 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 
 	private final PictureResult pictureResult;
 	private final VuforiaConfiguration vuforiaConfiguration;
+	private final boolean isBlue;
 
-	public CheckPicture(PictureResult pictureResult, OpModeContext opModeContext) {
+	public CheckPicture(boolean isBlue, OpModeContext opModeContext, PictureResult pictureResult) {
+		this.isBlue = isBlue;
 		this.pictureResult = pictureResult;
 		this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
 	}
@@ -28,7 +30,7 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 		final BeaconColorCounts colorCounts = this.vuforiaConfiguration.getColorCounts();
 		final int newBlue = colorCounts.leftBlue + colorCounts.rightBlue;
 		final boolean nowBlue = newBlue > oldBlue;
-		final boolean nowCorrect = nowBlue ^ AllianceOption.allianceOption.getRawSelectedOption() == AllianceOption.RED;
+		final boolean nowCorrect = nowBlue ^ (!isBlue);
 		if (nowCorrect) return CORRECT;
 		else return WRONG;
 	}

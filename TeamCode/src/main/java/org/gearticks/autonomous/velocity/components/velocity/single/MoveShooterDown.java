@@ -28,10 +28,4 @@ public class MoveShooterDown extends AutonomousComponentHardware<VelocityConfigu
         if (this.configuration.isShooterDown()) return NEXT_STATE;
         else return null;
     }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
-        this.configuration.resetAutoShooter();
-    }
 }

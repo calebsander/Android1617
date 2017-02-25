@@ -62,7 +62,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180, 0.05, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         //sm.addComponent(new GiroTurn(180.0, this.configuration, "Straighten out"));
-        sm.addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        sm.addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));
         sm.addComponent(new DebugPause(opModeContext));
 
 
@@ -77,7 +77,7 @@ public class SideAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new GiroDriveToLine(180, -0.05, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new Wait(0.3, "Wait for 0.5 sec"));
         sm.addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
-        sm.addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        sm.addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));
         sm.addComponent(new DebugPause(opModeContext));
 
 

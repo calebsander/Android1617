@@ -28,7 +28,7 @@ public class BlueSideAutonomous extends LinearStateMachine {
         addComponent(new GiroDriveAlongWallLine(distanceFromWall, 180.0, -0.17, 500, opModeContext, "Adjust to white line"));
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.17, 25, opModeContext, "Align"));
         addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
-        addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));
 
         //Go to second beacon
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.8, 3000, opModeContext, "Range sensor drive along wall"));
@@ -38,7 +38,7 @@ public class BlueSideAutonomous extends LinearStateMachine {
         //Press second beacon
         addComponent(new GiroDriveToLine(180, 0.05, 500, opModeContext, "Adjust to white line"));
         addComponent(new GiroTurn(180.0, opModeContext, "Straighten out"));
-        addComponent(new SidePressBeaconButton(opModeContext, "Press Button"));
+        addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));
 
         //Cap ball
         addComponent(new RaiseSideRollers(opModeContext, "Raise rollers"));
