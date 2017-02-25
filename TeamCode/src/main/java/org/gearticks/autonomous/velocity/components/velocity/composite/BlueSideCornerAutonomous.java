@@ -45,6 +45,7 @@ public class BlueSideCornerAutonomous extends LinearStateMachine {
 		addComponent(new GiroBananaTurnEncoder(180.0, 187.0, -0.4, 400, opModeContext, "Banana turn to 187"));
 		addComponent(new GiroBananaTurnEncoder(187, 270.0, 0.5, 500, 0.1, 0.2, 1.0, opModeContext, "banana turn to shoot"));
 		addComponent(new Shoot3Balls(true, opModeContext, "Shoot"));
+
 		//Cap ball
 		addComponent(new GiroTurn(290.0, 0.1, 3, 2.0, opModeContext, "turn to cap ball"));
 		addComponent(new GiroBananaTurnEncoder(300.0, 230.0, 1.0, 5000, 0.25, 0.3, 3.0, opModeContext, "Hit cap ball"));
