@@ -45,11 +45,4 @@ public class DecisionDebugPause extends AutonomousComponentHardware<VelocityConf
 		}
 		else return null;
 	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
-		//stop motors
-		this.configuration.stopMotion();
-	}
 }

@@ -64,11 +64,4 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 
 		return transition;
 	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
-		//stop motors
-		this.configuration.stopMotion();
-	}
 }

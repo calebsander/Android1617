@@ -85,8 +85,8 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
 
     @Override
     public void tearDown() {
-        this.vuforiaConfiguration.deactivate();
         super.tearDown();
+        this.vuforiaConfiguration.deactivate();
     }
 
     //Gets distance we are to the left of the center of the image

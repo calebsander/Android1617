@@ -52,12 +52,4 @@ public class GiroDriveEncoderBeacon extends AutonomousComponentHardware<Velocity
 		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
 		else return null;
 	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
-		//stop motors
-		this.configuration.stopMotion();
-	}
-
 }

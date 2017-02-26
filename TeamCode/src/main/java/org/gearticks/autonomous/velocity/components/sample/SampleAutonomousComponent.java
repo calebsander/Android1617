@@ -15,7 +15,6 @@ public class SampleAutonomousComponent extends AutonomousComponentHardware<Veloc
         //Custom code here
     }
 
-    @SuppressWarnings({"ConstantIfStatement", "ConstantConditions"})
     @Override
     public Transition run() {
         final Transition superTransition = super.run();
@@ -30,6 +29,6 @@ public class SampleAutonomousComponent extends AutonomousComponentHardware<Veloc
     @Override
     public void tearDown() {
         super.tearDown();
-        //Custom code here
+        //Custom code here (robot is already stopped by AutonomousComponentHardware)
     }
 }

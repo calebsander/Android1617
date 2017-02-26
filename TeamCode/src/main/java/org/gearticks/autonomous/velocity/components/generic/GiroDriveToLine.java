@@ -69,11 +69,4 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
         }
         return null;
     }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
-        //stop motors
-        this.configuration.stopMotion();
-    }
 }

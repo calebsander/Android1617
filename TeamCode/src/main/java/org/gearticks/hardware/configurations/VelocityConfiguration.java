@@ -231,7 +231,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void advanceShooterToDownSlowly() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
-				this.shooterPassedEncoder = true;
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 				if (this.v2) {
 					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
@@ -243,9 +242,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 				}
 				this.shooterWasDown = true;
+				this.shooterPassedEncoder = true;
 			}
 			else {
-				this.shooterPassedEncoder = true;
 				this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 				this.shooter.setPower(MotorConstants.SHOOTER_BACK_SUPER_SLOW);
 			}
@@ -265,11 +264,14 @@ public class VelocityConfiguration implements HardwareConfiguration {
 					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
 				}
 				this.shooterWasDown = true;
+				this.shooterPassedEncoder = true;
 			}
 			else if (this.shooter.encoderValue() > MotorConstants.SHOOTER_TICKS_PER_ROTATION - 250 * Math.signum(MotorConstants.SHOOTER_TICKS_PER_ROTATION)){
+				this.shooterPassedEncoder = true;
 				this.shootFast();
 			}
 			else {
+				this.shooterPassedEncoder = false;
 				this.shootSlow(autonomous);
 			}
 		}

@@ -41,11 +41,4 @@ public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfigur
 		if (done) return NEXT_STATE;
 		else return null;
 	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
-		//stop motors
-		this.configuration.stopMotion();
-	}
 }

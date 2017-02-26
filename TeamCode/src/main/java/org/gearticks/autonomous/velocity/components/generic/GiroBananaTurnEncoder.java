@@ -30,16 +30,7 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
      * @param id - descriptive name for logging
      */
 	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
-		this.direction = new DriveDirection();
-		this.power = power;
-		this.turnPower = 0.05;
-		this.turnAccel = 0.1;
-		this.turnRange = 1.0;
-		this.startHeading = startHeading;
-		this.endHeading = endHeading;
-		this.encoderTarget = Math.abs(encoderTarget);
-		this.headingSlope = (this.endHeading - this.startHeading) / this.encoderTarget;
+		this(startHeading, endHeading, power, encoderTarget, 0.05, 0.1, 1.0, opModeContext, id);
 	}
 	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, double turnPower, double turnAccel, double turnRange, OpModeContext<VelocityConfiguration> opModeContext, String id) {
 		super(opModeContext, id);
@@ -93,13 +84,6 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 
 		Log.v(Utils.TAG, "Target heading = " + targetHeading + " Distance = " + distance + " Current Heading = " + currentHeading);
 		return transition;
-	}
-
-	@Override
-	public void tearDown() {
-		super.tearDown();
-		//stop motors
-		this.configuration.stopMotion();
 	}
 
 	private double getHeading(int distance) {
