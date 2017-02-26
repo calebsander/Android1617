@@ -27,18 +27,23 @@ public class BlueBeaconFirstAutonomous extends VelocityBaseOpMode {
     protected void loopBeforeStart() {
         super.loopBeforeStart();
         this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-        this.configuration.advanceShooterToDownWithEncoder(true);
+        this.configuration.advanceShooterToDownSlowly();
         this.configuration.beaconPresserFrontIn();
         this.configuration.beaconPresserBackIn();
+        this.configuration.engageTopLatch();
+    }
+
+    @Override
+    protected void matchStart() {
+        super.matchStart();
+        this.configuration.disengageTopLatch();
     }
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
-        sm.addComponent(new RunIntake(1.3, true, opModeContext, "Intake particle"));
-
         //Get to far beacon
-        sm.addComponent(new RunIntake(1.3, true, opModeContext, "Intake particle"));
+        sm.addComponent(new RunIntake(1.3, false, opModeContext, "Intake particle"));
         final ParallelComponent driveAndDeployRollers = new ParallelComponent();
         driveAndDeployRollers.addComponent(new GiroBananaTurnEncoder(225.0, 180.0, -0.7, 8000, opModeContext, "Banana turn to 180.0"));
         driveAndDeployRollers.addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers"));
@@ -63,11 +68,12 @@ public class BlueBeaconFirstAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new RaiseSideRollers(opModeContext, "Raise rollers"));
         sm.addComponent(new GiroBananaTurnEncoder(180.0, 187.0, -0.4, 400, opModeContext, "Banana turn to 187"));
         sm.addComponent(new GiroBananaTurnEncoder(187, 270.0, 0.5, 500, 0.1, 0.2, 1.0, opModeContext, "banana turn to shoot"));
+        sm.addComponent(new GiroTurn(277.0, opModeContext, "Align to vortex"));
         sm.addComponent(new Shoot3Balls(true, opModeContext, "Shoot"));
 
         //Cap ball
         sm.addComponent(new GiroTurn(290.0, 0.1, 3, 2.0, opModeContext, "turn to cap ball"));
-        sm.addComponent(new GiroBananaTurnEncoder(300.0, 230.0, 1.0, 5000, 0.25, 0.3, 3.0, opModeContext, "Hit cap ball"));
+        sm.addComponent(new GiroBananaTurnEncoder(300.0, 230.0, 1.0, 4500, 0.25, 0.3, 3.0, opModeContext, "Hit cap ball"));
 
 
         sm.addComponent(new Stopped(opModeContext));
@@ -79,6 +85,6 @@ public class BlueBeaconFirstAutonomous extends VelocityBaseOpMode {
     }
 
     protected double targetHeading() {
-        return 26.0;
+        return 225.0;
     }
 }

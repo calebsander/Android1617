@@ -420,7 +420,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double PRESSER_V2_BACK_IN_STRAIN = 0.1;
 		public static final double PRESSER_V2_BACK_OUT_PARTIAL = 0.4;
 		public static final double PRESSER_V2_BACK_OUT = 0.7;
-		public static final double PRESSER_V2_TIME_TO_MOVE = 1.0; //seconds for beacon presser to switch positions
+		public static final double PRESSER_V2_TIME_TO_MOVE = 0.5; //seconds for beacon presser to switch positions
 		public static final int PRESSER_V2_TIMES_PULL_IN = 3; //number of times the presser pulls to straining position until in place
 
 		@Deprecated

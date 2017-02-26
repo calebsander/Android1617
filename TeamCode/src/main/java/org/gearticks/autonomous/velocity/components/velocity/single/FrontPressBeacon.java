@@ -27,18 +27,18 @@ public class FrontPressBeacon extends AutonomousComponentHardware<VelocityConfig
         if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE)) {
 	        return NEXT_STATE;
         }
-        else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.8)) {
-	        configuration.beaconPresserFrontOut();
-        }
-        else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.7)) {
-	        configuration.beaconPresserFrontOutPartial();
-        }
-        else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.5)) {
+        else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.6)) {
 	        configuration.beaconPresserFrontOut();
         }
         else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.4)) {
 	        configuration.beaconPresserFrontOutPartial();
         }
+        /*else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.5)) {
+	        configuration.beaconPresserFrontOut();
+        }
+        else if (this.stageTimer.seconds() > (VelocityConfiguration.MotorConstants.PRESSER_V2_TIME_TO_MOVE*0.4)) {
+	        configuration.beaconPresserFrontOutPartial();
+        }*/
         else {
 	        return null;
         }

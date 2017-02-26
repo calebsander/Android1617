@@ -50,20 +50,20 @@ public class RedBeaconFirstAutonomous extends VelocityBaseOpMode {
         final LinearStateMachine driveAndBTurn = new LinearStateMachine();
         //waitAndDrive.addComponent(new Wait(0.5, "Wait for 0.5"));
         driveAndBTurn.addComponent(new GiroDriveEncoderNoStop(315.0, 0.5, 4000, opModeContext, "Drive forward"));
-        //waitAndDrive.addComponent(new BananaTurnNoGiro(0.0, 0.6, 5000, opModeContext, "Banana turn to wall"));
+        //driveAndBTurn.addComponent(new BananaTurnNoGiro(0.0, 0.6, 5000, opModeContext, "Banana turn to wall"));
         driveAndBTurn.addComponent(new GiroBananaTurnEncoder(-45.0, 0.0, 0.9, 6000, 0.18, 0.25, 3.0, opModeContext, "Banana turn to 0.0"));
         final LinearStateMachine rollers = new LinearStateMachine();
         rollers.addComponent(new Wait(2.0, "Wait for 2 secs"));
         rollers.addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers"));
         final ParallelComponent intakeAndDrive = new ParallelComponent();
-        intakeAndDrive.addComponent(new RunIntake(4.5, true, opModeContext, "Intake particle"));
+        intakeAndDrive.addComponent(new RunIntake(4.5, false, opModeContext, "Intake particle"));
         intakeAndDrive.addComponent(rollers);
         intakeAndDrive.addComponent(driveAndBTurn);
 
         //Get to far beacon
         sm.addComponent(intakeAndDrive);
 	    //sm.addComponent(new DebugPause(opModeContext));
-	    sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.2, 4000, opModeContext, "Get to far beacon"));
+	      sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.2, 4000, opModeContext, "Get to far beacon"));
 
         //Press beacon
         sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.17, 500, opModeContext, "Adjust to white line"));
