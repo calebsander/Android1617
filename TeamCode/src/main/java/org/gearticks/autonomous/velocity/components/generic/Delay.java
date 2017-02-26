@@ -1,4 +1,4 @@
-package org.gearticks.autonomous.velocity.components.experimental;
+package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;

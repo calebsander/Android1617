@@ -6,12 +6,9 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.generic.BananaTurnNoGiro;
-import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.GiroBananaTurnEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveAlongWallLine;
-import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoderNoStop;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
@@ -21,28 +18,11 @@ import org.gearticks.autonomous.velocity.components.velocity.composite.SidePress
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
-import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Autonomous
-public class RedBeaconFirstAutonomous extends VelocityBaseOpMode {
+public class RedBeaconFirstAutonomous extends BeaconFirstAutonomous {
     private static final int DISTANCE_FROM_WALL = 9;
-
-    @Override
-    protected void loopBeforeStart() {
-        super.loopBeforeStart();
-        this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-        this.configuration.advanceShooterToDownSlowly();
-        this.configuration.beaconPresserFrontIn();
-        this.configuration.beaconPresserBackIn();
-        this.configuration.engageTopLatch();
-    }
-
-    @Override
-    protected void matchStart() {
-        super.matchStart();
-        this.configuration.disengageTopLatch();
-    }
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
@@ -62,8 +42,8 @@ public class RedBeaconFirstAutonomous extends VelocityBaseOpMode {
 
         //Get to far beacon
         sm.addComponent(intakeAndDrive);
-	    //sm.addComponent(new DebugPause(opModeContext));
-	      sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.2, 4000, opModeContext, "Get to far beacon"));
+        //sm.addComponent(new DebugPause(opModeContext));
+        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.2, 4000, opModeContext, "Get to far beacon"));
 
         //Press beacon
         sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.17, 500, opModeContext, "Adjust to white line"));
@@ -93,9 +73,6 @@ public class RedBeaconFirstAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new Stopped(opModeContext));
 
         return sm;
-    }
-    protected boolean isV2() {
-        return true;
     }
 
     protected double targetHeading() {

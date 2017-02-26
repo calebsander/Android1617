@@ -1,4 +1,4 @@
-package org.gearticks.autonomous.velocity.opmode;
+package org.gearticks.autonomous.velocity.opmode.deprecated;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;

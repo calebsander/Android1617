@@ -16,28 +16,11 @@ import org.gearticks.autonomous.velocity.components.velocity.composite.SidePress
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.RaiseSideRollers;
 import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
-import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Autonomous
-public class BlueBeaconFirstAutonomous extends VelocityBaseOpMode {
+public class BlueBeaconFirstAutonomous extends BeaconFirstAutonomous {
     private static final int DISTANCE_FROM_WALL = 10;
-
-    @Override
-    protected void loopBeforeStart() {
-        super.loopBeforeStart();
-        this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-        this.configuration.advanceShooterToDownSlowly();
-        this.configuration.beaconPresserFrontIn();
-        this.configuration.beaconPresserBackIn();
-        this.configuration.engageTopLatch();
-    }
-
-    @Override
-    protected void matchStart() {
-        super.matchStart();
-        this.configuration.disengageTopLatch();
-    }
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
@@ -79,9 +62,6 @@ public class BlueBeaconFirstAutonomous extends VelocityBaseOpMode {
         sm.addComponent(new Stopped(opModeContext));
 
         return sm;
-    }
-    protected boolean isV2() {
-        return true;
     }
 
     protected double targetHeading() {
