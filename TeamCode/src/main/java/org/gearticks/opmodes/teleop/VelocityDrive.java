@@ -1,5 +1,7 @@
 package org.gearticks.opmodes.teleop;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
@@ -14,6 +16,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstant
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
+import org.gearticks.opmodes.utility.Utils;
 
 import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
@@ -45,7 +48,7 @@ public class VelocityDrive extends BaseOpMode {
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
-			if (this.stageTimer.seconds() > 0.1) return NEXT_STATE; //wait for ball to settle in snake before loading
+			if (this.stageTimer.seconds() > 0) return NEXT_STATE; //wait for ball to settle in snake before loading
 			else return null;
 		}
 	}
@@ -72,13 +75,27 @@ public class VelocityDrive extends BaseOpMode {
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(MotorConstants.SNAKE_V2_DUMPING);
-			configuration.advanceShooterToDownWithEncoder(false);
+			configuration.advanceShooterToDownWithEncoder();
+
 			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
 			else return null;
 		}
 		public void tearDown() {
 			super.tearDown();
 			ballInShooter = true;
+		}
+	}
+	private class SnakeReturnComponent extends AutonomousComponentTimer {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
+			configuration.snake.setPosition(getDefaultSnakePosition());
+			autoShooterUnlessBumper();
+
+			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE*0.8) return NEXT_STATE;
+			else return null;
 		}
 	}
 	//The state machine switching between intaking, holding, and loading
@@ -182,12 +199,14 @@ public class VelocityDrive extends BaseOpMode {
 		final AutonomousComponent settling = new SettleInSnakeComponent();
 		final AutonomousComponent holding = new HoldingComponent();
 		final AutonomousComponent loading = new LoadingComponent();
+		final AutonomousComponent snakeReturning = new SnakeReturnComponent();
 		this.ballStateMachine.setInitialComponent(intaking);
 		this.ballStateMachine.addConnection(intaking, NEXT_STATE, settling);
 		this.ballStateMachine.addConnection(settling, NEXT_STATE, holding);
 		this.ballStateMachine.addConnection(holding, NEXT_STATE, loading);
 		this.ballStateMachine.addConnection(holding, MANUAL_SNAKE, intaking);
-		this.ballStateMachine.addConnection(loading, NEXT_STATE, intaking);
+		this.ballStateMachine.addConnection(loading, NEXT_STATE, snakeReturning);
+		this.ballStateMachine.addConnection(snakeReturning, NEXT_STATE, intaking);
 
 		this.shooterState = ShooterState.values()[0];
 
@@ -274,7 +293,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.configuration.intake.setPower(intakePower);
 
 		this.ballStateMachine.run();
-		this.beaconStateMachine.run();
+		//this.beaconStateMachine.run();
 		this.bumperStateMachine.run();
 
 		final double shooterStopperPower;
@@ -328,7 +347,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.telemetry.addData("passedEncoder", this.configuration.isShooterPassedEncoder());
 		switch (this.shooterState) {
 			case ADVANCING_TO_DOWN:
-				this.configuration.advanceShooterToDownWithEncoder(false);
+				this.configuration.advanceShooterToDownWithEncoder();
 				//Require ball to be newly loaded (unless overridden)
 				final boolean shotRequested = this.gamepads[JACK].getLeftBumper() && (this.ballInShooter || this.gamepads[JACK].getX());
 				if (this.configuration.isShooterDown() && shotRequested) {

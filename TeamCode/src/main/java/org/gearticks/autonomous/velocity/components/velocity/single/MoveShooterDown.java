@@ -24,7 +24,7 @@ public class MoveShooterDown extends AutonomousComponentHardware<VelocityConfigu
         final Transition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
-        this.configuration.advanceShooterToDownWithEncoder(true);
+        this.configuration.advanceShooterToDownAutonomous();
         if (this.configuration.isShooterDown()) return NEXT_STATE;
         else return null;
     }
