@@ -21,16 +21,12 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 		super.loopBeforeStart();
 		final EulerAngle heading = this.configuration.imu.getHeading();
 		this.telemetry.addData("Heading", heading);
+		final boolean redOn, blueOn;
 		if (heading != null) {
-			if (this.gamepads[0].getY()) {
-				this.hasResetHeading = true;
-				this.configuration.imu.resetHeading();
-			}
-			final boolean redOn, blueOn;
 			if (this.hasResetHeading) {
 				final double yaw = this.configuration.imu.getRelativeYaw();
 				this.telemetry.addData("Relative to wall", yaw);
-				final double headingDiff = ((yaw - this.targetHeading() + 540.0) % 360.0) - 180.0;
+				final double headingDiff = ((yaw - this.targetHeading() + 540.0) % 360.0) - 180.0; //get difference in range of -180 to 180
 				if (Math.abs(headingDiff) < 0.5) {
 					redOn = false;
 					blueOn = false;
@@ -45,16 +41,14 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 				}
 			}
 			else {
-				this.telemetry.addData("To reset heading", "Press Y");
+				this.configuration.imu.resetHeading();
+				this.hasResetHeading = true;
 				redOn = blueOn = true;
 			}
-			this.configuration.dim.setLED(DimLed.RED.id, redOn);
-			this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
 		}
-	}
-	protected void matchStart() {
-		super.matchStart();
-		if (!this.hasResetHeading) this.configuration.imu.resetHeading();
+		else redOn = blueOn = true;
+		this.configuration.dim.setLED(DimLed.RED.id, redOn);
+		this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
 	}
 
 	protected VelocityConfiguration newConfiguration() {
