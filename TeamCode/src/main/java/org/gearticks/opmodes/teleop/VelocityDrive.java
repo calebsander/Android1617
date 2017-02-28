@@ -248,8 +248,8 @@ public class VelocityDrive extends BaseOpMode {
 		double sScaleFactor;
 		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) {
 			driveGamepad = JACK;
-			yScaleFactor = 0.7;
-			sScaleFactor = Math.max(0.3, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
+			yScaleFactor = 0.8;
+			sScaleFactor = Math.max(0.4, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
 		}
 		else {
 			driveGamepad = CALVIN;
@@ -261,12 +261,12 @@ public class VelocityDrive extends BaseOpMode {
 		final double maxPower;
 		if (slowMode) {
 			maxPower = 0.4;
-			sScaleFactor = Math.max(0.2, Math.abs(this.gamepads[driveGamepad].getLeftY() * maxPower));
-			yScaleFactor = -yScaleFactor;
+			sScaleFactor = Math.max(0.15, Math.abs(this.gamepads[driveGamepad].getLeftY() * maxPower));
+//			yScaleFactor = -yScaleFactor;
 		}
 		else maxPower = 1.0;
 		final double accelLimit;
-		if (slowMode) accelLimit = 0.03;
+		if (slowMode) accelLimit = 0.075;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
 		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);

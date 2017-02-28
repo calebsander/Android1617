@@ -47,6 +47,7 @@ public class BlueBeaconFirstAutonomous extends VelocityBaseOpMode {
         final ParallelComponent driveAndDeployRollers = new ParallelComponent();
         driveAndDeployRollers.addComponent(new GiroBananaTurnEncoder(225.0, 180.0, -0.7, 8000, opModeContext, "Banana turn to 180.0"));
         driveAndDeployRollers.addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers"));
+        driveAndDeployRollers.addComponent(new RunIntake(3, false, opModeContext, "Intake particle"));
         sm.addComponent(driveAndDeployRollers);
         sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, -0.3, 4000, opModeContext, "Get to far beacon"));
 

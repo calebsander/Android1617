@@ -420,7 +420,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.3;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.20;
 		public static final double SHOOTER_BACK_SLOW_AUTONOMOUS = SHOOTER_BACK * 0.2;
 		public static final double SHOOTER_BACK_SUPER_SLOW = SHOOTER_BACK * 0.15;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -700;

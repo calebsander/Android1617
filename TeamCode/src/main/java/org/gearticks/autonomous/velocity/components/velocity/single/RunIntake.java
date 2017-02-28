@@ -9,6 +9,8 @@ import org.gearticks.hardware.drive.MotorWrapper;
 public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration> {
     private final double time;
     private final boolean rampUp;
+    private final boolean reversed;
+
 
     /**
      * @param time - the time to run the intake for (in seconds)
@@ -20,6 +22,14 @@ public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration
         super(opModeContext, id);
         this.time = time;
         this.rampUp = rampUp;
+        this.reversed = false;
+    }
+
+    public RunIntake(double time, boolean rampUp, boolean reversed, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+        super(opModeContext, id);
+        this.time = time;
+        this.rampUp = rampUp;
+        this.reversed = reversed;
     }
 
     @Override
@@ -30,7 +40,8 @@ public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration
         final double accelLimit;
         if (this.rampUp) accelLimit = 0.02;
         else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
-        this.configuration.intake.accelLimit(MotorConstants.INTAKE_IN, accelLimit);
+        if (reversed) this.configuration.intake.accelLimit(MotorConstants.INTAKE_OUT, accelLimit);
+        else this.configuration.intake.accelLimit(MotorConstants.INTAKE_IN, accelLimit);
 
         if (this.stageTimer.seconds() > this.time) return NEXT_STATE;
         else return null;
