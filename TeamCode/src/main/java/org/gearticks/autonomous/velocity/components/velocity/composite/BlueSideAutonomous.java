@@ -21,7 +21,6 @@ public class BlueSideAutonomous extends LinearStateMachine {
         addComponent(new GiroBananaTurnEncoder(18, 90.0, 0.8, 7700, opModeContext, "BTR 90 - 7700"));
         addComponent(new GiroTurn(180.0, 0.1, 20, opModeContext, "Straighten out"));
         addComponent(new DeploySideRollers(opModeContext, "Deploy rollers"));
-        //addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.4, 2000, configuration, "Drive backwards"));
         addComponent(new GiroDriveAlongWallLine(distanceFromWall - 1, 180.0, 0.2, 6000, opModeContext, "Drive to beacon"));
 
         //Press beacon
@@ -33,7 +32,6 @@ public class BlueSideAutonomous extends LinearStateMachine {
         //Go to second beacon
         addComponent(new GiroDriveAlongWallEncoder(distanceFromWall, 180.0, -0.8, 3000, opModeContext, "Range sensor drive along wall"));
         addComponent(new GiroDriveAlongWallLine(distanceFromWall + 1, 180.0, -0.25, 2000, opModeContext, "Range sensor drive along wall to line"));
-        //sm.addComponent(new GiroDriveToLine(180, 0.7, 8000, this.configuration, "Drive to white line"));
 
         //Press second beacon
         addComponent(new GiroDriveToLine(180, 0.05, 500, opModeContext, "Adjust to white line"));
@@ -42,7 +40,6 @@ public class BlueSideAutonomous extends LinearStateMachine {
 
         //Cap ball
         addComponent(new RaiseSideRollers(opModeContext, "Raise rollers"));
-        //addComponent(new GiroTurn(225.0, configuration, "Turn to cap ball"));
         addComponent(new GiroBananaTurnEncoder(180.0, 235.0, 0.6, 400, opModeContext, "BTR 235 - 400"));
         addComponent(new GiroDriveEncoder(235.0, 1.0, 6000, opModeContext, "Hit cap ball and park"));
     }

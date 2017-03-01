@@ -24,7 +24,7 @@ public class ShootBall extends AutonomousComponentHardware<VelocityConfiguration
         final Transition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
-        if (this.configuration.hasShot()) return NEXT_STATE;
+        if (this.configuration.hasShot() || this.stageTimer.seconds() > 1.0) return NEXT_STATE;
         else return null;
     }
 

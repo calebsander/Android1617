@@ -12,17 +12,22 @@ import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeacon
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class BeaconCheck extends NetworkedStateMachine {
+	public static final Transition
+			CORRECT = new Transition("Correct"),
+			WRONG = new Transition("Wrong"),
+			LEFT_TRANSITION = new Transition("Left"),
+			RIGHT_TRANSITION = new Transition("Right"),
+			UNKNOWN_TRANSITION = new Transition("Unknown");
+
 	public BeaconCheck(boolean isBlue, PictureResult pictureResult, OpModeContext<VelocityConfiguration> opModeContext) {
-		super("Fix beacon");
+		super("Beacon Check");
 		final AutonomousComponent checkPicture = new CheckPicture(isBlue, opModeContext, pictureResult);
-		final LinearStateMachine fixBeacon = new LinearStateMachine();
-		fixBeacon.addComponent(new Wait(4.0, "Wait for beacon"));
-		fixBeacon.addComponent(new FrontPressBeacon(opModeContext, "Press beacon"));
-		fixBeacon.addComponent(new DisengageBeaconServo(opModeContext, "Stop pressing beacon"));
 
 		this.setInitialComponent(checkPicture);
 		this.addExitConnection(checkPicture, CheckPicture.CORRECT);
-		this.addConnection(checkPicture, CheckPicture.WRONG, fixBeacon);
-		this.addExitConnection(fixBeacon, NEXT_STATE);
+		this.addExitConnection(checkPicture, CheckPicture.WRONG);
+		this.addExitConnection(checkPicture, CheckPicture.LEFT_TRANSITION);
+		this.addExitConnection(checkPicture, CheckPicture.RIGHT_TRANSITION);
+		this.addExitConnection(checkPicture, CheckPicture.UNKNOWN_TRANSITION);
 	}
 }
