@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
@@ -19,7 +18,7 @@ import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Autonomous
-public class BlueBeaconFirstAutonomous extends BeaconFirstAutonomous {
+public class BlueBeaconFirstAutonomous extends InitializedAutonomous {
     private static final int DISTANCE_FROM_WALL = 10;
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
@@ -30,6 +29,7 @@ public class BlueBeaconFirstAutonomous extends BeaconFirstAutonomous {
         final ParallelComponent driveAndDeployRollers = new ParallelComponent();
         driveAndDeployRollers.addComponent(new GiroBananaTurnEncoder(225.0, 180.0, -0.7, 8000, opModeContext, "Banana turn to 180.0"));
         driveAndDeployRollers.addComponent(new DeploySideRollers(opModeContext, "Deploy side rollers"));
+        driveAndDeployRollers.addComponent(new RunIntake(3, false, opModeContext, "Intake particle"));
         sm.addComponent(driveAndDeployRollers);
         sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 180.0, -0.3, 4000, opModeContext, "Get to far beacon"));
 

@@ -20,7 +20,7 @@ public class BlockingAutonomous extends VelocityBaseOpMode {
 	protected void loopBeforeStart() {
 		super.loopBeforeStart();
 		this.configuration.safeShooterStopper(VelocityConfiguration.MotorConstants.SHOOTER_STOPPER_UP);
-		this.configuration.advanceShooterToDownWithEncoder(true);
+		this.configuration.advanceShooterToDownAutonomous();
 	}
 
 	protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {

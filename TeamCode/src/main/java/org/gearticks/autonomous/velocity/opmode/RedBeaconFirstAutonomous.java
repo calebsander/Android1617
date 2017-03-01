@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
@@ -21,15 +20,14 @@ import org.gearticks.autonomous.velocity.components.velocity.single.RunIntake;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Autonomous
-public class RedBeaconFirstAutonomous extends BeaconFirstAutonomous {
+public class RedBeaconFirstAutonomous extends InitializedAutonomous {
     private static final int DISTANCE_FROM_WALL = 9;
 
     protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         final LinearStateMachine driveAndBTurn = new LinearStateMachine();
-        //waitAndDrive.addComponent(new Wait(0.5, "Wait for 0.5"));
-        driveAndBTurn.addComponent(new GiroDriveEncoderNoStop(315.0, 0.5, 4000, opModeContext, "Drive forward"));
+        driveAndBTurn.addComponent(new GiroDriveEncoderNoStop(315.0, 0.5, 5000, opModeContext, "Drive forward"));
         //driveAndBTurn.addComponent(new BananaTurnNoGiro(0.0, 0.6, 5000, opModeContext, "Banana turn to wall"));
         driveAndBTurn.addComponent(new GiroBananaTurnEncoder(-45.0, 0.0, 0.9, 6000, 0.18, 0.25, 3.0, opModeContext, "Banana turn to 0.0"));
         final LinearStateMachine rollers = new LinearStateMachine();
@@ -41,21 +39,22 @@ public class RedBeaconFirstAutonomous extends BeaconFirstAutonomous {
         intakeAndDrive.addComponent(driveAndBTurn);
 
         //Get to far beacon
+        sm.addComponent(new RunIntake(0.25, false, opModeContext, "Wagglers out"));
+        sm.addComponent(new RunIntake(0.25, false, true, opModeContext, "Reverse to make sure wags are out"));
         sm.addComponent(intakeAndDrive);
-        //sm.addComponent(new DebugPause(opModeContext));
-        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.2, 4000, opModeContext, "Get to far beacon"));
+        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.3, 4000, opModeContext, "Get to far beacon"));
 
         //Press beacon
-        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.17, 500, opModeContext, "Adjust to white line"));
+        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.20, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new GiroTurn(0.0, opModeContext, "Straighten out"));
         sm.addComponent(new SidePressBeaconButton(false, opModeContext, "Press Button"));
 
         //Get to near beacon
-        sm.addComponent(new GiroDriveAlongWallEncoder(DISTANCE_FROM_WALL, 0.0, -0.8, 3000, opModeContext, "Range sensor drive along wall"));
-        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.2, 3000, opModeContext, "Get to near beacon"));
+        sm.addComponent(new GiroDriveAlongWallEncoder(DISTANCE_FROM_WALL, 0.0, -0.6, 3000, opModeContext, "Range sensor drive along wall"));
+        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.3, 3000, opModeContext, "Get to near beacon"));
 
         //Press beacon
-        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.075, 500, opModeContext, "Adjust to white line"));
+        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.10, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new GiroTurn(0.0, opModeContext, "Straighten out"));
         sm.addComponent(new SidePressBeaconButton(false, opModeContext, "Press Button"));
 

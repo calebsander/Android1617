@@ -1,6 +1,5 @@
 package org.gearticks.hardware.configurations;
 
-import android.util.Log;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -19,7 +18,6 @@ import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.MotorWrapper.MotorType;
 import org.gearticks.hardware.drive.TankDrive;
-import org.gearticks.opmodes.utility.Utils;
 
 @SuppressWarnings("deprecation")
 public class VelocityConfiguration implements HardwareConfiguration {
@@ -50,6 +48,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this(hardwareMap, false);
 	}
 	public VelocityConfiguration(HardwareMap hardwareMap, boolean v2) {
+		this(hardwareMap, v2, false);
+	}
+	public VelocityConfiguration(HardwareMap hardwareMap, boolean v2, boolean autonomous) {
 		this.v2 = v2;
 		this.intake = new MotorWrapper((DcMotor) hardwareMap.get("intake"), MotorType.NEVEREST_20);
 		this.shooter = new MotorWrapper((DcMotor) hardwareMap.get("shooter"), MotorType.NEVEREST_40);
@@ -79,7 +80,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		if (v2) initialClutchPosition = MotorConstants.CLUTCH_V2_ENGAGED;
 		else initialClutchPosition = MotorConstants.CLUTCH_ENGAGED;
 		this.clutch.setPosition(initialClutchPosition);
-		if(v2) {
+		if (v2) {
 			this.frontBeaconPresser = (Servo) hardwareMap.get("frontBeacon");
 			this.backBeaconPresser = (Servo) hardwareMap.get("backBeacon");
 			final double frontInitialPresserPosition, backInitialPresserPosition;
@@ -87,7 +88,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			backInitialPresserPosition = MotorConstants.PRESSER_V2_BACK_IN;
 			this.frontBeaconPresser.setPosition(frontInitialPresserPosition);
 			this.backBeaconPresser.setPosition(backInitialPresserPosition);
-		} else {
+		}
+		else {
 			this.frontBeaconPresser = null;
 			this.backBeaconPresser = null;
 		}
@@ -105,9 +107,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			this.frontRoller = this.rearRoller = null;
 		}
 
-		if(v2) {
+		if (v2) {
 			this.topLatch = (Servo)hardwareMap.get("topLatch");
-			this.disengageTopLatch();
+			if (autonomous) this.engageTopLatch();
+			else this.disengageTopLatch();
 		}
 		else this.topLatch = null;
 
@@ -216,11 +219,16 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return !this.shooterDown.getState();
 	}
 
-	public void shootSlow(boolean autonomous) {
+	public void shootSlow() {
 		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
 		final double power;
-		if (autonomous) power = MotorConstants.SHOOTER_BACK_SLOW_AUTONOMOUS;
-		else power = MotorConstants.SHOOTER_BACK_SLOW;
+		power = MotorConstants.SHOOTER_BACK_SLOW;
+		this.shooter.setPower(power);
+	}
+	public void shootSlowAutonomous() {
+		this.shooter.setRunMode(RunMode.RUN_USING_ENCODER);
+		final double power;
+		power = MotorConstants.SHOOTER_BACK_SLOW_AUTONOMOUS;
 		this.shooter.setPower(power);
 	}
 	public void shootFast() {
@@ -250,9 +258,38 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			}
 		}
 	}
-	public void advanceShooterToDownWithEncoder(boolean autonomous) {
+	public void advanceShooterToDownWithEncoder() {
 		if (!this.shooterWasDown) {
 			if (this.isShooterAtSensor()) {
+				this.shooterPassedEncoder = true;
+				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+				if (this.v2) {
+					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
+					this.shooter.stop();
+				}
+				else {
+					this.shooter.setRunMode(RunMode.RUN_TO_POSITION);
+					this.shooter.setTarget(MotorConstants.SHOOTER_TICKS_TO_DOWN);
+					this.shooter.setPower(MotorConstants.SHOOTER_BACK);
+				}
+				this.shooterWasDown = true;
+			}
+			else if (Math.abs(this.shooter.encoderValue()) > Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 450) {
+				this.shooterPassedEncoder = true;
+			}
+			else if (Math.abs(this.shooter.encoderValue()) > Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 300) {
+				this.shootSlow();
+			}
+			else {
+				this.shootFast();
+			}
+		}
+	}
+
+	public void advanceShooterToDownAutonomous() {
+		if (!this.shooterWasDown) {
+			if (this.isShooterAtSensor()) {
+				this.shooterPassedEncoder = true;
 				this.shooter.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 				if (this.v2) {
 					this.shooter.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
@@ -272,7 +309,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			}
 			else {
 				this.shooterPassedEncoder = false;
-				this.shootSlow(autonomous);
+				this.shootSlowAutonomous();
 			}
 		}
 	}
@@ -299,17 +336,11 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		return this.shooterPassedEncoder;
 	}
 
-	public void beaconPresserFrontIn() {
-		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
-	}
 	public void beaconPresserFrontOut() {
 		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT);
 	}
 	public void beaconPresserFrontOutPartial() {
 		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_OUT_PARTIAL);
-	}
-	public void beaconPresserBackIn() {
-		this.backBeaconPresser.setPosition(MotorConstants.PRESSER_V2_BACK_IN);
 	}
 	public void beaconPresserBackOut() {
 		this.backBeaconPresser.setPosition(MotorConstants.PRESSER_V2_BACK_OUT);
@@ -324,23 +355,6 @@ public class VelocityConfiguration implements HardwareConfiguration {
 	public void beaconPressersIn() {
 		this.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
 		this.backBeaconPresser.setPosition(MotorConstants.PRESSER_V2_BACK_IN); // make back beacon presser
-	}
-
-	/**
-	 *
-	 * @return true if white line detected
-	 */
-	public boolean isWhiteLineColor() {
-		boolean isWhiteLine = false;
-		int clear = this.whiteLineColorSensor.getClear();
-		Log.v(Utils.TAG, "Clear = " + clear);
-		int whiteLineThreshold = 275;
-
-		if (clear > whiteLineThreshold){
-			isWhiteLine = true;
-		}
-
-		return isWhiteLine;
 	}
 
 	public void activateWhiteLineColor(){
@@ -388,8 +402,8 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.5;
-		public static final double SHOOTER_BACK_SLOW_AUTONOMOUS = SHOOTER_BACK * 0.3;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.20;
+		public static final double SHOOTER_BACK_SLOW_AUTONOMOUS = SHOOTER_BACK * 0.2;
 		public static final double SHOOTER_BACK_SUPER_SLOW = SHOOTER_BACK * 0.15;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -700;
 		@Deprecated
@@ -400,10 +414,10 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		@Deprecated
 		public static final double SNAKE_HOLDING = 0.9;
-		public static final double SNAKE_V2_HOLDING = 0.25;
+		public static final double SNAKE_V2_HOLDING = 0.0;
 		@Deprecated
 		public static final double SNAKE_DUMPING = 0.7;
-		public static final double SNAKE_V2_DUMPING = 0.8;
+		public static final double SNAKE_V2_DUMPING = 0.5;
 		public static final double SNAKE_V2_TIME_TO_MOVE = 0.3; //seconds for snake to switch positions
 
 		@Deprecated
@@ -441,7 +455,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double SHOOTER_STOPPER_DOWN = -SHOOTER_STOPPER_UP;
 
 		public static final double CAP_BALL_UP = 1.0;
-		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.05;
+		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.1;
 		public static final double CAP_BALL_SLOW_SCALE = 0.3, CAP_BALL_SUPER_SLOW_UP = CAP_BALL_UP * 0.1;
 		public static final int CAP_BALL_TOP = -6800;
 		public static final int CAP_BALL_BOTTOM = 0;

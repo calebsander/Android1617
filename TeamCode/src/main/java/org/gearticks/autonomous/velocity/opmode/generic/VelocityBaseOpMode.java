@@ -21,44 +21,35 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 		super.loopBeforeStart();
 		final EulerAngle heading = this.configuration.imu.getHeading();
 		this.telemetry.addData("Heading", heading);
-		if (heading != null) {
-			if (this.gamepads[0].getY()) {
-				this.hasResetHeading = true;
+		final boolean redOn, blueOn;
+		if (heading == null) redOn = blueOn = true;
+		else {
+			if (!this.hasResetHeading) {
 				this.configuration.imu.resetHeading();
+				this.hasResetHeading = true;
 			}
-			final boolean redOn, blueOn;
-			if (this.hasResetHeading) {
-				final double yaw = this.configuration.imu.getRelativeYaw();
-				this.telemetry.addData("Relative to wall", yaw);
-				final double headingDiff = ((yaw - this.targetHeading() + 540.0) % 360.0) - 180.0;
-				if (Math.abs(headingDiff) < 0.5) {
-					redOn = false;
-					blueOn = false;
-				}
-				else if (headingDiff > 0.0) {
-					redOn = false;
-					blueOn = true;
-				}
-				else { //headingDiff < 0.0
-					redOn = true;
-					blueOn = false;
-				}
+			final double yaw = this.configuration.imu.getRelativeYaw();
+			this.telemetry.addData("Relative to wall", yaw);
+			final double headingDiff = ((yaw - this.targetHeading() + 540.0) % 360.0) - 180.0; //get difference in range of -180 to 180
+			if (Math.abs(headingDiff) < 0.5) {
+				redOn = false;
+				blueOn = false;
 			}
-			else {
-				this.telemetry.addData("To reset heading", "Press Y");
-				redOn = blueOn = true;
+			else if (headingDiff > 0.0) {
+				redOn = false;
+				blueOn = true;
 			}
-			this.configuration.dim.setLED(DimLed.RED.id, redOn);
-			this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
+			else { //headingDiff < 0.0
+				redOn = true;
+				blueOn = false;
+			}
 		}
-	}
-	protected void matchStart() {
-		super.matchStart();
-		if (!this.hasResetHeading) this.configuration.imu.resetHeading();
+		this.configuration.dim.setLED(DimLed.RED.id, redOn);
+		this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
 	}
 
 	protected VelocityConfiguration newConfiguration() {
-		return new VelocityConfiguration(this.hardwareMap, this.isV2());
+		return new VelocityConfiguration(this.hardwareMap, this.isV2(), true);
 	}
 	protected abstract boolean isV2();
 	protected double targetHeading() {
