@@ -22,10 +22,10 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
         final AutonomousComponent backButton = new BackPressBeacon(opModeContext, "Back press beacon");
         final AutonomousComponent resetPresser = new DisengageBeaconServo(opModeContext, "Disengage beacon presser");
         final AutonomousComponent checkBeacon = new CheckPicture(isBlue, opModeContext, pictureResult);
-	    final AutonomousComponent wait = new Wait(6.0, "Wait for beacon");
-	    final AutonomousComponent frontButton2 = new FrontPressBeacon(opModeContext, "Front press beacon");
-	    final AutonomousComponent backButton2 = new BackPressBeacon(opModeContext, "Back press beacon");
-	    final AutonomousComponent resetPresser2 = new DisengageBeaconServo(opModeContext, "Disengage beacon presser");
+        final AutonomousComponent wait = new Wait(6.0, "Wait for beacon");
+        final AutonomousComponent frontButton2 = new FrontPressBeacon(opModeContext, "Front press beacon");
+        final AutonomousComponent backButton2 = new BackPressBeacon(opModeContext, "Back press beacon");
+        final AutonomousComponent resetPresser2 = new DisengageBeaconServo(opModeContext, "Disengage beacon presser");
 
         this.setInitialComponent(selectSide);
         this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, backButton);
@@ -36,11 +36,11 @@ public class SidePressBeaconButton extends NetworkedStateMachine {
 
         this.addConnection(checkBeacon, CheckPicture.LEFT_TRANSITION, backButton2);
         this.addConnection(checkBeacon, CheckPicture.RIGHT_TRANSITION, frontButton2);
-	    this.addConnection(checkBeacon, CheckPicture.CORRECT, resetPresser2);
-	    this.addConnection(checkBeacon, CheckPicture.WRONG, wait);
-	    this.addConnection(wait, NEXT_STATE, frontButton2);
-	    this.addConnection(frontButton2, NEXT_STATE, resetPresser2);
-	    this.addConnection(backButton2, NEXT_STATE, resetPresser2);
+        this.addConnection(checkBeacon, CheckPicture.CORRECT, resetPresser2);
+        this.addConnection(checkBeacon, CheckPicture.WRONG, wait);
+        this.addConnection(wait, NEXT_STATE, frontButton2);
+        this.addConnection(frontButton2, NEXT_STATE, resetPresser2);
+        this.addConnection(backButton2, NEXT_STATE, resetPresser2);
         this.addExitConnection(resetPresser2, NEXT_STATE);
     }
 }

@@ -11,11 +11,10 @@ public class ParallelComponent extends AutonomousComponentAbstractImpl {
 	private final Collection<AutonomousComponent> components;
 
 	public ParallelComponent() {
-		this.components = new HashSet<>();
+		this(new HashSet<>());
 	}
 	public ParallelComponent(String id) {
-		super(id);
-		this.components = new HashSet<>();
+		this(new HashSet<>(), id);
 	}
 	public ParallelComponent(Collection<AutonomousComponent> components) {
 		this.components = components;

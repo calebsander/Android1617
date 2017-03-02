@@ -25,13 +25,8 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 		this(targetHeading, 0.05, 10, opModeContext, id);
 	}
 	public GiroTurn(double targetHeading, double power, int correctTimes, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
-		this.targetHeading = targetHeading;
-		this.power = power;
-		this.range = 1.0;
-		this.correctTimes = correctTimes;
+		this(targetHeading, power, correctTimes, 1.0, opModeContext, id);
 	}
-
 	public GiroTurn(double targetHeading, double power, int correctTimes, double range, OpModeContext<VelocityConfiguration> opModeContext, String id) {
 		super(opModeContext, id);
 		this.targetHeading = targetHeading;
