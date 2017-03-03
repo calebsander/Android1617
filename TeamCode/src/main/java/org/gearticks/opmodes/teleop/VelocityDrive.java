@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
+import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
@@ -121,8 +122,6 @@ public class VelocityDrive extends BaseOpMode {
 			else return null;
 		}
 	}
-	//The state machine switching between intaking, holding, and loading
-	private NetworkedStateMachine ballStateMachine;
 
 
 	private enum ShooterState {
@@ -159,8 +158,6 @@ public class VelocityDrive extends BaseOpMode {
 			else return PresserTransition.STOP;
 		}
 	}
-	//The state machine controlling manually pressing the beacon
-	private NetworkedStateMachine beaconStateMachine;
 
 	private class BumperDown extends AutonomousComponentTimer<DefaultTransition> {
 		public BumperDown() {
@@ -208,33 +205,36 @@ public class VelocityDrive extends BaseOpMode {
 			else return null;
 		}
 	}
-	private NetworkedStateMachine bumperStateMachine;
 
+	//The component running all of the state machines
+	private ParallelComponent stateMachines;
 	//Whether rollers are deployed
 	private boolean rollersDeployed;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.direction = new DriveDirection();
+		this.stateMachines = new ParallelComponent();
 
 		this.ballInShooter = false;
-		this.ballStateMachine = new NetworkedStateMachine("Ball state");
+		final NetworkedStateMachine ballStateMachine = new NetworkedStateMachine("Ball state");
 		final IntakingComponent intaking = new IntakingComponent();
 		final SettleInSnakeComponent settling = new SettleInSnakeComponent();
 		final HoldingComponent holding = new HoldingComponent();
 		final LoadingComponent loading = new LoadingComponent();
 		final SnakeReturnComponent snakeReturning = new SnakeReturnComponent();
-		this.ballStateMachine.setInitialComponent(intaking);
-		this.ballStateMachine.addConnection(intaking, DefaultTransition.DEFAULT, settling);
-		this.ballStateMachine.addConnection(settling, DefaultTransition.DEFAULT, holding);
-		this.ballStateMachine.addConnection(holding, HoldingTransition.SHOOTER_DOWN, loading);
-		this.ballStateMachine.addConnection(holding, HoldingTransition.MANUAL_SNAKE, intaking);
-		this.ballStateMachine.addConnection(loading, DefaultTransition.DEFAULT, snakeReturning);
-		this.ballStateMachine.addConnection(snakeReturning, DefaultTransition.DEFAULT, intaking);
+		ballStateMachine.setInitialComponent(intaking);
+		ballStateMachine.addConnection(intaking, DefaultTransition.DEFAULT, settling);
+		ballStateMachine.addConnection(settling, DefaultTransition.DEFAULT, holding);
+		ballStateMachine.addConnection(holding, HoldingTransition.SHOOTER_DOWN, loading);
+		ballStateMachine.addConnection(holding, HoldingTransition.MANUAL_SNAKE, intaking);
+		ballStateMachine.addConnection(loading, DefaultTransition.DEFAULT, snakeReturning);
+		ballStateMachine.addConnection(snakeReturning, DefaultTransition.DEFAULT, intaking);
+		this.stateMachines.addComponent(ballStateMachine);
 
 		this.shooterState = ShooterState.values()[0];
 
-		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
+		final NetworkedStateMachine beaconStateMachine = new NetworkedStateMachine("Beacon state");
 		//final AutonomousComponent neutral = new PresserNeutral();
 		final LinearStateMachine in = new LinearStateMachine();
 		for(int pullIn = 0; pullIn < MotorConstants.PRESSER_V2_TIMES_PULL_IN; pullIn++) {
@@ -245,24 +245,28 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		final PresserEngaged stayIn = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
 		final PresserEngaged out = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_OUT);
-		this.beaconStateMachine.setInitialComponent(stayIn);
-		this.beaconStateMachine.addConnection(stayIn, PresserTransition.SWITCH, out);
-		this.beaconStateMachine.addConnection(stayIn, PresserTransition.STOP, stayIn);
-		this.beaconStateMachine.addConnection(out, PresserTransition.SWITCH, in);
-		this.beaconStateMachine.addConnection(out, PresserTransition.STOP, in);
-		this.beaconStateMachine.addConnection(in, DefaultTransition.DEFAULT, stayIn);
+		beaconStateMachine.setInitialComponent(stayIn);
+		beaconStateMachine.addConnection(stayIn, PresserTransition.SWITCH, out);
+		beaconStateMachine.addConnection(stayIn, PresserTransition.STOP, stayIn);
+		beaconStateMachine.addConnection(out, PresserTransition.SWITCH, in);
+		beaconStateMachine.addConnection(out, PresserTransition.STOP, in);
+		beaconStateMachine.addConnection(in, DefaultTransition.DEFAULT, stayIn);
+		//this.stateMachines.addComponent(beaconStateMachine);
 
-		this.bumperStateMachine = new NetworkedStateMachine("Front bumper state");
+		final NetworkedStateMachine bumperStateMachine = new NetworkedStateMachine("Front bumper state");
 		final BumperUpWhenTrigger bumperUp = new BumperUpWhenTrigger();
 		final BumperDown bumperDown = new BumperDown();
-		this.bumperStateMachine.setInitialComponent(bumperUp);
-		this.bumperStateMachine.addConnection(bumperUp, DefaultTransition.DEFAULT, bumperDown);
-		this.bumperStateMachine.addConnection(bumperDown, DefaultTransition.DEFAULT, bumperUp);
+		bumperStateMachine.setInitialComponent(bumperUp);
+		bumperStateMachine.addConnection(bumperUp, DefaultTransition.DEFAULT, bumperDown);
+		bumperStateMachine.addConnection(bumperDown, DefaultTransition.DEFAULT, bumperUp);
+		this.stateMachines.addComponent(bumperStateMachine);
 
 		this.rollersDeployed = true;
 	}
 	protected void matchStart() {
 		this.configuration.rollersDown();
+		this.stateMachines.onMatchStart();
+		this.stateMachines.setup();
 	}
 	@SuppressWarnings("ConstantConditions")
 	protected void loopAfterStart() {
@@ -315,9 +319,7 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.intake.setPower(intakePower);
 
-		this.ballStateMachine.run();
-		//this.beaconStateMachine.run();
-		this.bumperStateMachine.run();
+		this.stateMachines.run();
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
