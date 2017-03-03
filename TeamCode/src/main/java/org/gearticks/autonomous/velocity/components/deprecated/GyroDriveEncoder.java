@@ -1,12 +1,13 @@
 package org.gearticks.autonomous.velocity.components.deprecated;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 
 @Deprecated
-public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	private final DriveDirection direction;
 	private final double power;
 	private final double targetHeading;
@@ -20,7 +21,7 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 	 * @param id - descriptive name for logging
 	 */
 	public GyroDriveEncoder(double targetHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.targetHeading = targetHeading;
@@ -34,8 +35,8 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		//control gyro drive
@@ -43,7 +44,7 @@ public class GyroDriveEncoder extends AutonomousComponentHardware<VelocityConfig
 		this.direction.gyroCorrect(this.targetHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 		this.configuration.move(this.direction, 0.06);
 
-		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
+		if (this.configuration.encoderPositive() > this.encoderTarget) return DefaultTransition.DEFAULT;
 		else return null;
 	}
 }

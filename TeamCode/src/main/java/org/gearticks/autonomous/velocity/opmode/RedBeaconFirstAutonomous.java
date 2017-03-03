@@ -23,7 +23,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class RedBeaconFirstAutonomous extends InitializedAutonomous {
     private static final int DISTANCE_FROM_WALL = 9;
 
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         final LinearStateMachine driveAndBTurn = new LinearStateMachine();

@@ -1,16 +1,16 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.MotorWrapper;
 
-public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration> {
+public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final double time;
     private final boolean rampUp;
     private final boolean reversed;
-
 
     /**
      * @param time - the time to run the intake for (in seconds)
@@ -19,22 +19,19 @@ public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration
      * @param id - descriptive name for logging
      */
     public RunIntake(double time, boolean rampUp, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
-        this.time = time;
-        this.rampUp = rampUp;
-        this.reversed = false;
+        this(time, rampUp, false, opModeContext, id);
     }
 
     public RunIntake(double time, boolean rampUp, boolean reversed, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
         this.time = time;
         this.rampUp = rampUp;
         this.reversed = reversed;
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         final double accelLimit;
@@ -43,7 +40,7 @@ public class RunIntake extends AutonomousComponentHardware<VelocityConfiguration
         if (reversed) this.configuration.intake.accelLimit(MotorConstants.INTAKE_OUT, accelLimit);
         else this.configuration.intake.accelLimit(MotorConstants.INTAKE_IN, accelLimit);
 
-        if (this.stageTimer.seconds() > this.time) return NEXT_STATE;
+        if (this.stageTimer.seconds() > this.time) return DefaultTransition.DEFAULT;
         else return null;
     }
 

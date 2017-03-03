@@ -1,12 +1,13 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
+public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl<DefaultTransition> {
 	private final VelocityConfiguration configuration;
 	private final DriveDirection direction;
 	private final double power;
@@ -22,7 +23,7 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
 	 * @param id - descriptive name for logging
 	 */
 	public GiroDriveEncoderNoStop(double targetHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(id);
+		super(DefaultTransition.class, id);
 		this.configuration = opModeContext.configuration;
 		this.direction = new DriveDirection();
 		this.power = power;
@@ -40,8 +41,8 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		//control giro drive
@@ -49,7 +50,7 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
 		this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 		this.configuration.move(this.direction, 0.06);
 
-		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
+		if (this.configuration.encoderPositive() > this.encoderTarget) return DefaultTransition.DEFAULT;
 		else return null;
 	}
 }

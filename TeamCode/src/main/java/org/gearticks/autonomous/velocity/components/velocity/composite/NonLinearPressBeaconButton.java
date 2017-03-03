@@ -4,9 +4,9 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.velocity.components.deprecated.GiroDriveEncoderBeacon;
 import org.gearticks.autonomous.velocity.components.deprecated.GiroTurnBeacon;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide;
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.opmodes.units.SideOfButton;
 
 /**
  * Sample to create a composite autonomous component that will consist of a linear state-machine of 2 or more AutonomousComponents
@@ -14,21 +14,21 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class NonLinearPressBeaconButton extends NetworkedStateMachine {
 
     public NonLinearPressBeaconButton(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        final AutonomousComponent selectSide = new SelectBeaconSide(true, "Press beacon button", opModeContext);
-        final AutonomousComponent pushLeftButton = new GiroTurnBeacon(10.0, opModeContext, "Turn left");
-        final AutonomousComponent pushRightButton = new GiroTurnBeacon(-10.0, opModeContext, "Turn right");
-        final AutonomousComponent driveInLeftButton = new GiroDriveEncoderBeacon(10.0, 0.3, 200, opModeContext, "Press left button");
-        final AutonomousComponent driveInRightButton = new GiroDriveEncoderBeacon(-10.0, 0.3, 200, opModeContext, "Press right button");
-        final AutonomousComponent squareUp = new GiroTurnBeacon(0.0, opModeContext, "Square up");
+        final SelectBeaconSide selectSide = new SelectBeaconSide(true, "Press beacon button", opModeContext);
+        final GiroTurnBeacon pushLeftButton = new GiroTurnBeacon(10.0, opModeContext, "Turn left");
+        final GiroTurnBeacon pushRightButton = new GiroTurnBeacon(-10.0, opModeContext, "Turn right");
+        final GiroDriveEncoderBeacon driveInLeftButton = new GiroDriveEncoderBeacon(10.0, 0.3, 200, opModeContext, "Press left button");
+        final GiroDriveEncoderBeacon driveInRightButton = new GiroDriveEncoderBeacon(-10.0, 0.3, 200, opModeContext, "Press right button");
+        final GiroTurnBeacon squareUp = new GiroTurnBeacon(0.0, opModeContext, "Square up");
 
         this.setInitialComponent(selectSide);
-        this.addConnection(selectSide, SelectBeaconSide.LEFT_TRANSITION, pushLeftButton);
-        this.addConnection(selectSide, SelectBeaconSide.RIGHT_TRANSITION, pushRightButton);
-        this.addExitConnection(selectSide, SelectBeaconSide.UNKNOWN_TRANSITION);
-        this.addConnection(pushLeftButton, NEXT_STATE, driveInLeftButton);
-        this.addConnection(pushRightButton, NEXT_STATE, driveInRightButton);
-        this.addConnection(driveInLeftButton, NEXT_STATE, squareUp);
-        this.addConnection(driveInRightButton, NEXT_STATE, squareUp);
-        this.addExitConnection(squareUp, NEXT_STATE);
+        this.addConnection(selectSide, SideOfButton.LEFT, pushLeftButton);
+        this.addConnection(selectSide, SideOfButton.RIGHT, pushRightButton);
+        this.addExitConnection(selectSide, SideOfButton.UNKNOWN);
+        this.addConnection(pushLeftButton, DefaultTransition.DEFAULT, driveInLeftButton);
+        this.addConnection(pushRightButton, DefaultTransition.DEFAULT, driveInRightButton);
+        this.addConnection(driveInLeftButton, DefaultTransition.DEFAULT, squareUp);
+        this.addConnection(driveInRightButton, DefaultTransition.DEFAULT, squareUp);
+        this.addExitConnection(squareUp, DefaultTransition.DEFAULT);
     }
 }

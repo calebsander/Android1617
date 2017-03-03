@@ -1,12 +1,13 @@
 package org.gearticks.autonomous.velocity.components.sample;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class SampleAutonomousComponent extends AutonomousComponentHardware<VelocityConfiguration> {
+public class SampleAutonomousComponent extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     public SampleAutonomousComponent(OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
     }
 
     @Override
@@ -15,14 +16,15 @@ public class SampleAutonomousComponent extends AutonomousComponentHardware<Veloc
         //Custom code here
     }
 
+    @SuppressWarnings({"ConstantIfStatement", "ConstantConditions"})
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         //Code to update control system
 
-        if (true /*end condition met*/) return NEXT_STATE;
+        if (true /*end condition met*/) return DefaultTransition.DEFAULT;
         else return null;
     }
 

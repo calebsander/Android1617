@@ -1,11 +1,8 @@
 package org.gearticks.opmodes.teleop;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -16,9 +13,6 @@ import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstant
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.BaseOpMode;
-import org.gearticks.opmodes.utility.Utils;
-
-import static org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl.NEXT_STATE;
 
 @TeleOp
 public class VelocityDrive extends BaseOpMode {
@@ -28,73 +22,102 @@ public class VelocityDrive extends BaseOpMode {
 
 	//Whether we think there is a ball in the shooter
 	private boolean ballInShooter;
-	private class IntakingComponent extends AutonomousComponentTimer {
-		public Transition run() {
-			final Transition superTransition = super.run();
+	private class IntakingComponent extends AutonomousComponentTimer<DefaultTransition> {
+		public IntakingComponent() {
+			super(DefaultTransition.class);
+		}
+
+		@Override
+		public DefaultTransition run() {
+			final DefaultTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_ENGAGED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
-			if (configuration.ballInSnake()) return NEXT_STATE;
+			if (configuration.ballInSnake()) return DefaultTransition.DEFAULT;
 			else return null;
 		}
 	}
-	private class SettleInSnakeComponent extends AutonomousComponentTimer {
-		public Transition run() {
-			final Transition superTransition = super.run();
+	private class SettleInSnakeComponent extends AutonomousComponentTimer<DefaultTransition> {
+		public SettleInSnakeComponent() {
+			super(DefaultTransition.class);
+		}
+
+		@Override
+		public DefaultTransition run() {
+			final DefaultTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
-			if (this.stageTimer.seconds() > 0) return NEXT_STATE; //wait for ball to settle in snake before loading
+			if (this.stageTimer.seconds() > 0) return DefaultTransition.DEFAULT; //wait for ball to settle in snake before loading
 			else return null;
 		}
 	}
-	private static final Transition MANUAL_SNAKE = new Transition("Snake triggered manually");
-	private class HoldingComponent extends AutonomousComponentAbstractImpl {
-		public Transition run() {
-			final Transition superTransition = super.run();
+	private enum HoldingTransition {
+		SHOOTER_DOWN,
+		MANUAL_SNAKE
+	}
+	private class HoldingComponent extends AutonomousComponentAbstractImpl<HoldingTransition> {
+		public HoldingComponent() {
+			super(HoldingTransition.class);
+		}
+
+		@Override
+		public HoldingTransition run() {
+			final HoldingTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
 
-			if (isManualSnakeOn()) return MANUAL_SNAKE;
+			if (isManualSnakeOn()) return HoldingTransition.MANUAL_SNAKE;
 
-			if (!ballInShooter && configuration.isShooterPassedEncoder()) return NEXT_STATE;
+			if (!ballInShooter && configuration.isShooterPassedEncoder()) return HoldingTransition.SHOOTER_DOWN;
 			else return null;
 		}
 	}
-	private class LoadingComponent extends AutonomousComponentTimer {
-		public Transition run() {
-			final Transition superTransition = super.run();
+	private class LoadingComponent extends AutonomousComponentTimer<DefaultTransition> {
+		public LoadingComponent() {
+			super(DefaultTransition.class);
+		}
+
+		@Override
+		public DefaultTransition run() {
+			final DefaultTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(MotorConstants.SNAKE_V2_DUMPING);
 			configuration.advanceShooterToDownWithEncoder();
 
-			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return NEXT_STATE;
+			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE) return DefaultTransition.DEFAULT;
 			else return null;
 		}
+		@Override
 		public void tearDown() {
 			super.tearDown();
 			ballInShooter = true;
 		}
 	}
-	private class SnakeReturnComponent extends AutonomousComponentTimer {
-		public Transition run() {
-			final Transition superTransition = super.run();
+	private class SnakeReturnComponent extends AutonomousComponentTimer<DefaultTransition> {
+		public SnakeReturnComponent() {
+			super(DefaultTransition.class);
+		}
+
+		@Override
+		public DefaultTransition run() {
+			final DefaultTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			configuration.clutch.setPosition(MotorConstants.CLUTCH_V2_CLUTCHED);
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
 
-			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE*0.8) return NEXT_STATE;
+			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE*0.8) return DefaultTransition.DEFAULT;
 			else return null;
 		}
 	}
@@ -111,42 +134,39 @@ public class VelocityDrive extends BaseOpMode {
 	//The current state of the shooter control
 	private ShooterState shooterState;
 
-	private class PresserNeutral extends AutonomousComponentAbstractImpl {
-		public Transition run() {
-			final Transition superTransition = super.run();
-			if (superTransition != null) return superTransition;
-
-			configuration.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
-			if (gamepads[CALVIN].getB()) return NEXT_STATE;
-			else return null;
-		}
+	private enum PresserTransition {
+		SWITCH,
+		STOP
 	}
-	private static final Transition
-		SWITCH = new Transition("Switch sides"),
-		STOP = new Transition("Stop pressing");
-	private class PresserEngaged extends AutonomousComponentTimer {
+	private class PresserEngaged extends AutonomousComponentTimer<PresserTransition> {
 		private final double position;
 
 		public PresserEngaged(double position) {
+			super(PresserTransition.class);
 			this.position = position;
 		}
 
-		public Transition run() {
-			final Transition superTransition = super.run();
+		@Override
+		public PresserTransition run() {
+			final PresserTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			configuration.frontBeaconPresser.setPosition(this.position);
 			if (gamepads[CALVIN].getB()) {
-				if (this.stageTimer.seconds() > MotorConstants.PRESSER_V2_TIME_TO_MOVE) return SWITCH;
+				if (this.stageTimer.seconds() > MotorConstants.PRESSER_V2_TIME_TO_MOVE) return PresserTransition.SWITCH;
 				else return null;
 			}
-			else return STOP;
+			else return PresserTransition.STOP;
 		}
 	}
 	//The state machine controlling manually pressing the beacon
 	private NetworkedStateMachine beaconStateMachine;
 
-	private class BumperDown extends AutonomousComponentTimer {
+	private class BumperDown extends AutonomousComponentTimer<DefaultTransition> {
+		public BumperDown() {
+			super(DefaultTransition.class);
+		}
+
 		@SuppressWarnings("ConstantConditions")
 		@Override
 		public void setup() {
@@ -155,11 +175,11 @@ public class VelocityDrive extends BaseOpMode {
 		}
 
 		@Override
-		public Transition run() {
-			final Transition superTransition = super.run();
+		public DefaultTransition run() {
+			final DefaultTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
-			if (this.stageTimer.seconds() > 0.5) return NEXT_STATE;
+			if (this.stageTimer.seconds() > 0.5) return DefaultTransition.DEFAULT;
 			else return null;
 		}
 
@@ -169,10 +189,14 @@ public class VelocityDrive extends BaseOpMode {
 			configuration.frontBumper.setPower(0.0);
 		}
 	}
-	private class BumperUpWhenTrigger extends AutonomousComponentAbstractImpl {
+	private class BumperUpWhenTrigger extends AutonomousComponentAbstractImpl<DefaultTransition> {
+		public BumperUpWhenTrigger() {
+			super(DefaultTransition.class);
+		}
+
 		@Override
-		public Transition run() {
-			final Transition superTransition = super.run();
+		public DefaultTransition run() {
+			final DefaultTransition superTransition = super.run();
 			if (superTransition != null) return superTransition;
 
 			final double power;
@@ -180,7 +204,7 @@ public class VelocityDrive extends BaseOpMode {
 			else power = 0.0;
 			configuration.frontBumper.setPower(power);
 
-			if (gamepads[CALVIN].dpadDown()) return NEXT_STATE;
+			if (gamepads[CALVIN].dpadDown()) return DefaultTransition.DEFAULT;
 			else return null;
 		}
 	}
@@ -195,18 +219,18 @@ public class VelocityDrive extends BaseOpMode {
 
 		this.ballInShooter = false;
 		this.ballStateMachine = new NetworkedStateMachine("Ball state");
-		final AutonomousComponent intaking = new IntakingComponent();
-		final AutonomousComponent settling = new SettleInSnakeComponent();
-		final AutonomousComponent holding = new HoldingComponent();
-		final AutonomousComponent loading = new LoadingComponent();
-		final AutonomousComponent snakeReturning = new SnakeReturnComponent();
+		final IntakingComponent intaking = new IntakingComponent();
+		final SettleInSnakeComponent settling = new SettleInSnakeComponent();
+		final HoldingComponent holding = new HoldingComponent();
+		final LoadingComponent loading = new LoadingComponent();
+		final SnakeReturnComponent snakeReturning = new SnakeReturnComponent();
 		this.ballStateMachine.setInitialComponent(intaking);
-		this.ballStateMachine.addConnection(intaking, NEXT_STATE, settling);
-		this.ballStateMachine.addConnection(settling, NEXT_STATE, holding);
-		this.ballStateMachine.addConnection(holding, NEXT_STATE, loading);
-		this.ballStateMachine.addConnection(holding, MANUAL_SNAKE, intaking);
-		this.ballStateMachine.addConnection(loading, NEXT_STATE, snakeReturning);
-		this.ballStateMachine.addConnection(snakeReturning, NEXT_STATE, intaking);
+		this.ballStateMachine.addConnection(intaking, DefaultTransition.DEFAULT, settling);
+		this.ballStateMachine.addConnection(settling, DefaultTransition.DEFAULT, holding);
+		this.ballStateMachine.addConnection(holding, HoldingTransition.SHOOTER_DOWN, loading);
+		this.ballStateMachine.addConnection(holding, HoldingTransition.MANUAL_SNAKE, intaking);
+		this.ballStateMachine.addConnection(loading, DefaultTransition.DEFAULT, snakeReturning);
+		this.ballStateMachine.addConnection(snakeReturning, DefaultTransition.DEFAULT, intaking);
 
 		this.shooterState = ShooterState.values()[0];
 
@@ -219,22 +243,21 @@ public class VelocityDrive extends BaseOpMode {
 			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN));
 			in.addComponent(new Wait(0.05, "Wait to go out"));
 		}
-		final AutonomousComponent stayIn = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
-		final AutonomousComponent out = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_OUT);
+		final PresserEngaged stayIn = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
+		final PresserEngaged out = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_OUT);
 		this.beaconStateMachine.setInitialComponent(stayIn);
-		this.beaconStateMachine.addConnection(stayIn, NEXT_STATE, out);
-		this.beaconStateMachine.addConnection(out, SWITCH, in);
-		this.beaconStateMachine.addConnection(stayIn, SWITCH, out);
-		this.beaconStateMachine.addConnection(stayIn, STOP, stayIn);
-		this.beaconStateMachine.addConnection(out, STOP, in);
-		this.beaconStateMachine.addConnection(in, NEXT_STATE, stayIn);
+		this.beaconStateMachine.addConnection(stayIn, PresserTransition.SWITCH, out);
+		this.beaconStateMachine.addConnection(stayIn, PresserTransition.STOP, stayIn);
+		this.beaconStateMachine.addConnection(out, PresserTransition.SWITCH, in);
+		this.beaconStateMachine.addConnection(out, PresserTransition.STOP, in);
+		this.beaconStateMachine.addConnection(in, DefaultTransition.DEFAULT, stayIn);
 
 		this.bumperStateMachine = new NetworkedStateMachine("Front bumper state");
-		final AutonomousComponent bumperUp = new BumperUpWhenTrigger();
-		final AutonomousComponent bumperDown = new BumperDown();
+		final BumperUpWhenTrigger bumperUp = new BumperUpWhenTrigger();
+		final BumperDown bumperDown = new BumperDown();
 		this.bumperStateMachine.setInitialComponent(bumperUp);
-		this.bumperStateMachine.addConnection(bumperUp, NEXT_STATE, bumperDown);
-		this.bumperStateMachine.addConnection(bumperDown, NEXT_STATE, bumperUp);
+		this.bumperStateMachine.addConnection(bumperUp, DefaultTransition.DEFAULT, bumperDown);
+		this.bumperStateMachine.addConnection(bumperDown, DefaultTransition.DEFAULT, bumperUp);
 
 		this.rollersDeployed = true;
 	}

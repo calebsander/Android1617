@@ -15,7 +15,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 @Autonomous
 @Disabled
 public class DriveSquareTest extends VelocityBaseOpMode {
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
         for (int side = 0; side < 4; side++) {
             sm.addComponent(new GyroDriveEncoder(90.0 * side, 0.2, 4000, opModeContext, "Drive for 2000 ticks heading forward"));

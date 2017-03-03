@@ -12,8 +12,6 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Autonomous
 public class BlueBeaconTest extends VelocityBaseOpMode {
-    private static final int DISTANCE_FROM_WALL = 9;
-
     @Override
     protected void loopBeforeStart() {
         super.loopBeforeStart();
@@ -24,7 +22,7 @@ public class BlueBeaconTest extends VelocityBaseOpMode {
         super.matchStart();
     }
 
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         sm.addComponent(new SidePressBeaconButton(true, opModeContext, "Press Button"));

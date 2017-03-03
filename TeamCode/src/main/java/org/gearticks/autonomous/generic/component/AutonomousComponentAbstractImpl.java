@@ -1,6 +1,8 @@
 package org.gearticks.autonomous.generic.component;
 
 import android.util.Log;
+import java.util.Arrays;
+import java.util.Collection;
 import org.gearticks.opmodes.utility.Utils;
 
 /**
@@ -9,19 +11,25 @@ import org.gearticks.opmodes.utility.Utils;
  * - Transition constants and a transition id generator
  * - toString()
  */
-public abstract class AutonomousComponentAbstractImpl implements AutonomousComponent {
-	/**
-	 * The default output port.
-	 * Use if there is only one output port
-	 */
-	public static final Transition NEXT_STATE = new Transition("Default");
-
+public abstract class AutonomousComponentAbstractImpl<TRANSITION_TYPE extends Enum<?>> implements AutonomousComponent<TRANSITION_TYPE> {
+	private final Class<TRANSITION_TYPE> transitionClass;
 	protected final String id;
 
-	public AutonomousComponentAbstractImpl() {
+	/**
+	 * Creates a component using the class name as the ID
+	 * @param transitionClass the {@link Class} this component transitions with
+	 */
+	public AutonomousComponentAbstractImpl(Class<TRANSITION_TYPE> transitionClass) {
+		this.transitionClass = transitionClass;
 		this.id = this.getClass().getSimpleName();
 	}
-	public AutonomousComponentAbstractImpl(String id) {
+	/**
+	 * Creates a component with the specified ID
+	 * @param transitionClass the {@link Class} this component transitions with
+	 * @param id the debugging ID to use
+	 */
+	public AutonomousComponentAbstractImpl(Class<TRANSITION_TYPE> transitionClass, String id) {
+		this.transitionClass = transitionClass;
 		this.id = id;
 	}
 
@@ -39,9 +47,9 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 
 	/**
 	 * Default is empty so subclass doesn't have to implement if not necessary.
-	 * Returns null
+	 * Always returns null (never finished).
 	 */
-	public Transition run() {
+	public TRANSITION_TYPE run() {
 		return null;
 	}
 
@@ -54,6 +62,10 @@ public abstract class AutonomousComponentAbstractImpl implements AutonomousCompo
 
 	public String getId() {
 		return this.id;
+	}
+
+	public Collection<TRANSITION_TYPE> getPossibleTransitions() {
+		return Arrays.asList(this.transitionClass.getEnumConstants());
 	}
 
 	@Override

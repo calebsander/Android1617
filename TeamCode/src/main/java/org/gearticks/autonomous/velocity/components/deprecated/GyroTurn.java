@@ -1,13 +1,14 @@
 package org.gearticks.autonomous.velocity.components.deprecated;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
 @Deprecated
-public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	private final DriveDirection direction;
 	private final double targetHeading;
 	private double angleMultiplier;
@@ -18,7 +19,7 @@ public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	 * @param id - descriptive name for logging
 	 */
 	public GyroTurn(double targetHeading, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
 		this.direction = new DriveDirection();
 		this.targetHeading = targetHeading;
 	}
@@ -33,12 +34,14 @@ public class GyroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
-		final Transition transition;
-		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10) transition = NEXT_STATE;
+		final DefaultTransition transition;
+		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10) {
+			transition = DefaultTransition.DEFAULT;
+		}
 		else transition = null;
 		this.configuration.move(this.direction, 0.06);
 

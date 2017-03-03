@@ -1,39 +1,42 @@
 package org.gearticks.autonomous.velocity.components.velocity.single;
 
 import android.util.Log;
-
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
+import org.gearticks.autonomous.velocity.components.velocity.single.CheckPicture.PictureDifference;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide.PictureResult;
-import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.units.SideOfButton;
 import org.gearticks.opmodes.utility.Utils;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration.BeaconColorCounts;
 
-public class CheckPicture extends AutonomousComponentAbstractImpl {
-	public static final Transition CORRECT = new Transition("Correct"), WRONG = new Transition("Wrong"),
-			LEFT_TRANSITION = new Transition("Left"), RIGHT_TRANSITION = new Transition("Right"), UNKNOWN_TRANSITION = new Transition("Unknown");
+public class CheckPicture extends AutonomousComponentAbstractImpl<PictureDifference> {
+	public enum PictureDifference {
+		CORRECT,
+		WRONG,
+		LEFT,
+		RIGHT,
+		UNKNOWN
+	}
 
 	private final PictureResult pictureResult;
 	private final VuforiaConfiguration vuforiaConfiguration;
 	private final boolean isBlue;
 
-	public CheckPicture(boolean isBlue, OpModeContext opModeContext, PictureResult pictureResult) {
+	public CheckPicture(boolean isBlue, OpModeContext<?> opModeContext, PictureResult pictureResult) {
+		super(PictureDifference.class);
 		this.isBlue = isBlue;
 		this.pictureResult = pictureResult;
 		this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public PictureDifference run() {
+		final PictureDifference superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		final BeaconColorCounts oldColorCounts = pictureResult.colorCounts;
-		final int oldBlue = oldColorCounts.leftBlue + oldColorCounts.rightBlue;
 		final BeaconColorCounts colorCounts = this.vuforiaConfiguration.getColorCounts();
-		final int newBlue = colorCounts.leftBlue + colorCounts.rightBlue;
 
 		final int dLeftRed = colorCounts.leftRed - oldColorCounts.leftRed;
 		final int dRightRed = colorCounts.rightRed - oldColorCounts.rightRed;
@@ -46,11 +49,11 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 			Log.i(Utils.TAG, "Significant change: " + change);
 			if(isBlue){
 				Log.i(Utils.TAG, "Turned red, incorrect");
-				return WRONG;
+				return PictureDifference.WRONG;
 			}
 			else {
 				Log.i(Utils.TAG, "Turned red, correct");
-				return CORRECT;
+				return PictureDifference.CORRECT;
 			}
 		}
 		else if (change < -4500){
@@ -58,11 +61,11 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 			Log.i(Utils.TAG, "Turned blue");
 			if(isBlue){
 				Log.i(Utils.TAG, "Turned blue, correct");
-				return CORRECT;
+				return PictureDifference.CORRECT;
 			}
 			else {
 				Log.i(Utils.TAG, "Turned blue, incorrect");
-				return WRONG;
+				return PictureDifference.WRONG;
 			}
 		}
 		else {
@@ -71,13 +74,13 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 			switch (sideOfButton) {
 				case LEFT:
 					Log.i(Utils.TAG, "Going left");
-					return LEFT_TRANSITION;
+					return PictureDifference.LEFT;
 				case RIGHT:
 					Log.i(Utils.TAG, "Going right");
-					return RIGHT_TRANSITION;
+					return PictureDifference.RIGHT;
 				default:
 					Log.i(Utils.TAG, "Button color could not be detected");
-					return UNKNOWN_TRANSITION;
+					return PictureDifference.UNKNOWN;
 			}
 		}
 	}

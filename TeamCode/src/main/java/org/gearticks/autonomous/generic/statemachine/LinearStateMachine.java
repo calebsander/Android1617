@@ -2,6 +2,7 @@ package org.gearticks.autonomous.generic.statemachine;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.opmodes.utility.Utils;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,18 +13,18 @@ import java.util.List;
  * Simplifies initialization of a state-machine
  */
 public class LinearStateMachine extends StateMachineBase {
-    private Iterator<AutonomousComponent> iterator;
+    private Iterator<AutonomousComponent<?>> iterator;
 
     public LinearStateMachine() {
         this(new ArrayList<>());
     }
-    public LinearStateMachine(List<AutonomousComponent> components) {
+    public LinearStateMachine(List<AutonomousComponent<?>> components) {
         super(components);
     }
     public LinearStateMachine(String id) {
         this(new ArrayList<>(), id);
     }
-    public LinearStateMachine(List<AutonomousComponent> components, String id) {
+    public LinearStateMachine(List<AutonomousComponent<?>> components, String id) {
         super(components, id);
     }
 
@@ -32,7 +33,7 @@ public class LinearStateMachine extends StateMachineBase {
      * Must be called before the state machine gets initialized.
      * @param component the component to add
     */
-    public void addComponent(AutonomousComponent component) {
+    public void addComponent(AutonomousComponent<?> component) {
         this.components.add(component);
     }
 
@@ -51,19 +52,19 @@ public class LinearStateMachine extends StateMachineBase {
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         if (this.currentState == null) {
             //If there is no (more) current state, then end this state-machine
             Log.w(Utils.TAG, "LinearStateMachine in run() has no currentState \"" + this + "\"");
-            return NEXT_STATE;
+            return DefaultTransition.DEFAULT;
         }
 
         //Delegate run() to current state
-        final Transition transition = this.currentState.run();
-        //If no transition, we're done
+        final Enum<?> transition = this.currentState.run();
+        //If no transition, no need to advance state
         if (transition == null) return null;
 
         //If the component is done, get the next component
@@ -74,14 +75,14 @@ public class LinearStateMachine extends StateMachineBase {
         else {
             this.currentState.tearDown();
             //No more components -> end of this state-machine
-            Log.i(Utils.TAG, "Exiting \"" + this + "\" with transition \"" + transition + "\"");
+            Log.i(Utils.TAG, "Exiting \"" + this + "\"");
             this.currentState = null;
-            return transition;
+            return DefaultTransition.DEFAULT;
         }
     }
 
     private void transitionToNextStage() {
-        final AutonomousComponent nextState = this.iterator.next();
+        final AutonomousComponent<?> nextState = this.iterator.next();
         Log.i(Utils.TAG, "Transition from \"" + this.currentState + "\" => \"" + nextState + "\"");
         if (this.currentState != null) this.currentState.tearDown();
         this.currentState = nextState;

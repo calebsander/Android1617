@@ -26,7 +26,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 @Autonomous
 @Disabled
 public class SideAutonomous extends VelocityBaseOpMode {
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         int distanceFromWall = 10;
