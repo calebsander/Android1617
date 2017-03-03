@@ -235,7 +235,6 @@ public class VelocityDrive extends BaseOpMode {
 		this.shooterState = ShooterState.values()[0];
 
 		final NetworkedStateMachine beaconStateMachine = new NetworkedStateMachine("Beacon state");
-		//final AutonomousComponent neutral = new PresserNeutral();
 		final LinearStateMachine in = new LinearStateMachine();
 		for(int pullIn = 0; pullIn < MotorConstants.PRESSER_V2_TIMES_PULL_IN; pullIn++) {
 			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN_STRAIN));
@@ -270,7 +269,7 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	@SuppressWarnings("ConstantConditions")
 	protected void loopAfterStart() {
-		int driveGamepad;
+		final int driveGamepad;
 		double yScaleFactor;
 		double sScaleFactor;
 		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) {
@@ -289,7 +288,6 @@ public class VelocityDrive extends BaseOpMode {
 		if (slowMode) {
 			maxPower = 0.4;
 			sScaleFactor = Math.max(0.15, Math.abs(this.gamepads[driveGamepad].getLeftY() * maxPower));
-//			yScaleFactor = -yScaleFactor;
 		}
 		else maxPower = 1.0;
 		final double accelLimit;
@@ -395,7 +393,10 @@ public class VelocityDrive extends BaseOpMode {
 		return this.gamepads[JACK].getB();
 	}
 	private double getDefaultSnakePosition() {
-		if (this.isManualSnakeOn()) return MotorConstants.SNAKE_V2_DUMPING;
+		if (this.isManualSnakeOn()) {
+			this.ballInShooter = true;
+			return MotorConstants.SNAKE_V2_DUMPING;
+		}
 		else return MotorConstants.SNAKE_V2_HOLDING;
 	}
 }

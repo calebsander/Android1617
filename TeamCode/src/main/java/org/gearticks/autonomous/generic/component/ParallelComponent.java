@@ -7,25 +7,54 @@ import java.util.Iterator;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.opmodes.utility.Utils;
 
+/**
+ * Allows for running any number of different components at once.
+ * Won't quit until each internal component has quit.
+ * If two components do conflicting actions, behavior is undefined.
+ * This means, for example, that you can't do a drive and a turn at the same time,
+ * but a drive and an intake and a servo movement at the same time are fine.
+ */
 @SuppressWarnings("Convert2streamapi")
 public class ParallelComponent extends AutonomousComponentAbstractImpl<DefaultTransition> {
 	private final Collection<AutonomousComponent<?>> components;
 
+	/**
+	 * Creates a parallel component with an empty set of components
+	 */
 	public ParallelComponent() {
 		this(new HashSet<>());
 	}
+	/**
+	 * Creates a parallel component with an empty set of components
+	 * and the specified id
+	 * @param id the debugging id of the component
+	 */
 	public ParallelComponent(String id) {
 		this(new HashSet<>(), id);
 	}
+	/**
+	 * Creates a parallel component with the specified collection of components
+	 * @param components the components to run in parallel
+	 */
 	public ParallelComponent(Collection<AutonomousComponent<?>> components) {
 		super(DefaultTransition.class);
 		this.components = components;
 	}
+	/**
+	 * Creates a parallel component with the specified collection of components
+	 * and the specified id
+	 * @param components the components to run in parallel
+	 * @param id the debugging id of the component
+	 */
 	public ParallelComponent(Collection<AutonomousComponent<?>> components, String id) {
 		super(DefaultTransition.class, id);
 		this.components = components;
 	}
 
+	/**
+	 * Adds a component to the collection of components to run in parallel
+	 * @param component the component to add
+	 */
 	public void addComponent(AutonomousComponent<?> component) {
 		this.components.add(component);
 	}

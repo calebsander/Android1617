@@ -457,11 +457,9 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		public static final double CAP_BALL_UP = 1.0;
 		public static final double CAP_BALL_DOWN = -CAP_BALL_UP * 0.1;
 		public static final double CAP_BALL_SLOW_SCALE = 0.3, CAP_BALL_SUPER_SLOW_UP = CAP_BALL_UP * 0.1;
-		public static final int CAP_BALL_TOP = -6800;
-		public static final int CAP_BALL_BOTTOM = 0;
 
 		public static final double FRONT_BUMPER_UP = 1.0;
-		public static final double FRONT_BUMPER_DOWN = -1.0;
+		public static final double FRONT_BUMPER_DOWN = -FRONT_BUMPER_UP;
 
 		public static final double TOP_LATCH_ENGAGED = 0.55;
 		public static final double TOP_LATCH_DISENGAGED = 0.0;
