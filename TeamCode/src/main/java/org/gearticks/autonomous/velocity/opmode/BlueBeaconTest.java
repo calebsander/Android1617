@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
@@ -11,6 +12,7 @@ import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @Autonomous
+@Disabled
 public class BlueBeaconTest extends VelocityBaseOpMode {
     private static final int DISTANCE_FROM_WALL = 9;
 
