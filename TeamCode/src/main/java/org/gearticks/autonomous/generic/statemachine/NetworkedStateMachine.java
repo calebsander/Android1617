@@ -72,7 +72,17 @@ public class NetworkedStateMachine extends StateMachineBase {
 	@Override
 	public void setup() {
 		super.setup();
+		if (this.currentState == null) throw new RuntimeException("No initial component set for \"" + this + "\"");
 		this.currentState.setup();
+		for (final AutonomousComponent<?> component : this.components) {
+			for (final Enum<?> transition : component.getPossibleTransitions()) {
+				final boolean exitTransition = this.isExitTransition(component, transition);
+				final boolean nextComponent = this.getTransitionTarget(component, transition) != null;
+				if (!(exitTransition || nextComponent)) {
+					throw new RuntimeException("No connection defined for \"" + component + "\" on transition \"" + transition + "\" in \"" + this + "\"");
+				}
+			}
+		}
 	}
 
 	@Override
@@ -83,28 +93,32 @@ public class NetworkedStateMachine extends StateMachineBase {
 		if (this.currentState == null) return DefaultTransition.DEFAULT;
 
 		//Delegate run() to current state
-		final Enum transition = this.currentState.run();
+		final Enum<?> transition = this.currentState.run();
 		//If no transition, no need to advance state
 		if (transition == null) return null;
 
 		this.currentState.tearDown();
 
-		final Set<Enum<?>> exitPorts = this.exitConnections.get(this.currentState);
-		if (exitPorts != null) {
-			if (exitPorts.contains(transition)) {
-				Log.i(Utils.TAG, "Exiting from \"" + this.currentState + "\" on port \"" + transition + "\"");
-				this.currentState = null;
-				return DefaultTransition.DEFAULT;
-			}
+		if (this.isExitTransition(this.currentState, transition)) {
+			Log.i(Utils.TAG, "Exiting from \"" + this.currentState + "\" on port \"" + transition + "\"");
+			this.currentState = null;
+			return DefaultTransition.DEFAULT;
 		}
 
-		final Map<Enum<?>, AutonomousComponent<?>> componentConnections = this.connections.get(this.currentState);
-		Utils.assertNotNull(componentConnections, "No transitions defined for \"" + this.currentState + "\"");
-		final AutonomousComponent<?> nextState = componentConnections.get(transition);
-		Utils.assertNotNull(nextState, "No transition defined for \"" + this.currentState + "\" on port \"" + transition + "\"");
+		final AutonomousComponent<?> nextState = this.getTransitionTarget(this.currentState, transition);
 		Log.i(Utils.TAG, "Transition from \"" + this.currentState + "\" => \"" + nextState + "\" on port \"" + transition + "\"");
 		this.currentState = nextState;
 		nextState.setup();
 		return null;
+	}
+
+	private boolean isExitTransition(AutonomousComponent<?> component, Enum<?> transition) {
+		final Set<Enum<?>> exitTransitions = this.exitConnections.get(component);
+		return exitTransitions != null && exitTransitions.contains(transition);
+	}
+	private AutonomousComponent<?> getTransitionTarget(AutonomousComponent<?> component, Enum<?> transition) {
+		final Map<Enum<?>, AutonomousComponent<?>> componentConnections = this.connections.get(component);
+		if (componentConnections == null) return null;
+		return componentConnections.get(transition);
 	}
 }
