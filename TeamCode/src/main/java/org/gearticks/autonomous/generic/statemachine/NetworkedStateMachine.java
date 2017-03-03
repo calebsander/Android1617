@@ -70,10 +70,9 @@ public class NetworkedStateMachine extends StateMachineBase {
 	}
 
 	@Override
-	public void setup() {
-		super.setup();
+	public void onMatchStart() {
+		super.onMatchStart();
 		if (this.currentState == null) throw new RuntimeException("No initial component set for \"" + this + "\"");
-		this.currentState.setup();
 		for (final AutonomousComponent<?> component : this.components) {
 			for (final Enum<?> transition : component.getPossibleTransitions()) {
 				final boolean exitTransition = this.isExitTransition(component, transition);
@@ -83,6 +82,12 @@ public class NetworkedStateMachine extends StateMachineBase {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void setup() {
+		super.setup();
+		this.currentState.setup();
 	}
 
 	@Override
