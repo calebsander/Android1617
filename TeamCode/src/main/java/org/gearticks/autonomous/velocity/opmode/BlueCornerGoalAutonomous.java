@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.velocity.components.generic.DebugPause;
 import org.gearticks.autonomous.velocity.components.generic.Delay;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.autonomous.velocity.components.generic.GiroTurn;
@@ -26,9 +25,7 @@ public class BlueCornerGoalAutonomous extends InitializedAutonomous {
 		sm.addComponent(new Delay(opModeContext, delayOption));
 
 		sm.addComponent(new GiroDriveEncoder(START_HEADING, 0.5, 800, opModeContext, "Drive out"));
-		sm.addComponent(new DebugPause(opModeContext));
 		sm.addComponent(new GiroTurn(90.0, 0.1, 10, opModeContext, "Turn to ramp"));
-		sm.addComponent(new DebugPause(opModeContext));
 		sm.addComponent(new GiroDriveEncoder(90.0, 0.7, 6000, opModeContext, "Drive to ramp"));
 
 		return sm;
