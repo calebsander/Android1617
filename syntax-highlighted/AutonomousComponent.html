@@ -25,9 +25,9 @@
 <span class="cm">   * Returns the &quot;transition&quot; or id of the &quot;outputPort&quot; through which this AutonomousComponent ends.</span>
 <span class="cm">   * This allows for choice between different transitions/routes to next AutonomousComponents.</span>
 <span class="cm">   *</span>
-<span class="cm">   * @return &quot;outputPort,&quot; where AutonomousComponentAbstractImpl.NOT_DONE means that the component is not done</span>
+<span class="cm">   * @return null if not yet done; the transition value if done</span>
 <span class="cm">   */</span>
-  <span class="kt">int</span> <span class="nf">run</span><span class="o">();</span>
+  <span class="n">Transition</span> <span class="nf">run</span><span class="o">();</span>
 
   <span class="cm">/**</span>
 <span class="cm">   * Called each time the component ends</span>
@@ -39,5 +39,17 @@
 <span class="cm">   * @return a display name for this component</span>
 <span class="cm">   */</span>
   <span class="n">String</span> <span class="nf">getId</span><span class="o">();</span>
+
+  <span class="kd">class</span> <span class="nc">Transition</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Transition</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">name</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
 <span class="o">}</span>
 </pre></div>

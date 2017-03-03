@@ -15,7 +15,7 @@ cssFile=syntax.css
 sort files-to-print.txt -o files-to-print.txt
 
 while read javaFile; do
-	pathToFile=$(find .. -name $javaFile.java)
+	pathToFile=$(find ../TeamCode/src/main/java/org/gearticks/ -name $javaFile.java)
 	if [ -z "${pathToFile// }" ]; then
 		echo "Couldn't locate" $javaFile.java
 		exit

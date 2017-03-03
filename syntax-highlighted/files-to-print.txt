@@ -1,11 +1,10 @@
 AutonomousComponent
-BlueSideAutonomous
+BananaTurnNoGiro
+BlueBeaconFirstAutonomous
+BlueCornerGoalAutonomous
 DriveDirection
-HardwareComponentAutonomous
-LinearStateMachine
-NetworkedStateMachine
-RedSideAutonomous
-SideAutonomousRB
+I2CSensor
+Shoot3Balls
 VelocityConfiguration
 VelocityDrive
 VuforiaConfiguration
