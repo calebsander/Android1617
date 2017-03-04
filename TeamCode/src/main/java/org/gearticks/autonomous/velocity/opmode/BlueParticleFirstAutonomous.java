@@ -6,6 +6,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
+import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.components.velocity.composite.BlueSideAutonomous;
 import org.gearticks.autonomous.velocity.components.velocity.composite.Shoot2Balls;
 import org.gearticks.autonomous.velocity.components.velocity.single.DeploySideRollers;
@@ -24,6 +25,7 @@ public class BlueParticleFirstAutonomous extends InitializedAutonomous {
         sm.addComponent(shootAndDeployRollers);
 
         // Blue side driving components
+        sm.addComponent(new Wait(0.5, "Wait for top latch to get out of way"));
         sm.addComponent(new BlueSideAutonomous(opModeContext));
 
         //End component

@@ -31,9 +31,7 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 		if (superTransition != null) return superTransition;
 
 		final BeaconColorCounts oldColorCounts = pictureResult.colorCounts;
-		final int oldBlue = oldColorCounts.leftBlue + oldColorCounts.rightBlue;
 		final BeaconColorCounts colorCounts = this.vuforiaConfiguration.getColorCounts();
-		final int newBlue = colorCounts.leftBlue + colorCounts.rightBlue;
 
 		final int dLeftRed = colorCounts.leftRed - oldColorCounts.leftRed;
 		final int dRightRed = colorCounts.rightRed - oldColorCounts.rightRed;
@@ -42,7 +40,7 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 
 		final int change = (dLeftRed - dLeftBlue) + (dRightRed - dRightBlue);
 
-		if (change > 4500){
+		if (change > 2000){
 			Log.i(Utils.TAG, "Significant change: " + change);
 			if(isBlue){
 				Log.i(Utils.TAG, "Turned red, incorrect");
@@ -53,7 +51,7 @@ public class CheckPicture extends AutonomousComponentAbstractImpl {
 				return CORRECT;
 			}
 		}
-		else if (change < -4500){
+		else if (change < -2000){
 			Log.i(Utils.TAG, "Significant change: " + change);
 			Log.i(Utils.TAG, "Turned blue");
 			if(isBlue){

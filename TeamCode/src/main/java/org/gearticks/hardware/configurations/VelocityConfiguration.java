@@ -280,7 +280,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 			else if (Math.abs(this.shooter.encoderValue()) > (Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 110)) {
 				this.shootSlow();
 			}
-			else if (Math.abs(this.shooter.encoderValue()) > (Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 475)) {
+			else if (Math.abs(this.shooter.encoderValue()) > (Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 420)) {
 				this.shooterPassedEncoder = true;
 				this.shootFast();
 			}
@@ -307,13 +307,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				this.shooterWasDown = true;
 				this.shooterPassedEncoder = true;
 			}
-			else if (this.shooter.encoderValue() > MotorConstants.SHOOTER_TICKS_PER_ROTATION - 250 * Math.signum(MotorConstants.SHOOTER_TICKS_PER_ROTATION)){
+			else if (Math.abs(this.shooter.encoderValue()) > Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 150) {
 				this.shooterPassedEncoder = true;
-				this.shootFast();
+				this.shootSlowAutonomous();
 			}
 			else {
 				this.shooterPassedEncoder = false;
-				this.shootSlowAutonomous();
+				this.shootFast();
 			}
 		}
 	}
