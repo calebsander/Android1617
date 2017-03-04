@@ -47,6 +47,10 @@ public abstract class VelocityBaseOpMode extends HardwareComponentAutonomous<Vel
 		this.configuration.dim.setLED(DimLed.RED.id, redOn);
 		this.configuration.dim.setLED(DimLed.BLUE.id, blueOn);
 	}
+	protected void matchStart() {
+		super.matchStart();
+		this.configuration.resetEncoder();
+	}
 
 	protected VelocityConfiguration newConfiguration() {
 		return new VelocityConfiguration(this.hardwareMap, this.isV2(), true);
