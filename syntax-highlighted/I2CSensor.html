@@ -1,0 +1,186 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="cm">/*Allows for controlling an I2C device with multiple read and write registers</span>
+<span class="cm">  Read and write actions are queued and will occur as soon as is possible</span>
+<span class="cm">  Classes that extend this (presumably for a specific sensor) should make all their ReadRequest fields public and their WriteRequest fields private</span>
+<span class="cm">  Sets of registers to be read need to be explicitly told to begin reading and stop reading</span>
+<span class="cm">  The most recent data from a read request will be stored in it</span>
+<span class="cm">*/</span>
+<span class="kn">package</span> <span class="nn">org.gearticks.dimsensors.i2c</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">I2CSensor</span> <span class="kd">implements</span> <span class="n">I2cController</span><span class="o">.</span><span class="na">I2cPortReadyCallback</span> <span class="o">{</span>
+  <span class="c1">//The maximum number of registers that a ReadRequest or WriteRequest can have</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MAX_LENGTH</span> <span class="o">=</span> <span class="mi">26</span><span class="o">;</span>
+
+  <span class="c1">//A request for a read or write</span>
+  <span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">SensorRequest</span> <span class="o">{</span>
+    <span class="c1">//The first register being controlled</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">register</span><span class="o">;</span>
+    <span class="c1">//The number of consecutive registers being controlled</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">length</span><span class="o">;</span>
+    <span class="c1">//For example, controlling registers 5 to 15 would require register = 5, length = 11</span>
+
+    <span class="c1">//The value of System.nanoTime() when the action was performed</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">actionTimestamp</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">SensorRequest</span><span class="o">(</span><span class="kt">int</span> <span class="n">register</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Cannot have a 0 length request&quot;</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">&gt;</span> <span class="n">MAX_LENGTH</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Length must be no more than &quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">MAX_LENGTH</span><span class="o">));</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">register</span> <span class="o">=</span> <span class="n">register</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">length</span> <span class="o">=</span> <span class="n">length</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">resetActionTimer</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kt">int</span> <span class="nf">getRegister</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">register</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">protected</span> <span class="kt">int</span> <span class="nf">getLength</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">//Send the request to the I2C controller</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">sendRequest</span><span class="o">();</span>
+    <span class="c1">//Add the request to a different queue if it isn&#39;t yet there</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">addToQueue</span><span class="o">(</span><span class="n">Queue</span><span class="o">&lt;</span><span class="n">SensorRequest</span><span class="o">&gt;</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="k">this</span><span class="o">))</span> <span class="n">queue</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">//Add the request to the end of the queue if it isn&#39;t yet there</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">addToQueue</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">addToQueue</span><span class="o">(</span><span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">requests</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">//Reset the amount of time since the last action</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">resetActionTimer</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">actionTimestamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">//Returns the number of nanoseconds since the last action</span>
+    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">nanosSinceAction</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">actionTimestamp</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">//Get request in string form (for debugging)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="s">&quot;0x&quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toHexString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">register</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;, 0x&quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toHexString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//A request for a read</span>
+  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SensorReadRequest</span> <span class="kd">extends</span> <span class="n">SensorRequest</span> <span class="o">{</span>
+    <span class="c1">//The last data read (null if no data has been read yet)</span>
+    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">readData</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">SensorReadRequest</span><span class="o">(</span><span class="kt">int</span> <span class="n">register</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="n">register</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">readData</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">//Begin constantly polling these registers</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startReading</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">addToQueue</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">//Stop constantly polling these registers</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stopReading</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">requests</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendRequest</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">enableI2cReadMode</span><span class="o">(</span><span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">getAddress</span><span class="o">(),</span> <span class="k">this</span><span class="o">.</span><span class="na">getRegister</span><span class="o">(),</span> <span class="k">this</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="c1">//Record new data that has been received</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setReadData</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">resetActionTimer</span><span class="o">();</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">readData</span> <span class="o">=</span> <span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">getCopyOfReadBuffer</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">//Whether we have gotten read data at least once</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasReadData</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">readData</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">//Get the data that has been read</span>
+    <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getReadData</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">readData</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//A request for a write</span>
+  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SensorWriteRequest</span> <span class="kd">extends</span> <span class="n">SensorRequest</span> <span class="o">{</span>
+    <span class="c1">//The data to be written</span>
+    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">writeData</span><span class="o">;</span>
+    <span class="c1">//Whether or not the most recent data have been sent</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">sent</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">SensorWriteRequest</span><span class="o">(</span><span class="kt">int</span> <span class="n">register</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="n">register</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">writeData</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">sent</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">//Set the data to be written (returns whether or not it was different (and set))</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">setWriteData</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">newData</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getLength</span><span class="o">()</span> <span class="o">!=</span> <span class="n">newData</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Expected length &quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getLength</span><span class="o">())</span> <span class="o">+</span> <span class="s">&quot;, got &quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">newData</span><span class="o">.</span><span class="na">length</span><span class="o">));</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">writeData</span><span class="o">,</span> <span class="n">newData</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">else</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">writeData</span> <span class="o">=</span> <span class="n">newData</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">sent</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">addToQueue</span><span class="o">();</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendRequest</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">resetActionTimer</span><span class="o">();</span>
+      <span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">enableI2cWriteMode</span><span class="o">(</span><span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">getAddress</span><span class="o">(),</span> <span class="k">this</span><span class="o">.</span><span class="na">getRegister</span><span class="o">(),</span> <span class="k">this</span><span class="o">.</span><span class="na">writeData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+      <span class="n">I2CSensor</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">copyBufferIntoWriteBuffer</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">writeData</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">sent</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">//Whether the most recent changed value has been sent</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">wasSent</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">sent</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//Automatically calculates the length necessary to read all the registers between the two specified ones (inclusive)</span>
+  <span class="kd">protected</span> <span class="n">SensorReadRequest</span> <span class="nf">makeReadRequest</span><span class="o">(</span><span class="kt">int</span> <span class="n">minRegister</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxRegister</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">SensorReadRequest</span><span class="o">(</span><span class="n">minRegister</span><span class="o">,</span> <span class="n">maxRegister</span> <span class="o">-</span> <span class="n">minRegister</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">//The device being controlled (wrapped)</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">I2cDevice</span> <span class="n">device</span><span class="o">;</span>
+  <span class="c1">//The queue of requests to be processed</span>
+  <span class="c1">//Read requests cycle to the back of the queue when processed, while write requests are taken out</span>
+  <span class="kd">protected</span> <span class="kd">final</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">SensorRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">;</span>
+  <span class="c1">//The read request processed in the last ready cycle</span>
+  <span class="kd">private</span> <span class="n">SensorReadRequest</span> <span class="n">lastRead</span><span class="o">;</span>
+  <span class="c1">//The I2C address</span>
+  <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">I2cAddr</span> <span class="nf">getAddress</span><span class="o">();</span>
+
+  <span class="c1">//Initialize without setting the callback - for use with multiple devices on the same I2C bus</span>
+  <span class="kd">public</span> <span class="nf">I2CSensor</span><span class="o">(</span><span class="n">I2cDevice</span> <span class="n">device</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">SensorRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">device</span> <span class="o">=</span> <span class="n">device</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">requests</span> <span class="o">=</span> <span class="n">requests</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">lastRead</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nf">I2CSensor</span><span class="o">(</span><span class="n">I2cDevice</span> <span class="n">device</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">device</span><span class="o">,</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;&gt;());</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">registerForI2cPortReadyCallback</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nf">I2CSensor</span><span class="o">(</span><span class="n">I2cDevice</span> <span class="n">device</span><span class="o">,</span> <span class="n">I2CSwitcher</span> <span class="n">switcher</span><span class="o">,</span> <span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">device</span><span class="o">,</span> <span class="n">switcher</span><span class="o">.</span><span class="na">portRequests</span><span class="o">[</span><span class="n">port</span><span class="o">]);</span>
+    <span class="n">switcher</span><span class="o">.</span><span class="na">addDevice</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">portIsReady</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">lastRead</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">lastRead</span><span class="o">.</span><span class="na">setReadData</span><span class="o">();</span> <span class="c1">//record the read data</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">requests</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span> <span class="c1">//if there are commands to process</span>
+      <span class="kd">final</span> <span class="n">SensorRequest</span> <span class="n">nextRequest</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">requests</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span> <span class="c1">//get the request from the top of the queue</span>
+      <span class="n">nextRequest</span><span class="o">.</span><span class="na">sendRequest</span><span class="o">();</span> <span class="c1">//run the code necessary to process the request</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">setI2cPortActionFlag</span><span class="o">();</span> <span class="c1">//we always want to do the action</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">writeI2cCacheToController</span><span class="o">();</span> <span class="c1">//set new desired register</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">nextRequest</span> <span class="k">instanceof</span> <span class="n">SensorReadRequest</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">nextRequest</span><span class="o">.</span><span class="na">addToQueue</span><span class="o">();</span> <span class="c1">//reads need to be issued repeatedly</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">readI2cCacheFromController</span><span class="o">();</span> <span class="c1">//don&#39;t waste time performing a read if it isn&#39;t necessary</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">lastRead</span> <span class="o">=</span> <span class="o">(</span><span class="n">SensorReadRequest</span><span class="o">)</span><span class="n">nextRequest</span><span class="o">;</span> <span class="c1">//a read was issued, so keep track of it in order to store the response data</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">lastRead</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span> <span class="c1">//a write was issued, so no response has to be stored</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">readyCallback</span><span class="o">();</span>
+  <span class="o">}</span>
+  <span class="c1">//Can be overridden in subclasses to provide a callback function when an I2C request is completed</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">readyCallback</span><span class="o">()</span> <span class="o">{}</span>
+  <span class="c1">//Stop communicating on the port</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">terminate</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">requests</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">device</span><span class="o">.</span><span class="na">deregisterForPortReadyCallback</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

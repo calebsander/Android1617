@@ -12,10 +12,10 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.joystickoptions.IncrementOption;
 
 @Autonomous
-public class BlueCornerGoalAutonomous extends InitializedAutonomous {
-	private static final double START_HEADING = 25.0;
+public class RedCornerGoalAutonomous extends InitializedAutonomous {
+	private static final double START_HEADING = 360.0 - 22.0;
 
-	protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final LinearStateMachine sm = new LinearStateMachine();
 
 		sm.addComponent(new Shoot2Balls(true, opModeContext, "Shoot balls"));
@@ -25,8 +25,8 @@ public class BlueCornerGoalAutonomous extends InitializedAutonomous {
 		sm.addComponent(new Delay(opModeContext, delayOption));
 
 		sm.addComponent(new GiroDriveEncoder(START_HEADING, 0.5, 800, opModeContext, "Drive out"));
-		sm.addComponent(new GiroTurn(90.0, 0.1, 10, opModeContext, "Turn to ramp"));
-		sm.addComponent(new GiroDriveEncoder(90.0, 0.7, 6000, opModeContext, "Drive to ramp"));
+		sm.addComponent(new GiroTurn(-90.0, 0.1, 10, opModeContext, "Turn to ramp"));
+		sm.addComponent(new GiroDriveEncoder(-90.0, 0.7, 6000, opModeContext, "Drive to ramp"));
 
 		return sm;
 	}

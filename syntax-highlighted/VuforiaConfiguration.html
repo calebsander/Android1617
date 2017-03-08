@@ -37,6 +37,7 @@
 <span class="cm">     * Capture an image from Vuforia as a 720p (1280 x 720) bitmap</span>
 <span class="cm">     * @return can be null if Vuforia didn&#39;t return a usable frame</span>
 <span class="cm">     */</span>
+    <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;ConstantConditions&quot;</span><span class="o">)</span>
     <span class="kd">public</span> <span class="nd">@Nullable</span> <span class="n">Bitmap</span> <span class="nf">getBitmap</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
         <span class="n">CloseableFrame</span> <span class="n">frame</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>

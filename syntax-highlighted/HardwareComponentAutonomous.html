@@ -13,7 +13,7 @@
   <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Start OpMode initialize&quot;</span><span class="o">);</span>
     <span class="k">this</span><span class="o">.</span><span class="na">configuration</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">newConfiguration</span><span class="o">();</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">component</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getComponent</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">component</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">OpModeContext</span><span class="o">&lt;&gt;(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">matchTime</span><span class="o">));</span>
   <span class="o">}</span>
   <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">matchStart</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Starting OpMode matchStart&quot;</span><span class="o">);</span>
@@ -24,8 +24,8 @@
   <span class="o">}</span>
   <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">loopAfterStart</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">done</span><span class="o">)</span> <span class="o">{</span>
-      <span class="kd">final</span> <span class="kt">int</span> <span class="n">transition</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-      <span class="k">if</span> <span class="o">(</span><span class="n">transition</span> <span class="o">!=</span> <span class="n">AutonomousComponentAbstractImpl</span><span class="o">.</span><span class="na">NOT_DONE</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">final</span> <span class="n">Transition</span> <span class="n">transition</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">transition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Component finished&quot;</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">done</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">tearDown</span><span class="o">();</span>
@@ -44,7 +44,7 @@
 <span class="cm">   * Will be called in initialize() after configuration is created.</span>
 <span class="cm">   * @return the component to run</span>
 <span class="cm">   */</span>
-  <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">AutonomousComponent</span> <span class="nf">getComponent</span><span class="o">();</span>
+  <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">AutonomousComponent</span> <span class="nf">getComponent</span><span class="o">(</span><span class="n">OpModeContext</span><span class="o">&lt;</span><span class="n">HARDWARE_TYPE</span><span class="o">&gt;</span> <span class="n">opModeContext</span><span class="o">);</span>
   <span class="cm">/**</span>
 <span class="cm">   * Creates a configuration object of the specified type.</span>
 <span class="cm">   * The idea is to have a subclass of this class for each configuration type in use</span>

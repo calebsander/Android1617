@@ -45,7 +45,7 @@ public class RedBeaconFirstAutonomous extends InitializedAutonomous {
         sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, 0.3, 4000, opModeContext, "Get to far beacon"));
 
         //Press beacon
-        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.20, 500, opModeContext, "Adjust to white line"));
+        sm.addComponent(new GiroDriveAlongWallLine(DISTANCE_FROM_WALL, 0.0, -0.175, 500, opModeContext, "Adjust to white line"));
         sm.addComponent(new GiroTurn(0.0, opModeContext, "Straighten out"));
         sm.addComponent(new SidePressBeaconButton(false, opModeContext, "Press Button"));
 

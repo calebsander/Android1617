@@ -1,5 +1,7 @@
 package org.gearticks.hardware.configurations;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -18,6 +20,7 @@ import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.MotorWrapper.MotorType;
 import org.gearticks.hardware.drive.TankDrive;
+import org.gearticks.opmodes.utility.Utils;
 
 @SuppressWarnings("deprecation")
 public class VelocityConfiguration implements HardwareConfiguration {
@@ -274,11 +277,12 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				}
 				this.shooterWasDown = true;
 			}
-			else if (Math.abs(this.shooter.encoderValue()) > Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 450) {
-				this.shooterPassedEncoder = true;
-			}
-			else if (Math.abs(this.shooter.encoderValue()) > Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 300) {
+			else if (Math.abs(this.shooter.encoderValue()) > (Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 110)) {
 				this.shootSlow();
+			}
+			else if (Math.abs(this.shooter.encoderValue()) > (Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 420)) {
+				this.shooterPassedEncoder = true;
+				this.shootFast();
 			}
 			else {
 				this.shootFast();
@@ -303,13 +307,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 				this.shooterWasDown = true;
 				this.shooterPassedEncoder = true;
 			}
-			else if (this.shooter.encoderValue() > MotorConstants.SHOOTER_TICKS_PER_ROTATION - 250 * Math.signum(MotorConstants.SHOOTER_TICKS_PER_ROTATION)){
+			else if (Math.abs(this.shooter.encoderValue()) > Math.abs(MotorConstants.SHOOTER_TICKS_PER_ROTATION) - 150) {
 				this.shooterPassedEncoder = true;
-				this.shootFast();
+				this.shootSlowAutonomous();
 			}
 			else {
 				this.shooterPassedEncoder = false;
-				this.shootSlowAutonomous();
+				this.shootFast();
 			}
 		}
 	}
@@ -402,7 +406,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 		public static final double SHOOTER_FORWARD = 1.0;
 		public static final double SHOOTER_BACK = -SHOOTER_FORWARD;
-		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.20;
+		public static final double SHOOTER_BACK_SLOW = SHOOTER_BACK * 0.2;
 		public static final double SHOOTER_BACK_SLOW_AUTONOMOUS = SHOOTER_BACK * 0.2;
 		public static final double SHOOTER_BACK_SUPER_SLOW = SHOOTER_BACK * 0.15;
 		public static final int SHOOTER_TICKS_PER_ROTATION = -700;
