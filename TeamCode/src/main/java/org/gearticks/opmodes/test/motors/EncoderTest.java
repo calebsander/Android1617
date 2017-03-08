@@ -38,6 +38,6 @@ public class EncoderTest extends BaseOpMode {
 		for (Map.Entry<String, MotorWrapper> nameAndMotor : this.driveMotors.entrySet()) this.telemetry.addData(nameAndMotor.getKey(), nameAndMotor.getValue().encoderValue());
 		this.direction.drive(0.0, this.gamepads[0].getLeftY());
 		this.direction.turn(this.gamepads[0].getRightX());
-		this.configuration.move(this.direction);
+		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 	}
 }

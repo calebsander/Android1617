@@ -2,6 +2,7 @@ package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
+import org.gearticks.hardware.configurations.OrientableConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class GiroDriveEncoderStraighten extends LinearStateMachine {
@@ -13,7 +14,7 @@ public class GiroDriveEncoderStraighten extends LinearStateMachine {
 	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GiroDriveEncoderStraighten(double targetHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroDriveEncoderStraighten(double targetHeading, double power, int encoderTarget, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		super(id);
 		this.addComponent(new GiroDriveEncoder(targetHeading, power, encoderTarget, opModeContext, "Driving"));
 		this.addComponent(new Wait(0.05, "Waiting for stop"));

@@ -43,7 +43,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	protected void matchEnd() {
 		Log.i(Utils.TAG, "Starting OpMode matchEnd");
 		if (!this.done) this.component.tearDown();
-		this.configuration.teardown();
+		this.configuration.tearDown();
 	}
 
 	/**

@@ -25,6 +25,6 @@ public class RangeAndIMUTest extends BaseOpMode {
 		this.telemetry.addData("Yaw", this.configuration.imu.getRelativeYaw());
 	}
 	protected void matchEnd() {
-		this.configuration.teardown();
+		this.configuration.tearDown();
 	}
 }

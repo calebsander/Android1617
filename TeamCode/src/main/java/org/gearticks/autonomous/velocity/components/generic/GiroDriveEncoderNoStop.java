@@ -2,12 +2,13 @@ package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
+import org.gearticks.hardware.configurations.OrientableConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
 public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
-	private final VelocityConfiguration configuration;
+	private final OrientableConfiguration configuration;
 	private final DriveDirection direction;
 	private final double power;
 	private final double targetHeading;
@@ -21,7 +22,7 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
 	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GiroDriveEncoderNoStop(double targetHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroDriveEncoderNoStop(double targetHeading, double power, int encoderTarget, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		super(id);
 		this.configuration = opModeContext.configuration;
 		this.direction = new DriveDirection();
@@ -46,7 +47,7 @@ public class GiroDriveEncoderNoStop extends AutonomousComponentAbstractImpl {
 
 		//control giro drive
 		this.direction.drive(0.0, this.power);
-		this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
+		this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, 1.0, this.configuration.getHeading(), 0.05, 0.1);
 		this.configuration.move(this.direction, 0.06);
 
 		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;

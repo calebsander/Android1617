@@ -63,7 +63,7 @@ public class ResQConfiguration implements HardwareConfiguration {
 		this.bl.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
 		this.br.setRunMode(RunMode.RUN_WITHOUT_ENCODER);
 	}
-	public void teardown() {}
+	public void tearDown() {}
 	public void stopMotion() {
 		this.screw.setPower(MotorWrapper.STOPPED);
 		this.lift.setPower(MotorWrapper.STOPPED);
@@ -74,9 +74,10 @@ public class ResQConfiguration implements HardwareConfiguration {
 		this.bl.setPower(MotorWrapper.STOPPED);
 		this.br.setPower(MotorWrapper.STOPPED);
 	}
-	public void move(DriveDirection direction) {
+	public void move(DriveDirection direction, double accelLimit) {
 		this.drive.calculatePowers(direction);
 		this.drive.scaleMotorsDown();
+		this.drive.accelLimit(accelLimit);
 		this.drive.commitPowers();
 	}
 

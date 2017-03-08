@@ -3,12 +3,12 @@ package org.gearticks.autonomous.velocity.components.generic;
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
-import org.gearticks.hardware.configurations.VelocityConfiguration;
+import org.gearticks.hardware.configurations.OrientableConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
-public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroBananaTurnEncoder extends AutonomousComponentHardware<OrientableConfiguration> {
 	private final DriveDirection direction;
 	private final double power;
 	private final double turnPower;
@@ -29,10 +29,10 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
      * @param opModeContext - the OpModeContext this is running in
      * @param id - descriptive name for logging
      */
-	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		this(startHeading, endHeading, power, encoderTarget, 0.05, 0.1, 1.0, opModeContext, id);
 	}
-	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, double turnPower, double turnAccel, double turnRange, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, double turnPower, double turnAccel, double turnRange, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		super(opModeContext, id);
 		this.direction = new DriveDirection();
 		this.power = power;
@@ -63,8 +63,8 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 
 		final double targetHeading = getHeading(distance);
 
-		double currentHeading = this.configuration.imu.getRelativeYaw();
-		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, this.turnRange, this.configuration.imu.getRelativeYaw(), this.turnPower, this.turnAccel);
+		double currentHeading = this.configuration.getHeading();
+		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, this.turnRange, currentHeading, this.turnPower, this.turnAccel);
 
 		final Transition transition;
 		if (distance > this.encoderTarget) {

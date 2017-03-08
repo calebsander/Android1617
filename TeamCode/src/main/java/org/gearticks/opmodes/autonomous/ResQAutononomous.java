@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.gearticks.AutonomousDatalogger;
+import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.vuforia.VuforiaKey;
 import org.gearticks.hardware.configurations.ResQConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
@@ -157,7 +158,7 @@ public class ResQAutononomous extends BaseOpMode {
 			case STOPPED:
 				this.direction.stopDrive();
 		}
-		this.configuration.move(this.direction);
+		this.configuration.move(this.direction, MotorWrapper.NO_ACCEL_LIMIT);
 		if (resetEncoder) {
 			this.configuration.bl.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
 			this.configuration.bl.setRunMode(RunMode.RUN_WITHOUT_ENCODER);

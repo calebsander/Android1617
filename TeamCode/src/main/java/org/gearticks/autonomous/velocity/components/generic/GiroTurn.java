@@ -3,12 +3,13 @@ package org.gearticks.autonomous.velocity.components.generic;
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
+import org.gearticks.hardware.configurations.OrientableConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
-public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroTurn extends AutonomousComponentHardware<OrientableConfiguration> {
 	private final DriveDirection direction = new DriveDirection();
 	private final double targetHeading;
 	private double angleMultiplier;
@@ -21,13 +22,13 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GiroTurn(double targetHeading, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroTurn(double targetHeading, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		this(targetHeading, 0.05, 10, opModeContext, id);
 	}
-	public GiroTurn(double targetHeading, double power, int correctTimes, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroTurn(double targetHeading, double power, int correctTimes, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		this(targetHeading, power, correctTimes, 1.0, opModeContext, id);
 	}
-	public GiroTurn(double targetHeading, double power, int correctTimes, double range, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroTurn(double targetHeading, double power, int correctTimes, double range, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		super(opModeContext, id);
 		this.targetHeading = targetHeading;
 		this.power = power;
@@ -50,8 +51,8 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 		if (superTransition != null) return superTransition;
 
 		final Transition transition;
-		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, this.range, this.configuration.imu.getRelativeYaw(), this.power, 0.1) > this.correctTimes) {
-			Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
+		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, this.range, this.configuration.getHeading(), this.power, 0.1) > this.correctTimes) {
+			Log.d(Utils.TAG, "Heading = " + this.configuration.getHeading());
 			transition = NEXT_STATE;
 		}
 		else transition = null;

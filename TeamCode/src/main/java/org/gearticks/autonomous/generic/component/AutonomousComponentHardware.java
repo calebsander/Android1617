@@ -10,12 +10,12 @@ import org.gearticks.hardware.configurations.HardwareConfiguration;
 public class AutonomousComponentHardware<HARDWARE_TYPE extends HardwareConfiguration> extends AutonomousComponentTimer {
     protected final HARDWARE_TYPE configuration;
 
-    public AutonomousComponentHardware(OpModeContext<HARDWARE_TYPE> opModeContext) {
+    public AutonomousComponentHardware(OpModeContext<? extends HARDWARE_TYPE> opModeContext) {
         super();
         this.configuration = opModeContext.configuration;
     }
 
-    public AutonomousComponentHardware(OpModeContext<HARDWARE_TYPE> opModeContext, String id) {
+    public AutonomousComponentHardware(OpModeContext<? extends HARDWARE_TYPE> opModeContext, String id) {
         super(id);
         this.configuration = opModeContext.configuration;
     }

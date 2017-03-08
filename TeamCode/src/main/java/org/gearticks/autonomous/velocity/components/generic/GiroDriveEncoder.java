@@ -3,6 +3,7 @@ package org.gearticks.autonomous.velocity.components.generic;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
+import org.gearticks.hardware.configurations.OrientableConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class GiroDriveEncoder extends LinearStateMachine {
@@ -14,10 +15,10 @@ public class GiroDriveEncoder extends LinearStateMachine {
 	 * @param opModeContext - the OpModeContext this is running in
 	 * @param id - descriptive name for logging
 	 */
-	public GiroDriveEncoder(double targetHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
+	public GiroDriveEncoder(double targetHeading, double power, int encoderTarget, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		super(id);
 		this.addComponent(new GiroDriveEncoderNoStop(targetHeading, power, encoderTarget, opModeContext, "Driving"));
-		this.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext, "Stopping") {
+		this.addComponent(new AutonomousComponentHardware<OrientableConfiguration>(opModeContext, "Stopping") {
 			@Override
 			public Transition run() {
 				final Transition superTransition = super.run();

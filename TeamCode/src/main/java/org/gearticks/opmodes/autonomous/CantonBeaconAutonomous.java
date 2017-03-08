@@ -359,7 +359,7 @@ public class CantonBeaconAutonomous extends BaseOpMode {
 		this.telemetry.addData("Stage", this.stage);
 	}
 	protected void matchEnd() {
-		this.configuration.teardown();
+		this.configuration.tearDown();
 	}
 
 	//Gets distance we are to the left of the center of the image

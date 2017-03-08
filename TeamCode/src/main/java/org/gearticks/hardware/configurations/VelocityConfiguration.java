@@ -1,7 +1,5 @@
 package org.gearticks.hardware.configurations;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -20,10 +18,9 @@ import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.MotorWrapper.MotorType;
 import org.gearticks.hardware.drive.TankDrive;
-import org.gearticks.opmodes.utility.Utils;
 
 @SuppressWarnings("deprecation")
-public class VelocityConfiguration implements HardwareConfiguration {
+public class VelocityConfiguration implements OrientableConfiguration {
 	private final boolean v2;
 	public final MotorWrapper intake, shooter;
 	public final MotorWrapper capBall;
@@ -150,7 +147,7 @@ public class VelocityConfiguration implements HardwareConfiguration {
 		this.dim = (DeviceInterfaceModule)hardwareMap.get("DIM");
 	}
 
-	public void teardown() {
+	public void tearDown() {
 		this.imu.terminate();
 		this.rangeSensor.terminate();
 	}
@@ -398,6 +395,13 @@ public class VelocityConfiguration implements HardwareConfiguration {
 
 	public boolean isCapBallUp() {
 		return !capBallLimit.getState();
+	}
+
+	public void resetHeading() {
+		this.imu.resetHeading();
+	}
+	public double getHeading() {
+		return this.imu.getRelativeYaw();
 	}
 
 	public static abstract class MotorConstants {
