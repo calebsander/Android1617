@@ -8,7 +8,6 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
-import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
@@ -99,6 +98,8 @@ public class VelocityDrive extends BaseOpMode {
 			else return null;
 		}
 	}
+	//The state machine switching between intaking, holding, and loading
+	private NetworkedStateMachine ballStateMachine;
 
 
 	private enum ShooterState {
@@ -110,6 +111,16 @@ public class VelocityDrive extends BaseOpMode {
 	//The current state of the shooter control
 	private ShooterState shooterState;
 
+	private class PresserNeutral extends AutonomousComponentAbstractImpl {
+		public Transition run() {
+			final Transition superTransition = super.run();
+			if (superTransition != null) return superTransition;
+
+			configuration.frontBeaconPresser.setPosition(MotorConstants.PRESSER_V2_FRONT_IN);
+			if (gamepads[CALVIN].getB()) return NEXT_STATE;
+			else return null;
+		}
+	}
 	private static final Transition
 		SWITCH = new Transition("Switch sides"),
 		STOP = new Transition("Stop pressing");
@@ -132,6 +143,8 @@ public class VelocityDrive extends BaseOpMode {
 			else return STOP;
 		}
 	}
+	//The state machine controlling manually pressing the beacon
+	private NetworkedStateMachine beaconStateMachine;
 
 	private class BumperDown extends AutonomousComponentTimer {
 		@SuppressWarnings("ConstantConditions")
@@ -171,36 +184,34 @@ public class VelocityDrive extends BaseOpMode {
 			else return null;
 		}
 	}
+	private NetworkedStateMachine bumperStateMachine;
 
-	//The component running all of the state machines
-	private ParallelComponent stateMachines;
 	//Whether rollers are deployed
 	private boolean rollersDeployed;
 
 	protected void initialize() {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
 		this.direction = new DriveDirection();
-		this.stateMachines = new ParallelComponent();
 
 		this.ballInShooter = false;
-		final NetworkedStateMachine ballStateMachine = new NetworkedStateMachine("Ball state");
+		this.ballStateMachine = new NetworkedStateMachine("Ball state");
 		final AutonomousComponent intaking = new IntakingComponent();
 		final AutonomousComponent settling = new SettleInSnakeComponent();
 		final AutonomousComponent holding = new HoldingComponent();
 		final AutonomousComponent loading = new LoadingComponent();
 		final AutonomousComponent snakeReturning = new SnakeReturnComponent();
-		ballStateMachine.setInitialComponent(intaking);
-		ballStateMachine.addConnection(intaking, NEXT_STATE, settling);
-		ballStateMachine.addConnection(settling, NEXT_STATE, holding);
-		ballStateMachine.addConnection(holding, NEXT_STATE, loading);
-		ballStateMachine.addConnection(holding, MANUAL_SNAKE, intaking);
-		ballStateMachine.addConnection(loading, NEXT_STATE, snakeReturning);
-		ballStateMachine.addConnection(snakeReturning, NEXT_STATE, intaking);
-		this.stateMachines.addComponent(ballStateMachine);
+		this.ballStateMachine.setInitialComponent(intaking);
+		this.ballStateMachine.addConnection(intaking, NEXT_STATE, settling);
+		this.ballStateMachine.addConnection(settling, NEXT_STATE, holding);
+		this.ballStateMachine.addConnection(holding, NEXT_STATE, loading);
+		this.ballStateMachine.addConnection(holding, MANUAL_SNAKE, intaking);
+		this.ballStateMachine.addConnection(loading, NEXT_STATE, snakeReturning);
+		this.ballStateMachine.addConnection(snakeReturning, NEXT_STATE, intaking);
 
 		this.shooterState = ShooterState.values()[0];
 
-		final NetworkedStateMachine beaconStateMachine = new NetworkedStateMachine("Beacon state");
+		this.beaconStateMachine = new NetworkedStateMachine("Beacon state");
+		//final AutonomousComponent neutral = new PresserNeutral();
 		final LinearStateMachine in = new LinearStateMachine();
 		for(int pullIn = 0; pullIn < MotorConstants.PRESSER_V2_TIMES_PULL_IN; pullIn++) {
 			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN_STRAIN));
@@ -210,22 +221,20 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		final AutonomousComponent stayIn = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN);
 		final AutonomousComponent out = new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_OUT);
-		beaconStateMachine.setInitialComponent(stayIn);
-		beaconStateMachine.addConnection(stayIn, NEXT_STATE, out);
-		beaconStateMachine.addConnection(out, SWITCH, in);
-		beaconStateMachine.addConnection(stayIn, SWITCH, out);
-		beaconStateMachine.addConnection(stayIn, STOP, stayIn);
-		beaconStateMachine.addConnection(out, STOP, in);
-		beaconStateMachine.addConnection(in, NEXT_STATE, stayIn);
-		//this.stateMachines.addComponent(beaconStateMachine);
+		this.beaconStateMachine.setInitialComponent(stayIn);
+		this.beaconStateMachine.addConnection(stayIn, NEXT_STATE, out);
+		this.beaconStateMachine.addConnection(out, SWITCH, in);
+		this.beaconStateMachine.addConnection(stayIn, SWITCH, out);
+		this.beaconStateMachine.addConnection(stayIn, STOP, stayIn);
+		this.beaconStateMachine.addConnection(out, STOP, in);
+		this.beaconStateMachine.addConnection(in, NEXT_STATE, stayIn);
 
-		final NetworkedStateMachine bumperStateMachine = new NetworkedStateMachine("Front bumper state");
+		this.bumperStateMachine = new NetworkedStateMachine("Front bumper state");
 		final AutonomousComponent bumperUp = new BumperUpWhenTrigger();
 		final AutonomousComponent bumperDown = new BumperDown();
-		bumperStateMachine.setInitialComponent(bumperUp);
-		bumperStateMachine.addConnection(bumperUp, NEXT_STATE, bumperDown);
-		bumperStateMachine.addConnection(bumperDown, NEXT_STATE, bumperUp);
-		this.stateMachines.addComponent(bumperStateMachine);
+		this.bumperStateMachine.setInitialComponent(bumperUp);
+		this.bumperStateMachine.addConnection(bumperUp, NEXT_STATE, bumperDown);
+		this.bumperStateMachine.addConnection(bumperDown, NEXT_STATE, bumperUp);
 
 		this.rollersDeployed = true;
 	}
@@ -234,7 +243,7 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	@SuppressWarnings("ConstantConditions")
 	protected void loopAfterStart() {
-		final int driveGamepad;
+		int driveGamepad;
 		double yScaleFactor;
 		double sScaleFactor;
 		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) {
@@ -253,14 +262,27 @@ public class VelocityDrive extends BaseOpMode {
 		if (slowMode) {
 			maxPower = 0.4;
 			sScaleFactor = Math.max(0.15, Math.abs(this.gamepads[driveGamepad].getLeftY() * maxPower));
+//			yScaleFactor = -yScaleFactor;
 		}
 		else maxPower = 1.0;
 		final double accelLimit;
 		if (slowMode) accelLimit = 0.075;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
-		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+		final double joystickAngle = Math.atan2(this.gamepads[driveGamepad].getLeftY(), this.gamepads[driveGamepad].getLeftX());
+		final double x = this.gamepads[driveGamepad].getLeftX(), y = this.gamepads[driveGamepad].getLeftY();
+		if(Math.abs(joystickAngle) > toRadian(85) && Math.abs(joystickAngle) < toRadian(95)) {
+			this.direction.drive(0.0, scaleStick(y) * yScaleFactor);
+			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+		} else {
+			if(x >= 0) {
+				this.configuration.driveLeft.setPower(y + Math.signum(y) * Math.abs(x));
+				this.configuration.driveRight.setPower(y);
+			} else {
+				this.configuration.driveRight.setPower(y + Math.signum(y) * Math.abs(x));
+				this.configuration.driveLeft.setPower(y);
+			}
+		}
 
 		this.configuration.drive.calculatePowers(this.direction);
 		this.configuration.drive.scaleMotorsDown(maxPower);
@@ -282,7 +304,9 @@ public class VelocityDrive extends BaseOpMode {
 		}
 		this.configuration.intake.setPower(intakePower);
 
-		this.stateMachines.run();
+		this.ballStateMachine.run();
+		//this.beaconStateMachine.run();
+		this.bumperStateMachine.run();
 
 		final double shooterStopperPower;
 		if (this.gamepads[JACK].dpadUp()) {
@@ -354,14 +378,14 @@ public class VelocityDrive extends BaseOpMode {
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
 	}
+	private static double toRadian(double deg) {
+		return deg * Math.PI / 180;
+	}
 	private boolean isManualSnakeOn() {
 		return this.gamepads[JACK].getB();
 	}
 	private double getDefaultSnakePosition() {
-		if (this.isManualSnakeOn()) {
-			this.ballInShooter = true;
-			return MotorConstants.SNAKE_V2_DUMPING;
-		}
+		if (this.isManualSnakeOn()) return MotorConstants.SNAKE_V2_DUMPING;
 		else return MotorConstants.SNAKE_V2_HOLDING;
 	}
 }
