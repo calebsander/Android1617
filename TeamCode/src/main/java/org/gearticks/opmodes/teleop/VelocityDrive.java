@@ -178,7 +178,7 @@ public class VelocityDrive extends BaseOpMode {
 	private boolean rollersDeployed;
 
 	protected void initialize() {
-		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
+		this.configuration = new VelocityConfiguration(this.hardwareMap, false);
 		this.direction = new DriveDirection();
 		this.stateMachines = new ParallelComponent();
 
@@ -225,12 +225,12 @@ public class VelocityDrive extends BaseOpMode {
 		bumperStateMachine.setInitialComponent(bumperUp);
 		bumperStateMachine.addConnection(bumperUp, NEXT_STATE, bumperDown);
 		bumperStateMachine.addConnection(bumperDown, NEXT_STATE, bumperUp);
-		this.stateMachines.addComponent(bumperStateMachine);
+		//this.stateMachines.addComponent(bumperStateMachine);
 
 		this.rollersDeployed = true;
 	}
 	protected void matchStart() {
-		this.configuration.rollersDown();
+		//this.configuration.rollersDown();
 	}
 	@SuppressWarnings("ConstantConditions")
 	protected void loopAfterStart() {
@@ -319,8 +319,8 @@ public class VelocityDrive extends BaseOpMode {
 		final double capBallScaling;
 		if (this.gamepads[JACK].getBack()) capBallScaling = MotorConstants.CAP_BALL_SLOW_SCALE;
 		else capBallScaling = 1.0;
-		this.configuration.capBall.setPower(capBallPower * capBallScaling);
-		this.configuration.capBall.setRunMode(capBallMode);
+		//this.configuration.capBall.setPower(capBallPower * capBallScaling);
+		//this.configuration.capBall.setRunMode(capBallMode);
 
 		if (this.gamepads[CALVIN].getX() && !this.gamepads[CALVIN].getLast().getX()) {
 			this.rollersDeployed = !this.rollersDeployed;
