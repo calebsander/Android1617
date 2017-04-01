@@ -22,7 +22,7 @@
         <Motor name="intake" port="1" />
         <Motor name="shooter" port="2" />
     </MotorController>
-    <ServoController name="Servos" serialNumber="AL00XM5W">
+    <ServoController name="Servos" serialNumber="AL00VDKY">
         <ContinuousRotationServo name="shooterStopper" port="1" />
         <Servo name="snake" port="2" />
         <Servo name="clutch" port="3" />
