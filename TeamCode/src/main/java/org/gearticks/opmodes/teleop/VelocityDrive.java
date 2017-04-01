@@ -269,25 +269,26 @@ public class VelocityDrive extends BaseOpMode {
 		if (slowMode) accelLimit = 0.075;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-		final double joystickAngle = Math.atan2(this.gamepads[driveGamepad].getLeftY(), this.gamepads[driveGamepad].getLeftX());
+		final double maxSlope = 13.0;
 		final double x = this.gamepads[driveGamepad].getLeftX(), y = this.gamepads[driveGamepad].getLeftY();
-		if(Math.abs(joystickAngle) > toRadian(85) && Math.abs(joystickAngle) < toRadian(95)) {
+		if(x == 0 || Math.abs(y/x) > maxSlope) {
 			this.direction.drive(0.0, scaleStick(y) * yScaleFactor);
 			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+
+			this.configuration.drive.calculatePowers(this.direction);
+			this.configuration.drive.scaleMotorsDown(maxPower);
+			this.configuration.drive.accelLimit(accelLimit);
+			this.configuration.drive.commitPowers();
 		} else {
+			final double scale = 1.5;
 			if(x >= 0) {
-				this.configuration.driveLeft.setPower(y + Math.signum(y) * Math.abs(x));
-				this.configuration.driveRight.setPower(y);
+				this.configuration.driveLeft.setPower(y + Math.signum(y) * Math.abs(x)/scale);
+				this.configuration.driveRight.setPower(-y);
 			} else {
-				this.configuration.driveRight.setPower(y + Math.signum(y) * Math.abs(x));
+				this.configuration.driveRight.setPower(-y - Math.signum(y) * Math.abs(x)/scale);
 				this.configuration.driveLeft.setPower(y);
 			}
 		}
-
-		this.configuration.drive.calculatePowers(this.direction);
-		this.configuration.drive.scaleMotorsDown(maxPower);
-		this.configuration.drive.accelLimit(accelLimit);
-		this.configuration.drive.commitPowers();
 
 		this.telemetry.addData("Controller", driveGamepad);
 		this.telemetry.addData("Shooter down", this.configuration.isShooterDown());
