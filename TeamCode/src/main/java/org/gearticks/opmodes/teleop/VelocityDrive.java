@@ -269,26 +269,22 @@ public class VelocityDrive extends BaseOpMode {
 		if (slowMode) accelLimit = 0.075;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-		final double maxSlope = 13.0;
-		final double x = this.gamepads[driveGamepad].getLeftX(), y = this.gamepads[driveGamepad].getLeftY();
-		if(x == 0 || Math.abs(y/x) > maxSlope) {
-			this.direction.drive(0.0, scaleStick(y) * yScaleFactor);
+		final double maxSlope = 15.0;
+		final double leftX = this.gamepads[driveGamepad].getLeftX(), leftY = this.gamepads[driveGamepad].getLeftY();
+		if(this.gamepads[driveGamepad].getLeftX() == 0 || Math.abs(this.gamepads[driveGamepad].getLeftY()/this.gamepads[driveGamepad].getLeftX()) > maxSlope) {
+			this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
 			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
-
-			this.configuration.drive.calculatePowers(this.direction);
-			this.configuration.drive.scaleMotorsDown(maxPower);
-			this.configuration.drive.accelLimit(accelLimit);
-			this.configuration.drive.commitPowers();
+		} else if (leftY == 0) {
+			this.direction.turn(scaleStick(leftX) * sScaleFactor);
 		} else {
-			final double scale = 1.5;
-			if(x >= 0) {
-				this.configuration.driveLeft.setPower(y + Math.signum(y) * Math.abs(x)/scale);
-				this.configuration.driveRight.setPower(-y);
-			} else {
-				this.configuration.driveRight.setPower(-y - Math.signum(y) * Math.abs(x)/scale);
-				this.configuration.driveLeft.setPower(y);
-			}
+			this.direction.turn(Math.signum(leftY) * leftX / 2.0);
+			this.direction.drive(0.0, leftY + Math.signum(leftY) * leftX / 2.0);
 		}
+
+		this.configuration.drive.calculatePowers(this.direction);
+		this.configuration.drive.scaleMotorsDown(maxPower);
+		this.configuration.drive.accelLimit(accelLimit);
+		this.configuration.drive.commitPowers();
 
 		this.telemetry.addData("Controller", driveGamepad);
 		this.telemetry.addData("Shooter down", this.configuration.isShooterDown());
@@ -378,6 +374,9 @@ public class VelocityDrive extends BaseOpMode {
 	}
 	private static double scaleStick(double stick) {
 		return stick * stick * stick;
+	}
+	private static double magnitude(double x, double y) {
+		return Math.abs(Math.sqrt(x*x + y*y)) * Math.signum(y);
 	}
 	private static double toRadian(double deg) {
 		return deg * Math.PI / 180;
