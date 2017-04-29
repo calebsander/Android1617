@@ -41,7 +41,7 @@ public class GamepadLambdaTest extends VelocityBaseOpMode {
 		}
 	}
 
-	public AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	public AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final LedStateComponent offComponent = new LedStateComponent(false, opModeContext);
 		final LedStateComponent onComponent = new LedStateComponent(true, opModeContext);
 		final NetworkedStateMachine component = new NetworkedStateMachine();
