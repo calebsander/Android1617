@@ -1,7 +1,5 @@
 package org.gearticks.hardware.configurations;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -20,7 +18,6 @@ import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.hardware.drive.MotorWrapper.MotorType;
 import org.gearticks.hardware.drive.TankDrive;
-import org.gearticks.opmodes.utility.Utils;
 
 @SuppressWarnings("deprecation")
 public class VelocityConfiguration implements HardwareConfiguration {
