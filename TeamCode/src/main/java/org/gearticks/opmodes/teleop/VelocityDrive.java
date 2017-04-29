@@ -3,6 +3,7 @@ package org.gearticks.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
+import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
@@ -357,7 +358,7 @@ public class VelocityDrive extends BaseOpMode {
 		this.configuration.capBall.setPower(capBallPower * capBallScaling);
 		this.configuration.capBall.setRunMode(capBallMode);
 
-		if (this.gamepads[CALVIN].getX() && !this.gamepads[CALVIN].getLast().getX()) {
+		if (this.gamepads[CALVIN].newly(GamepadWrapper::getX)) {
 			this.rollersDeployed = !this.rollersDeployed;
 			if (this.rollersDeployed) this.configuration.rollersDown();
 			else this.configuration.rollersUp();
