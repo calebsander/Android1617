@@ -14,7 +14,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 @Autonomous
 @Disabled
 public class StaticTest extends VelocityBaseOpMode {
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         for (int i = 0; i < 6; i++) {

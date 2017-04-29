@@ -11,18 +11,18 @@ public class SampleParallelComponent extends ParallelComponent {
 	public SampleParallelComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		super("Drive and intake");
 		this.addComponent(new GiroDriveEncoder(0.0, 0.5, 5000, opModeContext, "Drive forward"));
-		this.addComponent(new AutonomousComponentTimer("Intaking") {
+		this.addComponent(new AutonomousComponentTimer<DefaultTransition>(DefaultTransition.class, "Intaking") {
 			@Override
 			public void setup() {
 				super.setup();
 				opModeContext.configuration.intake.setPower(MotorConstants.INTAKE_IN);
 			}
 			@Override
-			public Transition run() {
-				final Transition superTransition = super.run();
+			public DefaultTransition run() {
+				final DefaultTransition superTransition = super.run();
 				if (superTransition != null) return superTransition;
 
-				if (this.stageTimer.seconds() > 5.0) return NEXT_STATE; //if time is 1.0, intaking ends first
+				if (this.stageTimer.seconds() > 5.0) return DefaultTransition.DEFAULT; //if time is 1.0, intaking ends first
 				else return null;
 			}
 			@Override

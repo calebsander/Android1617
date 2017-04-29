@@ -1,12 +1,13 @@
 package org.gearticks.autonomous.velocity.components.deprecated;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	private final DriveDirection direction = new DriveDirection();
 	private final double targetHeading;
 	private double angleMultiplier;
@@ -17,7 +18,7 @@ public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfigur
 	 * @param id - descriptive name for logging
 	 */
 	public GiroTurnBeacon(double targetHeading, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
 		this.targetHeading = targetHeading;
 	}
 
@@ -31,14 +32,14 @@ public class GiroTurnBeacon extends AutonomousComponentHardware<VelocityConfigur
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		final boolean done = this.direction.gyroCorrect(90.0 * this.angleMultiplier + this.targetHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1) > 10;
 		this.configuration.move(this.direction, 0.06);
 
-		if (done) return NEXT_STATE;
+		if (done) return DefaultTransition.DEFAULT;
 		else return null;
 	}
 }

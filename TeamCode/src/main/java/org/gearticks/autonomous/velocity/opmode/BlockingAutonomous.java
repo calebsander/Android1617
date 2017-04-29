@@ -23,7 +23,7 @@ public class BlockingAutonomous extends VelocityBaseOpMode {
 		this.configuration.advanceShooterToDownAutonomous();
 	}
 
-	protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final IncrementOption delayOption = new IncrementOption("Delay", 20.0);
 		this.addOption(delayOption);
 

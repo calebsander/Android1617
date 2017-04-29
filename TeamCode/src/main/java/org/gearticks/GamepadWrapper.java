@@ -160,4 +160,11 @@ public class GamepadWrapper {
 	public GamepadWrapper getLast() {
 		return new GamepadWrapper(this.last);
 	}
+	public boolean newly(GamepadCondition condition) {
+		return condition.getState(this) && !condition.getState(this.getLast());
+	}
+
+	public interface GamepadCondition {
+		boolean getState(GamepadWrapper gamepad);
+	}
 }

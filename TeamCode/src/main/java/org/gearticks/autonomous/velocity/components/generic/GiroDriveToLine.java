@@ -3,6 +3,7 @@ package org.gearticks.autonomous.velocity.components.generic;
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
+import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine.LineOrTimeout;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
@@ -11,10 +12,11 @@ import org.gearticks.opmodes.utility.Utils;
 /**
  * Please add some comments on this component.
  */
-public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfiguration> {
-    private static final Transition
-        LINE_FOUND = new Transition("Found line"),
-        ENCODER_TIMEOUT = new Transition("Encoder timeout");
+public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfiguration, LineOrTimeout> {
+    public enum LineOrTimeout {
+        LINE_FOUND,
+        ENCODER_TIMEOUT
+    }
     private final DriveDirection direction;
     private final double power;
     private final double targetHeading;
@@ -30,7 +32,7 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
      * @param id - descriptive name for logging
      */
     public GiroDriveToLine(double targetHeading, double power, long maxEncoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, LineOrTimeout.class, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.targetHeading = targetHeading;
@@ -47,8 +49,8 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public LineOrTimeout run() {
+        final LineOrTimeout superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         //control giro drive
@@ -60,12 +62,12 @@ public class GiroDriveToLine extends AutonomousComponentHardware<VelocityConfigu
         if (this.configuration.isWhiteLineIR()){
             Log.d(Utils.TAG, "Transitioning because found white line");
             Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
-            return LINE_FOUND;
+            return LineOrTimeout.LINE_FOUND;
         }
         if (this.configuration.encoderPositive() > this.maxEncoderTarget) {
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
             Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
-            return ENCODER_TIMEOUT;
+            return LineOrTimeout.ENCODER_TIMEOUT;
         }
         return null;
     }

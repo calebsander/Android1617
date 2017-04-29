@@ -11,7 +11,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 @Autonomous
 @Disabled
 public class EncoderDriveTest extends VelocityBaseOpMode {
-	protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		return new GiroDriveEncoderStraighten(0.0, 1.0, 2000, opModeContext, "Drive");
 	}
 	protected boolean isV2() {

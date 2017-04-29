@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -52,14 +51,14 @@ public class Shoot3Balls extends LinearStateMachine {
         shootingAndLoading.addComponent(thirdBallIntoSnake);
 
         //State machine
-        addComponent(new AutonomousComponentAbstractImpl("Stop reading IMU") {
+        addComponent(new AutonomousComponentAbstractImpl<DefaultTransition>(DefaultTransition.class, "Stop reading IMU") {
             @Override
-            public Transition run() {
-                final Transition superTransition = super.run();
+            public DefaultTransition run() {
+                final DefaultTransition superTransition = super.run();
                 if (superTransition != null) return superTransition;
 
                 opModeContext.configuration.imu.eulerRequest.stopReading();
-                return NEXT_STATE;
+                return DefaultTransition.DEFAULT;
             }
         });
         addComponent(shootingAndIntaking);
@@ -67,14 +66,14 @@ public class Shoot3Balls extends LinearStateMachine {
         addComponent(new LoadBall(opModeContext, "Load 3nd ball"));
         addComponent(new ResetSnake(false, opModeContext, "Reset Snake"));
         addComponent(new ShootBall(opModeContext, "Shoot 3nd ball"));
-        addComponent(new AutonomousComponentAbstractImpl("Start reading IMU") {
+        addComponent(new AutonomousComponentAbstractImpl<DefaultTransition>(DefaultTransition.class, "Start reading IMU") {
             @Override
-            public Transition run() {
-                final Transition superTransition = super.run();
+            public DefaultTransition run() {
+                final DefaultTransition superTransition = super.run();
                 if (superTransition != null) return superTransition;
 
                 opModeContext.configuration.imu.eulerRequest.startReading();
-                return NEXT_STATE;
+                return DefaultTransition.DEFAULT;
             }
         });
 

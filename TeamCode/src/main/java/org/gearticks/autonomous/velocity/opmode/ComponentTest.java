@@ -9,7 +9,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent;
 
 @Autonomous
 public class ComponentTest extends VelocityBaseOpMode {
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         //Add components here

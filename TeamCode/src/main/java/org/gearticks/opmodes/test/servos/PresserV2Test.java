@@ -14,6 +14,7 @@ public class PresserV2Test extends BaseOpMode {
     protected void initialize() {
         this.configuration = new VelocityConfiguration(this.hardwareMap, true);
     }
+    @SuppressWarnings("ConstantConditions")
     protected void loopAfterStart() {
         final double presserPosition;
         if (this.gamepads[0].getX()) presserPosition = MotorConstants.PRESSER_V2_FRONT_OUT;

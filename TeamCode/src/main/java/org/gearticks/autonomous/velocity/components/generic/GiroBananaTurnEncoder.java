@@ -2,13 +2,14 @@ package org.gearticks.autonomous.velocity.components.generic;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
-public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	private final DriveDirection direction;
 	private final double power;
 	private final double turnPower;
@@ -33,7 +34,7 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		this(startHeading, endHeading, power, encoderTarget, 0.05, 0.1, 1.0, opModeContext, id);
 	}
 	public GiroBananaTurnEncoder(double startHeading, double endHeading, double power, long encoderTarget, double turnPower, double turnAccel, double turnRange, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.turnPower = turnPower;
@@ -55,8 +56,8 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		final int distance = this.configuration.encoderPositive();
@@ -66,11 +67,11 @@ public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityC
 		double currentHeading = this.configuration.imu.getRelativeYaw();
 		this.direction.gyroCorrect(targetHeading * this.angleMultiplier, this.turnRange, this.configuration.imu.getRelativeYaw(), this.turnPower, this.turnAccel);
 
-		final Transition transition;
+		final DefaultTransition transition;
 		if (distance > this.encoderTarget) {
 			this.direction.drive(0.0, 0.0);
 			if (this.direction.isStopped()) {
-				transition = NEXT_STATE;
+				transition = DefaultTransition.DEFAULT;
 			}
 			else { //keep rotating until turn completed
 				transition = null;

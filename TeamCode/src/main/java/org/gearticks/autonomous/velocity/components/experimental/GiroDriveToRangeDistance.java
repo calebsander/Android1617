@@ -2,12 +2,13 @@ package org.gearticks.autonomous.velocity.components.experimental;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.opmodes.utility.Utils;
 
-public class GiroDriveToRangeDistance extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroDriveToRangeDistance extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final DriveDirection direction;
     private final double power;
     private final double targetHeading;
@@ -16,7 +17,7 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
 
 
     public GiroDriveToRangeDistance(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.targetHeading = targetHeading;
@@ -32,8 +33,8 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         //control giro drive
@@ -47,11 +48,11 @@ public class GiroDriveToRangeDistance extends AutonomousComponentHardware<Veloci
 
         if(ultrasonicDistance < this.distanceFromWall) {
             Log.d(Utils.TAG, "Transitioning because distance limit reached = " + this.configuration.encoderPositive());
-            return NEXT_STATE;
+            return DefaultTransition.DEFAULT;
         }
         if (this.configuration.encoderPositive() > this.encoderTarget) {
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
-            return NEXT_STATE;
+            return DefaultTransition.DEFAULT;
         }
         else return null;
     }

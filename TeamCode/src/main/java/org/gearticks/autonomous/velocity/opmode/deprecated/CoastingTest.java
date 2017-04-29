@@ -14,7 +14,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 @Autonomous
 @Disabled
 public class CoastingTest extends VelocityBaseOpMode {
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         sm.addComponent(new GiroBananaTurnEncoder(0.0, -90.0, 0.25, 2000, opModeContext, "Banana Turn"));

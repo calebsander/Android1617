@@ -2,14 +2,15 @@ package org.gearticks.autonomous.velocity.components.generic;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.opmodes.utility.Utils;
 
-public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration> {
-	private final DriveDirection direction = new DriveDirection();
+public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
+	private final DriveDirection direction;
 	private final double targetHeading;
 	private double angleMultiplier;
 	private final double power;
@@ -28,7 +29,8 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 		this(targetHeading, power, correctTimes, 1.0, opModeContext, id);
 	}
 	public GiroTurn(double targetHeading, double power, int correctTimes, double range, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
+		this.direction = new DriveDirection();
 		this.targetHeading = targetHeading;
 		this.power = power;
 		this.range = range;
@@ -45,14 +47,14 @@ public class GiroTurn extends AutonomousComponentHardware<VelocityConfiguration>
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
-		final Transition transition;
+		final DefaultTransition transition;
 		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, this.range, this.configuration.imu.getRelativeYaw(), this.power, 0.1) > this.correctTimes) {
 			Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
-			transition = NEXT_STATE;
+			transition = DefaultTransition.DEFAULT;
 		}
 		else transition = null;
 		this.configuration.move(this.direction, 0.06);
