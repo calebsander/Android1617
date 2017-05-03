@@ -19,20 +19,24 @@ import java.util.regex.Pattern
 
 def getGitHash = { ->
     def stdout = new ByteArrayOutputStream()
-    exec {
+    def result = exec {
         commandLine 'git', 'rev-parse', 'HEAD'
         standardOutput = stdout
+        ignoreExitValue = true
     }
-    return stdout.toString().trim()
+    if (result.getExitValue() == 0) return stdout.toString().trim() //success
+    else return "unknown" //failure
 }
 
 def getGitBranch = { ->
     def stdout = new ByteArrayOutputStream()
-    exec {
+    def result = exec {
         commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
         standardOutput = stdout
+        ignoreExitValue = true
     }
-    return stdout.toString().trim()
+    if (result.getExitValue() == 0) return stdout.toString().trim() //success
+    else return "unknown" //failure
 }
 
 def currentTimestamp = { ->
