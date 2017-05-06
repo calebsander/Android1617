@@ -2,25 +2,34 @@ package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
+import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
 import org.gearticks.autonomous.velocity.components.generic.Wait;
+import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
-import org.gearticks.opmodes.BaseOpMode;
+import org.gearticks.opmodes.teleop.components.TeleopCapBall;
+import org.gearticks.opmodes.teleop.components.TeleopDrive;
+import org.gearticks.opmodes.teleop.components.TeleopIntake;
+import org.gearticks.opmodes.teleop.components.TeleopRollers;
+import org.gearticks.opmodes.teleop.components.TeleopShooterStopper;
 
 @TeleOp
-public class VelocityDrive extends BaseOpMode {
-	private static final int CALVIN = 0, JACK = 1;
-	private VelocityConfiguration configuration;
-	private DriveDirection direction;
+public class VelocityDrive extends VelocityBaseOpMode {
+	public static final int CALVIN = 0, JACK = 1;
+	public VelocityConfiguration configuration;
+
 
 	//Whether we think there is a ball in the shooter
 	private boolean ballInShooter;
@@ -208,14 +217,11 @@ public class VelocityDrive extends BaseOpMode {
 	}
 
 	//The component running all of the state machines
-	private ParallelComponent stateMachines;
-	//Whether rollers are deployed
-	private boolean rollersDeployed;
+	private ParallelComponent teleopComponent;
 
-	protected void initialize() {
+	protected AutonomousComponent<?> getComponent(OpModeContext opModeContext) {
 		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
-		this.direction = new DriveDirection();
-		this.stateMachines = new ParallelComponent();
+		this.teleopComponent = new ParallelComponent();
 
 		this.ballInShooter = false;
 		final NetworkedStateMachine ballStateMachine = new NetworkedStateMachine("Ball state");
@@ -231,7 +237,7 @@ public class VelocityDrive extends BaseOpMode {
 		ballStateMachine.addConnection(holding, HoldingTransition.MANUAL_SNAKE, intaking);
 		ballStateMachine.addConnection(loading, DefaultTransition.DEFAULT, snakeReturning);
 		ballStateMachine.addConnection(snakeReturning, DefaultTransition.DEFAULT, intaking);
-		this.stateMachines.addComponent(ballStateMachine);
+		this.teleopComponent.addComponent(ballStateMachine);
 
 		this.shooterState = ShooterState.values()[0];
 
@@ -251,7 +257,7 @@ public class VelocityDrive extends BaseOpMode {
 		beaconStateMachine.addConnection(out, PresserTransition.SWITCH, in);
 		beaconStateMachine.addConnection(out, PresserTransition.STOP, in);
 		beaconStateMachine.addConnection(in, DefaultTransition.DEFAULT, stayIn);
-		//this.stateMachines.addComponent(beaconStateMachine);
+		//this.teleopComponent.addComponent(beaconStateMachine);
 
 		final NetworkedStateMachine bumperStateMachine = new NetworkedStateMachine("Front bumper state");
 		final BumperUpWhenTrigger bumperUp = new BumperUpWhenTrigger();
@@ -259,111 +265,22 @@ public class VelocityDrive extends BaseOpMode {
 		bumperStateMachine.setInitialComponent(bumperUp);
 		bumperStateMachine.addConnection(bumperUp, DefaultTransition.DEFAULT, bumperDown);
 		bumperStateMachine.addConnection(bumperDown, DefaultTransition.DEFAULT, bumperUp);
-		this.stateMachines.addComponent(bumperStateMachine);
+		this.teleopComponent.addComponent(bumperStateMachine);
 
-		this.rollersDeployed = true;
+		this.teleopComponent.addComponent(new TeleopCapBall(opModeContext));
+		this.teleopComponent.addComponent(new TeleopDrive(opModeContext));
+		this.teleopComponent.addComponent(new TeleopIntake(opModeContext));
+		this.teleopComponent.addComponent(new TeleopRollers(opModeContext));
+		this.teleopComponent.addComponent(new TeleopShooterStopper(opModeContext));
+
+		return this.teleopComponent;
 	}
 	protected void matchStart() {
 		this.configuration.rollersDown();
-		this.stateMachines.onMatchStart();
-		this.stateMachines.setup();
+		this.teleopComponent.onMatchStart();
+		this.teleopComponent.setup();
 	}
 	@SuppressWarnings("ConstantConditions")
-	protected void loopAfterStart() {
-		final int driveGamepad;
-		double yScaleFactor;
-		double sScaleFactor;
-		if (this.gamepads[CALVIN].leftStickAtRest() && this.gamepads[CALVIN].rightStickAtRest()) {
-			driveGamepad = JACK;
-			yScaleFactor = 0.8;
-			sScaleFactor = Math.max(0.4, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
-		}
-		else {
-			driveGamepad = CALVIN;
-			yScaleFactor = 1.0;
-			sScaleFactor = Math.max(0.5, Math.abs(this.gamepads[driveGamepad].getLeftY() * yScaleFactor)); //if just turning, turn slower for greater accuracy
-		}
-
-		final boolean slowMode = this.gamepads[CALVIN].getLeftBumper();
-		final double maxPower;
-		if (slowMode) {
-			maxPower = 0.4;
-			sScaleFactor = Math.max(0.15, Math.abs(this.gamepads[driveGamepad].getLeftY() * maxPower));
-		}
-		else maxPower = 1.0;
-		final double accelLimit;
-		if (slowMode) accelLimit = 0.075;
-		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
-
-		this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
-		this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
-
-		this.configuration.drive.calculatePowers(this.direction);
-		this.configuration.drive.scaleMotorsDown(maxPower);
-		this.configuration.drive.accelLimit(accelLimit);
-		this.configuration.drive.commitPowers();
-
-		this.telemetry.addData("Controller", driveGamepad);
-		this.telemetry.addData("Shooter down", this.configuration.isShooterDown());
-
-		final double intakePower;
-		if (this.gamepads[CALVIN].getRightBumper() || this.gamepads[JACK].getRightBumper()) {
-			intakePower = MotorConstants.INTAKE_IN;
-		}
-		else if (this.gamepads[CALVIN].getRightTrigger() || this.gamepads[JACK].getRightTrigger()) {
-			intakePower = MotorConstants.INTAKE_OUT;
-		}
-		else {
-			intakePower = MotorWrapper.STOPPED; //leave intake off by default to save battery
-		}
-		this.configuration.intake.setPower(intakePower);
-
-		this.stateMachines.run();
-
-		final double shooterStopperPower;
-		if (this.gamepads[JACK].dpadUp()) {
-			shooterStopperPower = MotorConstants.SHOOTER_STOPPER_UP;
-		}
-		else if (this.gamepads[JACK].dpadDown()) {
-			shooterStopperPower = MotorConstants.SHOOTER_STOPPER_DOWN;
-		}
-		else {
-			shooterStopperPower = MotorWrapper.STOPPED;
-		}
-		this.configuration.safeShooterStopper(shooterStopperPower);
-
-		final double capBallPower;
-		final DcMotor.RunMode capBallMode;
-		if (this.gamepads[JACK].getY()) {
-			if(this.configuration.isCapBallUp()) {
-				capBallPower = MotorConstants.CAP_BALL_SUPER_SLOW_UP;
-				capBallMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-			}
-			else {
-				capBallPower = MotorConstants.CAP_BALL_UP;
-				capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
-			}
-		}
-		else if (this.gamepads[JACK].getA()) {
-			capBallPower = MotorConstants.CAP_BALL_DOWN;
-			capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
-		}
-		else {
-			capBallPower = MotorWrapper.STOPPED;
-			capBallMode = DcMotor.RunMode.RUN_USING_ENCODER;
-		}
-		final double capBallScaling;
-		if (this.gamepads[JACK].getBack()) capBallScaling = MotorConstants.CAP_BALL_SLOW_SCALE;
-		else capBallScaling = 1.0;
-		this.configuration.capBall.setPower(capBallPower * capBallScaling);
-		this.configuration.capBall.setRunMode(capBallMode);
-
-		if (this.gamepads[CALVIN].newly(GamepadWrapper::getX)) {
-			this.rollersDeployed = !this.rollersDeployed;
-			if (this.rollersDeployed) this.configuration.rollersDown();
-			else this.configuration.rollersUp();
-		}
-	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
 	private void autoShooterUnlessBumper() {
@@ -387,7 +304,7 @@ public class VelocityDrive extends BaseOpMode {
 				}
 		}
 	}
-	private static double scaleStick(double stick) {
+	public static double scaleStick(double stick) {
 		return stick * stick * stick;
 	}
 	private boolean isManualSnakeOn() {
@@ -399,5 +316,8 @@ public class VelocityDrive extends BaseOpMode {
 			return MotorConstants.SNAKE_V2_DUMPING;
 		}
 		else return MotorConstants.SNAKE_V2_HOLDING;
+	}
+	public boolean isV2() {
+		return true;
 	}
 }
