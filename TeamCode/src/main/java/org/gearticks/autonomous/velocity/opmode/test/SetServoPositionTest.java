@@ -1,6 +1,7 @@
 package org.gearticks.autonomous.velocity.opmode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
@@ -13,6 +14,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 
 @Autonomous
+@Disabled
 public class SetServoPositionTest extends VelocityBaseOpMode {
 	protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final VelocityConfiguration configuration = opModeContext.configuration;
