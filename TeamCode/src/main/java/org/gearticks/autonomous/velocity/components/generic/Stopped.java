@@ -1,8 +1,8 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.NoTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
-import org.gearticks.autonomous.velocity.components.generic.Stopped.NoTransition;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 
 /**
@@ -10,7 +10,6 @@ import org.gearticks.hardware.configurations.HardwareConfiguration;
  * never transitions
  */
 public class Stopped extends AutonomousComponentHardware<HardwareConfiguration, NoTransition> {
-	public enum NoTransition {}
 
 	@SuppressWarnings("unchecked")
 	public Stopped(OpModeContext opModeContext) {

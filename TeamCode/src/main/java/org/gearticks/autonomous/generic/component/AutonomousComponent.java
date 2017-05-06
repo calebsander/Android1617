@@ -50,9 +50,14 @@ public interface AutonomousComponent<TRANSITION_TYPE extends Enum<?>> {
 
 	/**
 	 * The default output port.
-	 * Use if there is only one output port
+	 * Use if there is only one output port.
 	 */
 	enum DefaultTransition {
 		DEFAULT
 	}
+	/**
+	 * Indicates no possible transitions.
+	 * Use for components that never terminate.
+	 */
+	enum NoTransition {}
 }

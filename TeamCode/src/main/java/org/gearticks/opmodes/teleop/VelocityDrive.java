@@ -1,14 +1,10 @@
 package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
-import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
-import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -17,8 +13,6 @@ import org.gearticks.autonomous.velocity.components.generic.Wait;
 import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
-import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.teleop.components.TeleopCapBall;
 import org.gearticks.opmodes.teleop.components.TeleopDrive;
 import org.gearticks.opmodes.teleop.components.TeleopIntake;
@@ -28,8 +22,6 @@ import org.gearticks.opmodes.teleop.components.TeleopShooterStopper;
 @TeleOp
 public class VelocityDrive extends VelocityBaseOpMode {
 	public static final int CALVIN = 0, JACK = 1;
-	public VelocityConfiguration configuration;
-
 
 	//Whether we think there is a ball in the shooter
 	private boolean ballInShooter;
@@ -128,7 +120,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 			configuration.snake.setPosition(getDefaultSnakePosition());
 			autoShooterUnlessBumper();
 
-			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE*0.8) return DefaultTransition.DEFAULT;
+			if (this.stageTimer.seconds() > MotorConstants.SNAKE_V2_TIME_TO_MOVE * 0.8) return DefaultTransition.DEFAULT;
 			else return null;
 		}
 	}
@@ -216,12 +208,8 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		}
 	}
 
-	//The component running all of the state machines
-	private ParallelComponent teleopComponent;
-
-	protected AutonomousComponent<?> getComponent(OpModeContext opModeContext) {
-		this.configuration = new VelocityConfiguration(this.hardwareMap, true);
-		this.teleopComponent = new ParallelComponent();
+	protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+		final ParallelComponent teleopComponent = new ParallelComponent();
 
 		this.ballInShooter = false;
 		final NetworkedStateMachine ballStateMachine = new NetworkedStateMachine("Ball state");
@@ -237,13 +225,13 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		ballStateMachine.addConnection(holding, HoldingTransition.MANUAL_SNAKE, intaking);
 		ballStateMachine.addConnection(loading, DefaultTransition.DEFAULT, snakeReturning);
 		ballStateMachine.addConnection(snakeReturning, DefaultTransition.DEFAULT, intaking);
-		this.teleopComponent.addComponent(ballStateMachine);
+		teleopComponent.addComponent(ballStateMachine);
 
 		this.shooterState = ShooterState.values()[0];
 
 		final NetworkedStateMachine beaconStateMachine = new NetworkedStateMachine("Beacon state");
 		final LinearStateMachine in = new LinearStateMachine();
-		for(int pullIn = 0; pullIn < MotorConstants.PRESSER_V2_TIMES_PULL_IN; pullIn++) {
+		for (int pullIn = 0; pullIn < MotorConstants.PRESSER_V2_TIMES_PULL_IN; pullIn++) {
 			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN_STRAIN));
 			in.addComponent(new Wait(0.05, "Wait to go out"));
 			in.addComponent(new PresserEngaged(MotorConstants.PRESSER_V2_FRONT_IN));
@@ -257,7 +245,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		beaconStateMachine.addConnection(out, PresserTransition.SWITCH, in);
 		beaconStateMachine.addConnection(out, PresserTransition.STOP, in);
 		beaconStateMachine.addConnection(in, DefaultTransition.DEFAULT, stayIn);
-		//this.teleopComponent.addComponent(beaconStateMachine);
+		//teleopComponent.addComponent(beaconStateMachine);
 
 		final NetworkedStateMachine bumperStateMachine = new NetworkedStateMachine("Front bumper state");
 		final BumperUpWhenTrigger bumperUp = new BumperUpWhenTrigger();
@@ -265,22 +253,23 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		bumperStateMachine.setInitialComponent(bumperUp);
 		bumperStateMachine.addConnection(bumperUp, DefaultTransition.DEFAULT, bumperDown);
 		bumperStateMachine.addConnection(bumperDown, DefaultTransition.DEFAULT, bumperUp);
-		this.teleopComponent.addComponent(bumperStateMachine);
+		teleopComponent.addComponent(bumperStateMachine);
 
-		this.teleopComponent.addComponent(new TeleopCapBall(opModeContext));
-		this.teleopComponent.addComponent(new TeleopDrive(opModeContext));
-		this.teleopComponent.addComponent(new TeleopIntake(opModeContext));
-		this.teleopComponent.addComponent(new TeleopRollers(opModeContext));
-		this.teleopComponent.addComponent(new TeleopShooterStopper(opModeContext));
+		teleopComponent.addComponent(new TeleopCapBall(opModeContext));
+		teleopComponent.addComponent(new TeleopDrive(opModeContext));
+		teleopComponent.addComponent(new TeleopIntake(opModeContext));
+		teleopComponent.addComponent(new TeleopRollers(opModeContext));
+		teleopComponent.addComponent(new TeleopShooterStopper(opModeContext));
 
-		return this.teleopComponent;
+		return teleopComponent;
 	}
-	protected void matchStart() {
-		this.configuration.rollersDown();
-		this.teleopComponent.onMatchStart();
-		this.teleopComponent.setup();
+	public boolean isV2() {
+		return true;
 	}
-	@SuppressWarnings("ConstantConditions")
+	@Override
+	protected VelocityConfiguration newConfiguration() {
+		return new VelocityConfiguration(this.hardwareMap, this.isV2());
+	}
 
 	//Move shooter to down unless bumper is pressed, in which case, fire ball
 	private void autoShooterUnlessBumper() {
@@ -304,9 +293,6 @@ public class VelocityDrive extends VelocityBaseOpMode {
 				}
 		}
 	}
-	public static double scaleStick(double stick) {
-		return stick * stick * stick;
-	}
 	private boolean isManualSnakeOn() {
 		return this.gamepads[JACK].getB();
 	}
@@ -316,8 +302,5 @@ public class VelocityDrive extends VelocityBaseOpMode {
 			return MotorConstants.SNAKE_V2_DUMPING;
 		}
 		else return MotorConstants.SNAKE_V2_HOLDING;
-	}
-	public boolean isV2() {
-		return true;
 	}
 }

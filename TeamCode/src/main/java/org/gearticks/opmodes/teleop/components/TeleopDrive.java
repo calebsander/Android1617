@@ -3,29 +3,26 @@ package org.gearticks.opmodes.teleop.components;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
 import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.NoTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.teleop.VelocityDrive;
 
-/**
- * Created by kevin on 5/6/2017.
- */
+public class TeleopDrive extends AutonomousComponentHardware<VelocityConfiguration, NoTransition> {
+    private final GamepadWrapper[] gamepads;
+    private final DriveDirection direction;
+    private final Telemetry telemetry;
 
-public class TeleopDrive extends AutonomousComponentHardware<VelocityConfiguration, AutonomousComponent.DefaultTransition> {
-    GamepadWrapper[] gamepads;
-    DriveDirection direction;
-    Telemetry telemetry;
     public TeleopDrive(OpModeContext<VelocityConfiguration> opModeContext) {
-        super(opModeContext, AutonomousComponent.DefaultTransition.class);
+        super(opModeContext, NoTransition.class);
         this.gamepads = opModeContext.gamepads;
         this.direction = new DriveDirection();
         this.telemetry = opModeContext.telemetry;
     }
 
-    public AutonomousComponent.DefaultTransition run() {
+    public NoTransition run() {
         final int driveGamepad;
         double yScaleFactor;
         double sScaleFactor;
@@ -51,8 +48,8 @@ public class TeleopDrive extends AutonomousComponentHardware<VelocityConfigurati
         if (slowMode) accelLimit = 0.075;
         else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-        this.direction.drive(0.0, VelocityDrive.scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
-        this.direction.turn(VelocityDrive.scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+        this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
+        this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
 
         this.configuration.drive.calculatePowers(this.direction);
         this.configuration.drive.scaleMotorsDown(maxPower);
@@ -63,5 +60,9 @@ public class TeleopDrive extends AutonomousComponentHardware<VelocityConfigurati
         this.telemetry.addData("Shooter down", this.configuration.isShooterDown());
 
         return null;
+    }
+
+    private static double scaleStick(double stick) {
+        return stick * stick * stick;
     }
 }
