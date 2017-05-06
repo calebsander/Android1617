@@ -269,16 +269,16 @@ public class VelocityDrive extends BaseOpMode {
 		if (slowMode) accelLimit = 0.075;
 		else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-		final double maxSlope = 15.0;
+		final double maxSlope = 50.0; //defines range at which robot will go straight forward/back or will turn in place
 		final double leftX = this.gamepads[driveGamepad].getLeftX(), leftY = this.gamepads[driveGamepad].getLeftY();
-		if(this.gamepads[driveGamepad].getLeftX() == 0 || Math.abs(this.gamepads[driveGamepad].getLeftY()/this.gamepads[driveGamepad].getLeftX()) > maxSlope) {
+		if(leftX == 0 || Math.abs(leftY/leftX) > maxSlope) {
 			this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
 			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
-		} else if (leftY == 0) {
+		} else if (leftY == 0 || Math.abs(leftY/leftX) < 1.0/maxSlope) {
 			this.direction.turn(scaleStick(leftX) * sScaleFactor);
 		} else {
 			this.direction.turn(Math.signum(leftY) * leftX / 2.0);
-			this.direction.drive(0.0, leftY + Math.signum(leftY) * leftX / 2.0);
+			this.direction.drive(0.0, leftY + Math.signum(leftY) * Math.abs(leftX) / 2.0);
 		}
 
 		this.configuration.drive.calculatePowers(this.direction);
