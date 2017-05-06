@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.gearticks.opmodes.units.SideOfButton;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 import java.util.concurrent.BlockingQueue;
 
 public class VuforiaConfiguration {

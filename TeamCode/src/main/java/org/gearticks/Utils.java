@@ -1,4 +1,4 @@
-package org.gearticks.opmodes.utility;
+package org.gearticks;
 
 import android.support.annotation.NonNull;
 import android.util.Log;

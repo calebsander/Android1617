@@ -7,7 +7,7 @@ import org.gearticks.autonomous.velocity.components.generic.GiroDriveToLine.Line
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * Please add some comments on this component.

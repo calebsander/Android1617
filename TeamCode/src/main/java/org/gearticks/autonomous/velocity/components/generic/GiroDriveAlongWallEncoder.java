@@ -7,7 +7,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTra
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * drives with gyro and range sensor along the wall at a set distance for encoder ticks

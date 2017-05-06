@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * A state machine with a number of component states that don't necessarily proceed in a linear fashion.

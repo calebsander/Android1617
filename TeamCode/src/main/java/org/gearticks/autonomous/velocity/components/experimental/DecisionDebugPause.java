@@ -5,7 +5,7 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.velocity.components.experimental.DecisionDebugPause.XYTransition;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 public class DecisionDebugPause extends AutonomousComponentHardware<VelocityConfiguration, XYTransition> {
 	public enum XYTransition {

@@ -1,7 +1,6 @@
 package org.gearticks;
 
 import android.os.Environment;
-import org.gearticks.opmodes.utility.Utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

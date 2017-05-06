@@ -7,7 +7,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 public class GiroBananaTurnEncoder extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	private final DriveDirection direction;

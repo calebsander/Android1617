@@ -1,6 +1,6 @@
 package org.gearticks.vuforia;
 
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 public abstract class VuforiaImages {
 	public static int getID(String imageName) {
