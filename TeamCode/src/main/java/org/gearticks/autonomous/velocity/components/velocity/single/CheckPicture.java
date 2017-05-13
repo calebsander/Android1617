@@ -6,7 +6,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImp
 import org.gearticks.autonomous.velocity.components.velocity.single.CheckPicture.PictureDifference;
 import org.gearticks.autonomous.velocity.components.velocity.single.SelectBeaconSide.PictureResult;
 import org.gearticks.opmodes.units.SideOfButton;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.vuforia.VuforiaConfiguration.BeaconColorCounts;
 

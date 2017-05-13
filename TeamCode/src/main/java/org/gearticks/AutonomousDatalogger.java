@@ -31,7 +31,7 @@ public class AutonomousDatalogger {
 				new Date(file.lastModified()).after(new Date(newest.lastModified()))
 			) newest = file;
 		}
-		if (newest == null) throw new RuntimeException("No datalogs saved");
+		if (newest == null) Utils.throwException("No datalogs saved");
 		return newest;
 	}
 	public static List<String> openDatalog(File datalogFile) {
@@ -43,7 +43,8 @@ public class AutonomousDatalogger {
 			return result;
 		}
 		catch (IOException e) {
-			throw new RuntimeException("Couldn't open file");
+			Utils.throwException("Couldn't open file");
+			return null; //unreachable
 		}
 	}
 
@@ -66,12 +67,14 @@ public class AutonomousDatalogger {
 			padWithZeros(Integer.toString(minute), 2) + "-" +
 			padWithZeros(Integer.toString(second), 2) +
 			".log";
+		PrintStream outStream = null;
 		try {
-			this.outStream = new PrintStream(new File(DATALOG_DIR, fileName));
+			outStream = new PrintStream(new File(DATALOG_DIR, fileName));
 		}
 		catch (FileNotFoundException e) {
-			throw new RuntimeException("Couldn't create file with name: " + fileName);
+			Utils.throwException("Couldn't create file with name: " + fileName);
 		}
+		this.outStream = outStream;
 	}
 
 	private static String padWithZeros(String input, int characters) {

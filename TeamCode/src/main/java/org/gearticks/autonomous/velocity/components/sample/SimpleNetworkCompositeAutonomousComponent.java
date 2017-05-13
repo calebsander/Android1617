@@ -7,7 +7,7 @@ import org.gearticks.autonomous.velocity.components.experimental.DecisionDebugPa
 import org.gearticks.autonomous.velocity.components.experimental.DecisionDebugPause.XYTransition;
 import org.gearticks.autonomous.velocity.components.generic.GiroDriveEncoder;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * Sample to create a composite autonomous component that will consist of a non-linear state-machine of 2 or more AutonomousComponents

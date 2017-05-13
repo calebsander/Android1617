@@ -6,7 +6,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTra
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 public class GiroDriveToRangeDistance extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final DriveDirection direction;

@@ -17,6 +17,41 @@
 
 import java.util.regex.Pattern
 
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'rev-parse', 'HEAD'
+            standardOutput = stdout
+            ignoreExitValue = true
+        }
+        return stdout.toString().trim()
+    }
+    catch (Exception e) {
+        return "unknown"
+    }
+}
+
+def getGitBranch = { ->
+    def stdout = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+            standardOutput = stdout
+            ignoreExitValue = true
+        }
+        return stdout.toString().trim()
+    }
+    catch (Exception e) {
+        return "unknown"
+    }
+}
+
+def currentTimestamp = { ->
+    def date = new Date()
+    return date.toLocaleString()
+}
+
 apply plugin: 'com.android.application'
 
 android {
@@ -64,7 +99,7 @@ android {
         def vName = matcher.group(1)
         //
         versionCode vCode
-        versionName vName
+        versionName vName + " (" + getGitBranch() + "@" + getGitHash() + ") - built at " + currentTimestamp()
 
         jackOptions {
             enabled true

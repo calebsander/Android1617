@@ -1,12 +1,12 @@
 package org.gearticks.opmodes.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.gearticks.AutonomousDatalogger;
 import org.gearticks.opmodes.BaseOpMode;
 
-@Autonomous
+@TeleOp
 @Disabled
 public class DatalogTest extends BaseOpMode {
 	private AutonomousDatalogger logger;

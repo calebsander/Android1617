@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * Allows for running any number of different components at once.

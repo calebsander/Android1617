@@ -2,8 +2,7 @@ package org.gearticks.autonomous.generic.statemachine;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

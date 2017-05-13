@@ -6,7 +6,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTra
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.dimsensors.i2c.GearticksMRRangeSensor;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 public class RangeSensorReadout extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final double timeLimit;

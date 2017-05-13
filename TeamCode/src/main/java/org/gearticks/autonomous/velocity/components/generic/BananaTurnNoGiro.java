@@ -6,7 +6,7 @@ import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTra
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	//Width of robot in encoder ticks
@@ -29,7 +29,7 @@ public class BananaTurnNoGiro extends AutonomousComponentHardware<VelocityConfig
 	}
 	public BananaTurnNoGiro(boolean gyroCorrect, double endHeading, double power, int encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
 		super(opModeContext, DefaultTransition.class, id);
-		if (encoderTarget == 0) throw new RuntimeException("encoderTarget == 0; use GiroTurn instead");
+		if (encoderTarget == 0) Utils.throwException("encoderTarget == 0; use GiroTurn instead");
 		this.gyroCorrect = gyroCorrect;
 		this.endHeading = endHeading;
 		this.y_0 = power;

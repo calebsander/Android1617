@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
 import org.gearticks.autonomous.velocity.components.generic.Stopped;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * A state machine with a number of component states that don't necessarily proceed in a linear fashion.
@@ -72,13 +72,13 @@ public class NetworkedStateMachine extends StateMachineBase {
 	@Override
 	public void onMatchStart() {
 		super.onMatchStart();
-		if (this.currentState == null) throw new RuntimeException("No initial component set for \"" + this + "\"");
+		if (this.currentState == null) Utils.throwException("No initial component set for \"" + this + "\"");
 		for (final AutonomousComponent<?> component : this.components) {
 			for (final Enum<?> transition : component.getPossibleTransitions()) {
 				final boolean exitTransition = this.isExitTransition(component, transition);
 				final boolean nextComponent = this.getTransitionTarget(component, transition) != null;
 				if (!(exitTransition || nextComponent)) {
-					throw new RuntimeException("No connection defined for \"" + component + "\" on transition \"" + transition + "\" in \"" + this + "\"");
+					Utils.throwException("No connection defined for \"" + component + "\" on transition \"" + transition + "\" in \"" + this + "\"");
 				}
 			}
 		}

@@ -3,7 +3,7 @@ package org.gearticks.autonomous.generic.component;
 import android.util.Log;
 import java.util.Arrays;
 import java.util.Collection;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * Implements the AutonomousComponent interface.
