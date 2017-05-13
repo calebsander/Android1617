@@ -2,15 +2,15 @@ package org.gearticks.autonomous.velocity.components.generic;
 
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.OrientableConfiguration;
-import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
-public class GiroTurn extends AutonomousComponentHardware<OrientableConfiguration> {
-	private final DriveDirection direction = new DriveDirection();
+public class GiroTurn extends AutonomousComponentHardware<OrientableConfiguration, DefaultTransition> {
+	private final DriveDirection direction;
 	private final double targetHeading;
 	private double angleMultiplier;
 	private final double power;
@@ -29,7 +29,8 @@ public class GiroTurn extends AutonomousComponentHardware<OrientableConfiguratio
 		this(targetHeading, power, correctTimes, 1.0, opModeContext, id);
 	}
 	public GiroTurn(double targetHeading, double power, int correctTimes, double range, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
+		this.direction = new DriveDirection();
 		this.targetHeading = targetHeading;
 		this.power = power;
 		this.range = range;
@@ -46,14 +47,14 @@ public class GiroTurn extends AutonomousComponentHardware<OrientableConfiguratio
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
-		final Transition transition;
+		final DefaultTransition transition;
 		if (this.direction.gyroCorrect(this.targetHeading * this.angleMultiplier, this.range, this.configuration.getHeading(), this.power, 0.1) > this.correctTimes) {
 			Log.d(Utils.TAG, "Heading = " + this.configuration.getHeading());
-			transition = NEXT_STATE;
+			transition = DefaultTransition.DEFAULT;
 		}
 		else transition = null;
 		this.configuration.move(this.direction, 0.06);

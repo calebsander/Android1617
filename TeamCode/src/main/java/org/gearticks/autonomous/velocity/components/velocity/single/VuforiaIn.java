@@ -6,15 +6,16 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 import org.gearticks.vuforia.VuforiaImages;
 
-public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration> {
+public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final DriveDirection direction;
     private final float finalDistance;
     private final VuforiaConfiguration vuforiaConfiguration;
@@ -28,7 +29,7 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
      * @param id - descriptive name for logging
      */
     public VuforiaIn(float finalDistance, boolean isNearBeacon, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
         this.direction = new DriveDirection();
         this.finalDistance = finalDistance;
         this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
@@ -45,13 +46,13 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         Log.v(Utils.TAG, "get pose from listener");
         final OpenGLMatrix pose = this.firstTargetListener.getPose();
-        final Transition transition;
+        final DefaultTransition transition;
         if (pose == null) {
             Log.v(Utils.TAG, "pose == null");
 
@@ -69,7 +70,7 @@ public class VuforiaIn extends AutonomousComponentHardware<VelocityConfiguration
             if (normalDistance < this.finalDistance) {
                 Log.v(Utils.TAG, "stop drive");
                 this.direction.stopDrive();
-                transition = NEXT_STATE;
+                transition = DefaultTransition.DEFAULT;
             }
             else {
                 Log.v(Utils.TAG, "drive and turn to beacon");

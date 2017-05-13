@@ -3,15 +3,16 @@ package org.gearticks.autonomous.velocity.components.generic;
 import android.util.Log;
 import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * drives with gyro and range sensor along the wall at a set distance for encoder ticks
  */
-public class GiroDriveAlongWallLine extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroDriveAlongWallLine extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final DriveDirection direction;
     private final double power;
     private final double distanceFromWall;
@@ -25,7 +26,7 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
 
 
     public GiroDriveAlongWallLine(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.distanceFromWall = distanceFromWall;
@@ -44,8 +45,8 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         this.direction.drive(0.0, this.power);
@@ -74,12 +75,12 @@ public class GiroDriveAlongWallLine extends AutonomousComponentHardware<Velocity
         if (this.configuration.isWhiteLineIR()){
             Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             Log.d(Utils.TAG, "Transitioning because found white line");
-            return NEXT_STATE; //TODO returning LINE_FOUND
+            return DefaultTransition.DEFAULT; //TODO returning LINE_FOUND
         }
         if (this.configuration.encoderPositive() > this.encoderLimit) {
             Log.d(Utils.TAG, "Heading = " + this.configuration.imu.getRelativeYaw());
             Log.d(Utils.TAG, "Transitioning because encoder limit reached = " + this.configuration.encoderPositive());
-            return NEXT_STATE; //TODO returning LIMIT_REACHED
+            return DefaultTransition.DEFAULT; //TODO returning LIMIT_REACHED
         }
         return null;
     }

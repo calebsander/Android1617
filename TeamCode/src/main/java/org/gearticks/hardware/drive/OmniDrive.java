@@ -4,6 +4,8 @@ package org.gearticks.hardware.drive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OmniDrive extends DriveSystem {
 	//The motors being controlled (FL, BL, FR, BR)
@@ -25,10 +27,12 @@ public class OmniDrive extends DriveSystem {
 		this.g.setRunMode(RunMode.RUN_USING_ENCODER);
 	}
 
-	public void calculatePowers(DriveDirection direction) {
-		this.setMotorPower(this.d, + direction.getX() + direction.getY() - direction.getS());
-		this.setMotorPower(this.e, - direction.getX() + direction.getY() - direction.getS());
-		this.setMotorPower(this.f, + direction.getX() - direction.getY() - direction.getS());
-		this.setMotorPower(this.g, - direction.getX() - direction.getY() - direction.getS());
+	protected Map<MotorWrapper, Double> powersFromDirection(DriveDirection direction) {
+		final Map<MotorWrapper, Double> powers = new HashMap<>();
+		powers.put(this.d, + direction.getX() + direction.getY() - direction.getS());
+		powers.put(this.e, - direction.getX() + direction.getY() - direction.getS());
+		powers.put(this.f, + direction.getX() - direction.getY() - direction.getS());
+		powers.put(this.g, - direction.getX() - direction.getY() - direction.getS());
+		return powers;
 	}
 }

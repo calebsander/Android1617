@@ -1,12 +1,13 @@
 package org.gearticks.autonomous.velocity.components.deprecated;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 
-public class GiroDriveEncoderBeacon extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroDriveEncoderBeacon extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
 	private final DriveDirection direction;
 	private double power;
 	private final double targetHeading;
@@ -22,7 +23,7 @@ public class GiroDriveEncoderBeacon extends AutonomousComponentHardware<Velocity
 	 * @param id - descriptive name for logging
 	 */
 	public GiroDriveEncoderBeacon(double targetHeading, double power, long encoderTarget, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-		super(opModeContext, id);
+		super(opModeContext, DefaultTransition.class, id);
 		this.direction = new DriveDirection();
 		this.power = power;
 		this.targetHeading = targetHeading;
@@ -39,8 +40,8 @@ public class GiroDriveEncoderBeacon extends AutonomousComponentHardware<Velocity
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		//control giro drive
@@ -49,7 +50,7 @@ public class GiroDriveEncoderBeacon extends AutonomousComponentHardware<Velocity
 		this.direction.gyroCorrect(buttonAngle + this.targetHeading, 1.0, this.configuration.imu.getRelativeYaw(), 0.05, 0.1);
 		this.configuration.move(this.direction, 0.06);
 
-		if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
+		if (this.configuration.encoderPositive() > this.encoderTarget) return DefaultTransition.DEFAULT;
 		else return null;
 	}
 }

@@ -3,10 +3,9 @@ package org.gearticks.autonomous.generic.opmode;
 import android.util.Log;
 import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.Transition;
 import org.gearticks.hardware.configurations.HardwareConfiguration;
 import org.gearticks.opmodes.BaseOpMode;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * An OpMode that instantiates a configuration
@@ -14,7 +13,7 @@ import org.gearticks.opmodes.utility.Utils;
  */
 public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends HardwareConfiguration> extends BaseOpMode {
 	protected HARDWARE_TYPE configuration;
-	private AutonomousComponent component;
+	private AutonomousComponent<?> component;
 	private boolean done;
 
 	protected void initialize() {
@@ -31,7 +30,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	}
 	protected void loopAfterStart() {
 		if (!this.done) {
-			final Transition transition = this.component.run();
+			final Enum<?> transition = this.component.run();
 			if (transition != null) {
 				Log.i(Utils.TAG, "Component finished");
 				this.done = true;
@@ -51,7 +50,7 @@ public abstract class HardwareComponentAutonomous<HARDWARE_TYPE extends Hardware
 	 * Will be called in initialize() after configuration is created.
 	 * @return the component to run
 	 */
-	protected abstract AutonomousComponent getComponent(OpModeContext<HARDWARE_TYPE> opModeContext);
+	protected abstract AutonomousComponent<?> getComponent(OpModeContext<HARDWARE_TYPE> opModeContext);
 	/**
 	 * Creates a configuration object of the specified type.
 	 * The idea is to have a subclass of this class for each configuration type in use

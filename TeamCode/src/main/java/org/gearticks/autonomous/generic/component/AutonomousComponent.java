@@ -1,5 +1,7 @@
 package org.gearticks.autonomous.generic.component;
 
+import java.util.Collection;
+
 /**
  * Autonomous component has output "ports," each assigned a unique nonzero integer.
  * Interface is as simple as possible to allow for easy conversion.
@@ -7,7 +9,7 @@ package org.gearticks.autonomous.generic.component;
  * AutonomousComponent can be used in regular switch-like state-machine, but also by an automated state-machine.
  * See samples.
  */
-public interface AutonomousComponent {
+public interface AutonomousComponent<TRANSITION_TYPE extends Enum<?>> {
 	/**
 	 * To be called once at start of autonomous program, e.g. to initialize some sensors
 	 */
@@ -26,7 +28,7 @@ public interface AutonomousComponent {
 	 *
 	 * @return null if not yet done; the transition value if done
 	 */
-	Transition run();
+	TRANSITION_TYPE run();
 
 	/**
 	 * Called each time the component ends
@@ -39,15 +41,23 @@ public interface AutonomousComponent {
 	 */
 	String getId();
 
-	class Transition {
-		private final String name;
+	/**
+	 * Returns a collection of all possible transition values
+	 * that this component can emit.
+	 * @return the values in the enum declaration of TRANSITION_TYPE
+	 */
+	Collection<TRANSITION_TYPE> getPossibleTransitions();
 
-		public Transition(String name) {
-			this.name = name;
-		}
-
-		public String toString() {
-			return this.name;
-		}
+	/**
+	 * The default output port.
+	 * Use if there is only one output port.
+	 */
+	enum DefaultTransition {
+		DEFAULT
 	}
+	/**
+	 * Indicates no possible transitions.
+	 * Use for components that never terminate.
+	 */
+	enum NoTransition {}
 }

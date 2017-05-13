@@ -1,11 +1,12 @@
 package org.gearticks.autonomous.velocity.components.generic;
 
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
-public class DebugPause extends AutonomousComponentHardware<VelocityConfiguration> {
-	private final OpModeContext opModeContext;
+public class DebugPause extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
+	private final OpModeContext<?> opModeContext;
 
 	/**
 	 * waits until A is released
@@ -13,7 +14,7 @@ public class DebugPause extends AutonomousComponentHardware<VelocityConfiguratio
 	 *
 	 */
 	public DebugPause(OpModeContext<VelocityConfiguration> opModeContext) {
-		super(opModeContext);
+		super(opModeContext, DefaultTransition.class);
 		this.opModeContext = opModeContext;
 	}
 
@@ -24,14 +25,14 @@ public class DebugPause extends AutonomousComponentHardware<VelocityConfiguratio
 	}
 
 	@Override
-	public Transition run() {
-		final Transition superTransition = super.run();
+	public DefaultTransition run() {
+		final DefaultTransition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
 		this.opModeContext.telemetry.addData("heading", this.configuration.imu.getHeading());
 		this.opModeContext.telemetry.addData("drive left", this.configuration.driveLeft.encoderValue());
 		this.opModeContext.telemetry.addData("drive right", this.configuration.driveRight.encoderValue());
-		if (this.opModeContext.gamepads[0].getA()) return NEXT_STATE;
+		if (this.opModeContext.gamepads[0].getA()) return DefaultTransition.DEFAULT;
 		else return null;
 	}
 

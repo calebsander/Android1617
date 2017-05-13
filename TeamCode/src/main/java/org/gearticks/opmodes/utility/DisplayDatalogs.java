@@ -3,9 +3,9 @@ package org.gearticks.opmodes.utility;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import org.gearticks.AutonomousDatalogger;
+import org.gearticks.Utils;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
@@ -47,6 +47,7 @@ public class DisplayDatalogs extends BaseOpMode {
 	}
 	protected void initialize() {
 		final File[] datalogFiles = AutonomousDatalogger.listDatalogFiles();
+		if (datalogFiles.length == 0) Utils.throwException("No datalog files");
 		final Filename[] datalogFilenames = new Filename[datalogFiles.length];
 		for (int i = 0; i < datalogFiles.length; i++) datalogFilenames[i] = new Filename(datalogFiles[i]);
 		Arrays.sort(datalogFilenames, (lhs, rhs) -> -lhs.toString().compareTo(rhs.toString()));

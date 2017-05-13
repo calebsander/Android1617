@@ -3,15 +3,16 @@ package org.gearticks.autonomous.velocity.components.generic;
 import android.util.Log;
 import org.gearticks.PIDControl.MiniPID;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 
 /**
  * drives with gyro and range sensor along the wall at a set distance for encoder ticks
  */
-public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<VelocityConfiguration> {
+public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final DriveDirection direction;
     private final double power;
     private final double distanceFromWall;
@@ -25,7 +26,7 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
 
 
     public GiroDriveAlongWallEncoder(double distanceFromWall, double targetHeading, double power, long encoderLimit, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
         this.direction = new DriveDirection();
         this.power = power;
         this.distanceFromWall = distanceFromWall;
@@ -44,8 +45,8 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         this.direction.drive(0.0, this.power);
@@ -70,7 +71,7 @@ public class GiroDriveAlongWallEncoder extends AutonomousComponentHardware<Veloc
         //this.controlledHeading = this.targetHeading + headingDeviation;
 
         Log.d(Utils.TAG, "Ultrasonic distance = " + ultrasonicDistance + " Distance error = " + distanceError + " Heading deviation = " + headingDeviation + " Encoder val = " + this.configuration.encoderPositive());
-        if (this.configuration.encoderPositive() > this.encoderTarget) return NEXT_STATE;
+        if (this.configuration.encoderPositive() > this.encoderTarget) return DefaultTransition.DEFAULT;
         else return null;
     }
 

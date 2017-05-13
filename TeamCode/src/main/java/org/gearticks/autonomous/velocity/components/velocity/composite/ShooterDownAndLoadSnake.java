@@ -1,7 +1,6 @@
 package org.gearticks.autonomous.velocity.components.velocity.composite;
 
 import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.component.ParallelComponent;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
@@ -14,13 +13,13 @@ public class ShooterDownAndLoadSnake extends ParallelComponent {
 		super(id);
 		this.addComponent(new MoveShooterDown(opModeContext, "Move Shooter Down"));
 		final LinearStateMachine handleSnakeLoad = new LinearStateMachine("Load snake");
-		handleSnakeLoad.addComponent(new AutonomousComponentHardware<VelocityConfiguration>(opModeContext, "Wait for shooter down") {
+		handleSnakeLoad.addComponent(new AutonomousComponentHardware<VelocityConfiguration, DefaultTransition>(opModeContext, DefaultTransition.class, "Wait for shooter down") {
 			@Override
-			public Transition run() {
-				final Transition superTransition = super.run();
+			public DefaultTransition run() {
+				final DefaultTransition superTransition = super.run();
 				if (superTransition != null) return superTransition;
 
-				if (this.configuration.isShooterPassedEncoder() || this.configuration.isShooterDown()) return NEXT_STATE;
+				if (this.configuration.isShooterPassedEncoder() || this.configuration.isShooterDown()) return DefaultTransition.DEFAULT;
 				else return null;
 			}
 		});

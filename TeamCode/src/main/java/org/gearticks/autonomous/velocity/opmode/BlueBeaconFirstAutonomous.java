@@ -21,7 +21,7 @@ import org.gearticks.hardware.configurations.VelocityConfiguration;
 public class BlueBeaconFirstAutonomous extends InitializedAutonomous {
     private static final int DISTANCE_FROM_WALL = 10;
 
-    protected AutonomousComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+    protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
         final LinearStateMachine sm = new LinearStateMachine();
 
         //Get to far beacon

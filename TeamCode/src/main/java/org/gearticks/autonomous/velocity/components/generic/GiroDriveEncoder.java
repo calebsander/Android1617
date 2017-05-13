@@ -4,7 +4,6 @@ import org.gearticks.autonomous.generic.OpModeContext;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
 import org.gearticks.hardware.configurations.OrientableConfiguration;
-import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 public class GiroDriveEncoder extends LinearStateMachine {
 	/**
@@ -18,14 +17,14 @@ public class GiroDriveEncoder extends LinearStateMachine {
 	public GiroDriveEncoder(double targetHeading, double power, int encoderTarget, OpModeContext<? extends OrientableConfiguration> opModeContext, String id) {
 		super(id);
 		this.addComponent(new GiroDriveEncoderNoStop(targetHeading, power, encoderTarget, opModeContext, "Driving"));
-		this.addComponent(new AutonomousComponentHardware<OrientableConfiguration>(opModeContext, "Stopping") {
+		this.addComponent(new AutonomousComponentHardware<OrientableConfiguration, DefaultTransition>(opModeContext, DefaultTransition.class, "Stopping") {
 			@Override
-			public Transition run() {
-				final Transition superTransition = super.run();
+			public DefaultTransition run() {
+				final DefaultTransition superTransition = super.run();
 				if (superTransition != null) return superTransition;
 
 				this.configuration.stopMotion();
-				return NEXT_STATE;
+				return DefaultTransition.DEFAULT;
 			}
 		});
 	}

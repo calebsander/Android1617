@@ -1,6 +1,7 @@
-package org.gearticks.opmodes.utility;
+package org.gearticks;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import java.text.MessageFormat;
 
 public class Utils {
@@ -53,5 +54,18 @@ public class Utils {
         if (!condition) {
             throw new AssertionError(new MessageFormat(messageFormat).format(messageParameters));
         }
+    }
+
+    /**
+     * Logs the current stack trace with the specified error message,
+     * then throws the error.
+     * Should be used instead of <tt>throw new RuntimeException()</tt>
+     * so error appears with Gearticks filter.
+     * @param message the error message to log
+     */
+    public static void throwException(String message) {
+        final RuntimeException exception = new RuntimeException(message);
+        Log.e(Utils.TAG, message, exception);
+        throw exception;
     }
 }

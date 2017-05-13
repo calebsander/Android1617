@@ -5,16 +5,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**
  * Adds a timer on top of AutonomousComponentAbstractImpl
  */
-public class AutonomousComponentTimer extends AutonomousComponentAbstractImpl {
+public class AutonomousComponentTimer<TRANSITION_TYPE extends Enum<?>> extends AutonomousComponentAbstractImpl<TRANSITION_TYPE> {
 	protected final ElapsedTime stageTimer;
 
-	public AutonomousComponentTimer() {
-		super();
+	public AutonomousComponentTimer(Class<TRANSITION_TYPE> transitionClass) {
+		super(transitionClass);
 		this.stageTimer = new ElapsedTime();
 	}
 
-	public AutonomousComponentTimer(String id) {
-		super(id);
+	public AutonomousComponentTimer(Class<TRANSITION_TYPE> transitionClass, String id) {
+		super(transitionClass, id);
 		this.stageTimer = new ElapsedTime();
 	}
 

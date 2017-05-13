@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.gearticks.opmodes.units.SideOfButton;
-import org.gearticks.opmodes.utility.Utils;
+import org.gearticks.Utils;
 import java.util.concurrent.BlockingQueue;
 
 public class VuforiaConfiguration {
@@ -83,14 +83,12 @@ public class VuforiaConfiguration {
         }
         Matrix matrix = new Matrix();
         matrix.postRotate(180);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),matrix,true);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
 
-    //private static final int IMAGE_WIDTH = 1280, IMAGE_HEIGHT = 720;
-    //private static final int IMAGE_WIDTH = 320, IMAGE_HEIGHT = 180;
-    private static final int IMAGE_WIDTH = 32, IMAGE_HEIGHT = 18;
-    private static final double SCALE_FACTOR = 0.4;
+    private static final int IMAGE_WIDTH = 1280, IMAGE_HEIGHT = 720;
+    private static final double SCALE_FACTOR = 0.01;
     private static final int SCALED_WIDTH = (int)(IMAGE_WIDTH * SCALE_FACTOR), SCALED_HEIGHT = (int)(IMAGE_HEIGHT * SCALE_FACTOR);
     private static final int HALF_WIDTH = SCALED_WIDTH / 2;
     public static class BeaconColorCounts {

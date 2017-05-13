@@ -17,9 +17,9 @@ import org.gearticks.joystickoptions.AllianceOption;
 @Autonomous
 @Disabled
 public class SelectedComponentTest extends VelocityBaseOpMode {
-	protected AutonomousComponent getComponent(final OpModeContext<VelocityConfiguration> opModeContext) {
+	protected AutonomousComponent<?> getComponent(final OpModeContext<VelocityConfiguration> opModeContext) {
 		final LinearStateMachine sm = new LinearStateMachine();
-		sm.addComponent(new SelectedComponent<>(AllianceOption.allianceOption, new HashMap<AllianceOption, AutonomousComponent>() {{
+		sm.addComponent(new SelectedComponent<>(AllianceOption.allianceOption, AllianceOption.class, new HashMap<AllianceOption, AutonomousComponent<?>>() {{
 			put(AllianceOption.BLUE, new GiroDriveEncoder(0.0, 1.0, 2000, opModeContext, "Blue: Drive forward"));
 			put(AllianceOption.RED, new GiroTurn(90.0, 1.0, 10, opModeContext, "Red: turn"));
 		}}));

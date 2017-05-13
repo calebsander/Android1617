@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.gearticks.autonomous.generic.OpModeContext;
+import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
 import org.gearticks.vuforia.VuforiaConfiguration;
 import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
@@ -14,7 +15,7 @@ import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.joystickoptions.AllianceOption;
 import org.gearticks.vuforia.VuforiaImages;
 
-public class FacePicture extends AutonomousComponentHardware<VelocityConfiguration> {
+public class FacePicture extends AutonomousComponentHardware<VelocityConfiguration, DefaultTransition> {
     private final boolean isNearBeacon;
     private final DriveDirection direction;
     private final VuforiaConfiguration vuforiaConfiguration;
@@ -27,7 +28,7 @@ public class FacePicture extends AutonomousComponentHardware<VelocityConfigurati
      * @param id - descriptive name for logging
      */
     public FacePicture(boolean isNearBeacon, OpModeContext<VelocityConfiguration> opModeContext, String id) {
-        super(opModeContext, id);
+        super(opModeContext, DefaultTransition.class, id);
         this.isNearBeacon = isNearBeacon;
         this.direction = new DriveDirection();
         this.vuforiaConfiguration = opModeContext.getVuforiaConfiguration();
@@ -45,8 +46,8 @@ public class FacePicture extends AutonomousComponentHardware<VelocityConfigurati
     }
 
     @Override
-    public Transition run() {
-        final Transition superTransition = super.run();
+    public DefaultTransition run() {
+        final DefaultTransition superTransition = super.run();
         if (superTransition != null) return superTransition;
 
         final OpenGLMatrix firstTargetPose = this.firstTargetListener.getPose();
@@ -62,7 +63,7 @@ public class FacePicture extends AutonomousComponentHardware<VelocityConfigurati
             else this.direction.stopDrive(); //then pause for .2 seconds
         }
         this.configuration.move(this.direction, 0.06);
-        if (this.angleCorrectionTimer.seconds() > 0.4) return NEXT_STATE; //if we have been on target for .4 seconds in a row, take the picture
+        if (this.angleCorrectionTimer.seconds() > 0.4) return DefaultTransition.DEFAULT; //if we have been on target for .4 seconds in a row, take the picture
         return null;
     }
 
