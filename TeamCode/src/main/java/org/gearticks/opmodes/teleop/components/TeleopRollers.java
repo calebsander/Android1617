@@ -1,13 +1,13 @@
 package org.gearticks.opmodes.teleop.components;
 
 import org.gearticks.GamepadWrapper;
-import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.NoTransition;
-import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
+import org.gearticks.components.generic.OpModeContext;
+import org.gearticks.components.generic.component.OpModeComponent.NoTransition;
+import org.gearticks.components.generic.component.OpModeComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.opmodes.teleop.VelocityDrive;
 
-public class TeleopRollers extends AutonomousComponentHardware<VelocityConfiguration, NoTransition> {
+public class TeleopRollers extends OpModeComponentHardware<VelocityConfiguration, NoTransition> {
     private final GamepadWrapper[] gamepads;
     private boolean rollersDeployed;
 

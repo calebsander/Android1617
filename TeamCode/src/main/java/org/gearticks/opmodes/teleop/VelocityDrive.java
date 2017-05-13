@@ -1,16 +1,16 @@
 package org.gearticks.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
-import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
-import org.gearticks.autonomous.generic.component.AutonomousComponentTimer;
-import org.gearticks.autonomous.generic.component.ParallelComponent;
-import org.gearticks.autonomous.generic.statemachine.LinearStateMachine;
-import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
-import org.gearticks.autonomous.velocity.components.generic.Wait;
-import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
+import org.gearticks.components.generic.OpModeContext;
+import org.gearticks.components.generic.component.OpModeComponent;
+import org.gearticks.components.generic.component.OpModeComponent.DefaultTransition;
+import org.gearticks.components.generic.component.OpModeComponentAbstract;
+import org.gearticks.components.generic.component.OpModeComponentTimer;
+import org.gearticks.components.generic.component.ParallelComponent;
+import org.gearticks.components.generic.statemachine.LinearStateMachine;
+import org.gearticks.components.generic.statemachine.NetworkedStateMachine;
+import org.gearticks.components.hardwareagnostic.component.Wait;
+import org.gearticks.components.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.configurations.VelocityConfiguration.MotorConstants;
 import org.gearticks.opmodes.teleop.components.TeleopCapBall;
@@ -25,7 +25,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 
 	//Whether we think there is a ball in the shooter
 	private boolean ballInShooter;
-	private class IntakingComponent extends AutonomousComponentTimer<DefaultTransition> {
+	private class IntakingComponent extends OpModeComponentTimer<DefaultTransition> {
 		public IntakingComponent() {
 			super(DefaultTransition.class);
 		}
@@ -42,7 +42,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 			else return null;
 		}
 	}
-	private class SettleInSnakeComponent extends AutonomousComponentTimer<DefaultTransition> {
+	private class SettleInSnakeComponent extends OpModeComponentTimer<DefaultTransition> {
 		public SettleInSnakeComponent() {
 			super(DefaultTransition.class);
 		}
@@ -63,7 +63,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		SHOOTER_DOWN,
 		MANUAL_SNAKE
 	}
-	private class HoldingComponent extends AutonomousComponentAbstractImpl<HoldingTransition> {
+	private class HoldingComponent extends OpModeComponentAbstract<HoldingTransition> {
 		public HoldingComponent() {
 			super(HoldingTransition.class);
 		}
@@ -83,7 +83,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 			else return null;
 		}
 	}
-	private class LoadingComponent extends AutonomousComponentTimer<DefaultTransition> {
+	private class LoadingComponent extends OpModeComponentTimer<DefaultTransition> {
 		public LoadingComponent() {
 			super(DefaultTransition.class);
 		}
@@ -106,7 +106,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 			ballInShooter = true;
 		}
 	}
-	private class SnakeReturnComponent extends AutonomousComponentTimer<DefaultTransition> {
+	private class SnakeReturnComponent extends OpModeComponentTimer<DefaultTransition> {
 		public SnakeReturnComponent() {
 			super(DefaultTransition.class);
 		}
@@ -139,7 +139,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		SWITCH,
 		STOP
 	}
-	private class PresserEngaged extends AutonomousComponentTimer<PresserTransition> {
+	private class PresserEngaged extends OpModeComponentTimer<PresserTransition> {
 		private final double position;
 
 		public PresserEngaged(double position) {
@@ -161,7 +161,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		}
 	}
 
-	private class BumperDown extends AutonomousComponentTimer<DefaultTransition> {
+	private class BumperDown extends OpModeComponentTimer<DefaultTransition> {
 		public BumperDown() {
 			super(DefaultTransition.class);
 		}
@@ -188,7 +188,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 			configuration.frontBumper.setPower(0.0);
 		}
 	}
-	private class BumperUpWhenTrigger extends AutonomousComponentAbstractImpl<DefaultTransition> {
+	private class BumperUpWhenTrigger extends OpModeComponentAbstract<DefaultTransition> {
 		public BumperUpWhenTrigger() {
 			super(DefaultTransition.class);
 		}
@@ -208,7 +208,7 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		}
 	}
 
-	protected AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	protected OpModeComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final ParallelComponent teleopComponent = new ParallelComponent();
 
 		this.ballInShooter = false;

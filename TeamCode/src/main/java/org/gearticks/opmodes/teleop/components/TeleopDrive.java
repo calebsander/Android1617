@@ -2,15 +2,15 @@ package org.gearticks.opmodes.teleop.components;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.gearticks.GamepadWrapper;
-import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.NoTransition;
-import org.gearticks.autonomous.generic.component.AutonomousComponentHardware;
+import org.gearticks.components.generic.OpModeContext;
+import org.gearticks.components.generic.component.OpModeComponent.NoTransition;
+import org.gearticks.components.generic.component.OpModeComponentHardware;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 import org.gearticks.hardware.drive.DriveDirection;
 import org.gearticks.hardware.drive.MotorWrapper;
 import org.gearticks.opmodes.teleop.VelocityDrive;
 
-public class TeleopDrive extends AutonomousComponentHardware<VelocityConfiguration, NoTransition> {
+public class TeleopDrive extends OpModeComponentHardware<VelocityConfiguration, NoTransition> {
     private final GamepadWrapper[] gamepads;
     private final DriveDirection direction;
     private final Telemetry telemetry;

@@ -4,19 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import org.gearticks.GamepadWrapper;
-import org.gearticks.autonomous.generic.OpModeContext;
-import org.gearticks.autonomous.generic.component.AutonomousComponent;
-import org.gearticks.autonomous.generic.component.AutonomousComponent.DefaultTransition;
-import org.gearticks.autonomous.generic.component.AutonomousComponentAbstractImpl;
-import org.gearticks.autonomous.generic.statemachine.NetworkedStateMachine;
-import org.gearticks.autonomous.velocity.opmode.generic.VelocityBaseOpMode;
+import org.gearticks.components.generic.OpModeContext;
+import org.gearticks.components.generic.component.OpModeComponent;
+import org.gearticks.components.generic.component.OpModeComponent.DefaultTransition;
+import org.gearticks.components.generic.component.OpModeComponentAbstract;
+import org.gearticks.components.generic.statemachine.NetworkedStateMachine;
+import org.gearticks.components.velocity.opmode.generic.VelocityBaseOpMode;
 import org.gearticks.dimsensors.DimLed;
 import org.gearticks.hardware.configurations.VelocityConfiguration;
 
 @TeleOp
 @Disabled
 public class GamepadLambdaTest extends VelocityBaseOpMode {
-	private static class LedStateComponent extends AutonomousComponentAbstractImpl<DefaultTransition> {
+	private static class LedStateComponent extends OpModeComponentAbstract<DefaultTransition> {
 		private final boolean ledState;
 		private final DeviceInterfaceModule dim;
 		private final GamepadWrapper gamepad;
@@ -41,7 +41,7 @@ public class GamepadLambdaTest extends VelocityBaseOpMode {
 		}
 	}
 
-	public AutonomousComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	public OpModeComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final LedStateComponent offComponent = new LedStateComponent(false, opModeContext);
 		final LedStateComponent onComponent = new LedStateComponent(true, opModeContext);
 		final NetworkedStateMachine component = new NetworkedStateMachine();
