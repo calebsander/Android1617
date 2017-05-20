@@ -28,7 +28,8 @@ public class DebugPause extends AutonomousComponentHardware<VelocityConfiguratio
 		final Transition superTransition = super.run();
 		if (superTransition != null) return superTransition;
 
-		this.opModeContext.telemetry.addData("heading", this.configuration.imu.getHeading());
+		this.opModeContext.telemetry.addData("raw heading", this.configuration.imu.getHeading());
+		this.opModeContext.telemetry.addData("relative heading", this.configuration.imu.getRelativeYaw());
 		this.opModeContext.telemetry.addData("drive left", this.configuration.driveLeft.encoderValue());
 		this.opModeContext.telemetry.addData("drive right", this.configuration.driveRight.encoderValue());
 		if (this.opModeContext.gamepads[0].getA()) return NEXT_STATE;

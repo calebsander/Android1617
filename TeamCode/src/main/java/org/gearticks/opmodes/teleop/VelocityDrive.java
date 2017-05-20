@@ -271,10 +271,10 @@ public class VelocityDrive extends BaseOpMode {
 
 		final double maxSlope = 50.0; //defines range at which robot will go straight forward/back or will turn in place
 		final double leftX = this.gamepads[driveGamepad].getLeftX(), leftY = this.gamepads[driveGamepad].getLeftY();
-		if(leftX == 0 || Math.abs(leftY/leftX) > maxSlope) {
-			this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
+		if (leftX == 0 || Math.abs(leftY / leftX) > maxSlope) {
+			this.direction.drive(0.0, scaleStick(leftY) * yScaleFactor);
 			this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
-		} else if (leftY == 0 || Math.abs(leftY/leftX) < 1.0/maxSlope) {
+		} else if (leftY == 0 || Math.abs(leftY / leftX) < 1.0 / maxSlope) {
 			this.direction.turn(scaleStick(leftX) * sScaleFactor);
 		} else {
 			this.direction.turn(Math.signum(leftY) * leftX / 2.0);
@@ -376,10 +376,7 @@ public class VelocityDrive extends BaseOpMode {
 		return stick * stick * stick;
 	}
 	private static double magnitude(double x, double y) {
-		return Math.abs(Math.sqrt(x*x + y*y)) * Math.signum(y);
-	}
-	private static double toRadian(double deg) {
-		return deg * Math.PI / 180;
+		return Math.sqrt(x*x + y*y) * Math.signum(y);
 	}
 	private boolean isManualSnakeOn() {
 		return this.gamepads[JACK].getB();
