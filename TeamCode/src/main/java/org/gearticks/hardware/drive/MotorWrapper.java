@@ -32,9 +32,6 @@ public class MotorWrapper {
 	private double lastPower;
 	//Point where encoder was "reset"
 	private int encoderResetPoint;
-	//The desired StopMode for this motor
-	@SuppressWarnings("unused")
-	private ZeroPowerBehavior lastStopMode;
 	//The current RunMode for this motor
 	private RunMode lastRunMode;
 	//The current encoder target
@@ -56,7 +53,6 @@ public class MotorWrapper {
 		this.motor = motor;
 		this.lastPower = STOPPED;
 		this.encoderResetPoint = 0;
-		this.lastStopMode = null;
 		this.lastRunMode = null;
 		this.lastTarget = UNSET_TARGET;
 		this.type = type;
@@ -89,14 +85,11 @@ public class MotorWrapper {
 	//If motor was stopped, will either brake or coast it immediately
 	public void setStopMode(ZeroPowerBehavior newMode) {
 		this.motor.setZeroPowerBehavior(newMode);
-		this.lastStopMode = newMode;
 	}
 	//Sets the desired run mode
 	public void setRunMode(RunMode runMode) {
-		if (runMode != this.lastRunMode) {
-			this.motor.setMode(runMode);
-			this.lastRunMode = runMode;
-		}
+		this.motor.setMode(runMode);
+		this.lastRunMode = runMode;
 	}
 	//Gets the last set run mode
 	public RunMode getRunMode() {
@@ -108,10 +101,8 @@ public class MotorWrapper {
 		if (this.reversed) target = -target;
 		target = (int)(target / this.type.scaling);
 		target += this.encoderResetPoint; //since the input target is relative to the reset point
-		if (this.lastTarget == UNSET_TARGET || target != this.lastTarget) {
-			this.motor.setTargetPosition(target);
-			this.lastTarget = target;
-		}
+		this.motor.setTargetPosition(target);
+		this.lastTarget = target;
 	}
 	//Gets the last set target
 	public int getTarget() {
@@ -121,7 +112,6 @@ public class MotorWrapper {
 		else return scaledTarget;
 	}
 	//Returns whether or not the motor is still trying to reach the target position (wrapper for DcMotor)
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean notAtTarget() {
 		return this.motor.isBusy();
 	}

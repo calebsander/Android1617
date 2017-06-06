@@ -195,13 +195,8 @@ public class VelocityConfiguration implements OrientableConfiguration {
 	}
 
 	public void resetEncoder() {
-		final RunMode leftLastMode = this.driveLeft.getRunMode();
-		this.driveLeft.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-		final RunMode rightLastMode = this.driveRight.getRunMode();
-		this.driveRight.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-
-		this.driveLeft.setRunMode(leftLastMode);
-		this.driveRight.setRunMode(rightLastMode);
+		this.driveLeft.stopAndReset();
+		this.driveRight.stopAndReset();
 	}
 	/**
 	 * Returns an encoder value from the drive motors.
