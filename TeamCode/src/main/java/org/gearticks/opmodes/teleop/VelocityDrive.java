@@ -253,18 +253,19 @@ public class VelocityDrive extends VelocityBaseOpMode {
 		bumperStateMachine.setInitialComponent(bumperUp);
 		bumperStateMachine.addConnection(bumperUp, DefaultTransition.DEFAULT, bumperDown);
 		bumperStateMachine.addConnection(bumperDown, DefaultTransition.DEFAULT, bumperUp);
-		teleopComponent.addComponent(bumperStateMachine);
 
-		teleopComponent.addComponent(new TeleopCapBall(opModeContext));
+
+		//teleopComponent.addComponent(bumperStateMachine);
+		//teleopComponent.addComponent(new TeleopCapBall(opModeContext));
 		teleopComponent.addComponent(new TeleopDrive(opModeContext));
 		teleopComponent.addComponent(new TeleopIntake(opModeContext));
-		teleopComponent.addComponent(new TeleopRollers(opModeContext));
+		//teleopComponent.addComponent(new TeleopRollers(opModeContext));
 		teleopComponent.addComponent(new TeleopShooterStopper(opModeContext));
 
 		return teleopComponent;
 	}
 	public boolean isV2() {
-		return true;
+		return false;
 	}
 	@Override
 	protected VelocityConfiguration newConfiguration() {
