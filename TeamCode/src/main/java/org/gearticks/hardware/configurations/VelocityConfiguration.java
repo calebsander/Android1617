@@ -163,6 +163,12 @@ public class VelocityConfiguration implements OrientableConfiguration {
 		this.drive.accelLimit(accelLimit);
 		this.drive.commitPowers();
 	}
+	public void move(DriveDirection direction, double[] accelLimit) {
+		this.drive.calculatePowers(direction);
+		this.drive.scaleMotorsDown();
+		this.drive.accelLimit(accelLimit);
+		this.drive.commitPowers();
+	}
 
 	public boolean shooterFarTriggered() {
 		return !this.shooterFar.getState();

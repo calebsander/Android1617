@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public abstract class DriveSystem {
 	//Maps motors to the powers they are going to be assigned
@@ -61,6 +62,15 @@ public abstract class DriveSystem {
 	public void accelLimit(double maxDiff) {
 		for (final Entry<MotorWrapper, Double> entry : this.motorPowers.entrySet()) {
 			entry.setValue(MotorWrapper.accelLimit(entry.getKey().getPower(), entry.getValue(), maxDiff));
+		}
+	}
+	public void accelLimit(double[] maxDiff) {
+		if(maxDiff.length != this.motorPowers.size())
+			throw new IllegalArgumentException();
+		int cnt = 0;
+		for(final Entry<MotorWrapper, Double> entry : this.motorPowers.entrySet()) {
+			entry.setValue(MotorWrapper.accelLimit(entry.getKey().getPower(), entry.getValue(), maxDiff[cnt]));
+			cnt++;
 		}
 	}
 	//Scales all motor powers by a constant
