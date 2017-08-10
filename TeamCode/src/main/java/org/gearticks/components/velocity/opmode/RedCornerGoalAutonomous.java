@@ -16,7 +16,7 @@ import org.gearticks.joystickoptions.IncrementOption;
 public class RedCornerGoalAutonomous extends InitializedAutonomous {
 	private static final double START_HEADING = 360.0 - 22.0;
 
-	protected OpModeComponent getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
+	protected OpModeComponent<?> getComponent(OpModeContext<VelocityConfiguration> opModeContext) {
 		final LinearStateMachine sm = new LinearStateMachine();
 
 		sm.addComponent(new Shoot2Balls(true, opModeContext, "Shoot balls"));

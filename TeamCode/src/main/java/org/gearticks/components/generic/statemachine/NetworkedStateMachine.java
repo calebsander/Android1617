@@ -73,15 +73,15 @@ public class NetworkedStateMachine extends StateMachineBase {
 	public void onMatchStart() {
 		super.onMatchStart();
 		if (this.currentState == null) Utils.throwException("No initial component set for \"" + this + "\"");
-		for (final OpModeComponent<?> component : this.components) {
-			for (final Enum<?> transition : component.getPossibleTransitions()) {
+		this.components.forEach(component ->
+			component.getPossibleTransitions().forEach(transition -> {
 				final boolean exitTransition = this.isExitTransition(component, transition);
 				final boolean nextComponent = this.getTransitionTarget(component, transition) != null;
 				if (!(exitTransition || nextComponent)) {
 					Utils.throwException("No connection defined for \"" + component + "\" on transition \"" + transition + "\" in \"" + this + "\"");
 				}
-			}
-		}
+			})
+		);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import android.util.Log;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import org.gearticks.components.generic.component.OpModeComponent.DefaultTransition;
 import org.gearticks.Utils;
 
@@ -14,7 +15,6 @@ import org.gearticks.Utils;
  * This means, for example, that you can't do a drive and a turn at the same time,
  * but a drive and an intake and a servo movement at the same time are fine.
  */
-@SuppressWarnings("Convert2streamapi")
 public class ParallelComponent extends OpModeComponentAbstract<DefaultTransition> {
 	private final Collection<OpModeComponent<?>> components;
 
@@ -62,16 +62,12 @@ public class ParallelComponent extends OpModeComponentAbstract<DefaultTransition
 	@Override
 	public void onMatchStart() {
 		super.onMatchStart();
-		for (final OpModeComponent<?> component : this.components) {
-			component.onMatchStart();
-		}
+		this.components.forEach(OpModeComponent::onMatchStart);
 	}
 	@Override
 	public void setup() {
 		super.setup();
-		for (final OpModeComponent<?> component : this.components) {
-			component.setup();
-		}
+		this.components.forEach(OpModeComponent::setup);
 	}
 	@Override
 	public DefaultTransition run() {
@@ -93,24 +89,19 @@ public class ParallelComponent extends OpModeComponentAbstract<DefaultTransition
 	@Override
 	public void tearDown() {
 		super.tearDown();
-		for (final OpModeComponent<?> component : this.components) {
-			component.tearDown();
-		}
+		this.components.forEach(OpModeComponent::tearDown);
 	}
 	@Override
 	public String getId() {
 		final StringBuilder sb = new StringBuilder(super.getId());
 		if (this.components.isEmpty()) sb.append(" - done");
 		else {
-			sb.append(" - in");
-			final int nonLastComponents = this.components.size() - 1;
-			int element = 0;
-			for (final OpModeComponent<?> component : this.components) {
-				sb.append(' ');
-				sb.append(component.getId());
-				if (element < nonLastComponents) sb.append(" ,");
-				element++;
-			}
+			sb.append(" - in ");
+			sb.append(
+				this.components.stream()
+					.map(OpModeComponent::getId)
+					.collect(Collectors.joining(", "))
+			);
 		}
 		return sb.toString();
 	}

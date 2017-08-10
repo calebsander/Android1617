@@ -10,8 +10,7 @@ import org.gearticks.hardware.configurations.HardwareConfiguration;
  * never transitions
  */
 public class Stopped extends OpModeComponentHardware<HardwareConfiguration, NoTransition> {
-	@SuppressWarnings("unchecked")
-	public Stopped(OpModeContext opModeContext) {
+	public Stopped(OpModeContext<? extends HardwareConfiguration> opModeContext) {
 		super(opModeContext, NoTransition.class);
 	}
 

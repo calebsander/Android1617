@@ -25,13 +25,10 @@ public abstract class StateMachineBase extends OpModeComponentAbstract<DefaultTr
 		this.components = components;
 	}
 
-	@SuppressWarnings("Convert2streamapi")
 	@Override
 	public void onMatchStart() {
 		super.onMatchStart();
-		for (final OpModeComponent<?> component : this.components) {
-			component.onMatchStart();
-		}
+		this.components.forEach(OpModeComponent::onMatchStart);
 	}
 
 	@Override

@@ -65,7 +65,7 @@ public class I2CSwitcher extends I2CSensor {
 		this.switchRequests[port].addToQueue();
 		final Queue<SensorRequest> portRequests = this.portRequests[port];
 		//Add each of child's requests to the main queue, then clear it
-		for (final SensorRequest portRequest : portRequests) portRequest.addToQueue(this.requests);
+		portRequests.forEach(request -> request.addToQueue(this.requests));
 		portRequests.clear();
 		this.requests.add(END_OF_PORT_REQUESTS); //marks the end of the commands for this port
 		this.hasSentSwitchRequest = false; //switch has not yet been issued

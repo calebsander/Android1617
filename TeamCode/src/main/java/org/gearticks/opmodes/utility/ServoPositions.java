@@ -3,7 +3,7 @@ package org.gearticks.opmodes.utility;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap.DeviceMapping;
 import com.qualcomm.robotcore.hardware.Servo;
-import java.util.Map;
+import java.util.Map.Entry;
 import org.gearticks.joystickoptions.ValuesJoystickOption;
 import org.gearticks.opmodes.BaseOpMode;
 
@@ -15,12 +15,9 @@ public class ServoPositions extends BaseOpMode {
 
 	protected void initialize() {
 		final DeviceMapping<Servo> servoMap = this.hardwareMap.servo;
-		final String[] servoNames = new String[servoMap.size()];
-		int servoIndex = 0;
-		for (final Map.Entry<String, Servo> nameAndServo : servoMap.entrySet()) {
-			servoNames[servoIndex] = nameAndServo.getKey();
-			servoIndex++;
-		}
+		final String[] servoNames = servoMap.entrySet().stream()
+			.map(Entry::getKey)
+			.toArray(String[]::new);
 		this.servoOption = new ValuesJoystickOption<>("Servo", servoNames);
 		this.addOption(this.servoOption);
 		this.locking = false;

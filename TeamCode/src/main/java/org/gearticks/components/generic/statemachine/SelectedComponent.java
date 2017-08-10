@@ -36,11 +36,11 @@ public class SelectedComponent<E extends Enum<?>> extends NetworkedStateMachine 
 			}
 		};
 		this.setInitialComponent(switcher);
-		for (final Map.Entry<E, OpModeComponent<?>> valueComponent : components.entrySet()) {
+		components.entrySet().forEach(valueComponent -> {
 			final LinearStateMachine componentTransitionSuppressed = new LinearStateMachine("Suppress transition");
 			componentTransitionSuppressed.addComponent(valueComponent.getValue());
 			this.addConnection(switcher, valueComponent.getKey(), componentTransitionSuppressed);
 			this.addExitConnection(componentTransitionSuppressed, DefaultTransition.DEFAULT);
-		}
+		});
 	}
 }

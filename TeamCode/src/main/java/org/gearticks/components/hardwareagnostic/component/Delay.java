@@ -11,8 +11,7 @@ public class Delay extends OpModeComponentHardware<HardwareConfiguration, Defaul
 	private final ElapsedTime matchTime;
 	private final IncrementOption delayOption;
 
-	@SuppressWarnings("unchecked")
-	public Delay(OpModeContext opModeContext, IncrementOption delayOption) {
+	public Delay(OpModeContext<? extends HardwareConfiguration> opModeContext, IncrementOption delayOption) {
 		super(opModeContext, DefaultTransition.class);
 		this.matchTime = opModeContext.matchTime;
 		this.delayOption = delayOption;

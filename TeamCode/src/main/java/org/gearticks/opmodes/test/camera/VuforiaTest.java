@@ -9,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.gearticks.vuforia.VuforiaKey;
@@ -38,13 +37,13 @@ public class VuforiaTest extends BaseOpMode {
 		this.beaconImages.activate();
 	}
 	public void loopAfterStart() {
-		for (final VuforiaTrackable beaconImage : this.beaconImages) {
+		this.beaconImages.forEach(beaconImage -> {
 			final VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener)beaconImage.getListener();
 			final OpenGLMatrix pose = listener.getPose();
 			final String telemetryText;
 			if (pose == null) telemetryText = "Not found";
 			else telemetryText = pose.getTranslation().toString();
 			this.telemetry.addData(beaconImage.getName(), telemetryText);
-		}
+		});
 	}
 }

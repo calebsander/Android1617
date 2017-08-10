@@ -77,6 +77,9 @@ public class TCS34725 extends I2CSensor {
 			case ADC_ENABLE:
 				this.state = StartupState.DONE;
 				this.setIntegrationTime(DEFAULT_INTEGRATION_INTERVAL);
+				break;
+			case DONE:
+				//pass
 		}
 	}
 	//Start reading the clear channel
