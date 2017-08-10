@@ -1,7 +1,7 @@
 //Provides several utility functions for calculating the result of a Gamepad and comparing values with the last measured ones
 package org.gearticks;
 
-import com.qualcomm.ftccommon.DbgLog;
+import android.util.Log;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -149,7 +149,7 @@ public class GamepadWrapper {
 			this.last.copy(this.gamepad);
 		}
 		catch (RobotCoreException e) {
-			DbgLog.error("Unable to copy gamepad");
+			Log.e(Utils.TAG, "Unable to copy gamepad");
 		}
 	}
 	//Returns the native gamepad object being wrapped
