@@ -48,8 +48,17 @@ public class TeleopDrive extends OpModeComponentHardware<VelocityConfiguration, 
         if (slowMode) accelLimit = 0.075;
         else accelLimit = MotorWrapper.NO_ACCEL_LIMIT;
 
-        this.direction.drive(0.0, scaleStick(this.gamepads[driveGamepad].getLeftY()) * yScaleFactor);
-        this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+        final double maxSlope = 50.0; //defines range at which robot will go straight forward/back or will turn in place
+        final double leftX = this.gamepads[driveGamepad].getLeftX(), leftY = this.gamepads[driveGamepad].getLeftY();
+        if (leftX == 0 || Math.abs(leftY / leftX) > maxSlope) {
+            this.direction.drive(0.0, scaleStick(leftY) * yScaleFactor);
+            this.direction.turn(scaleStick(this.gamepads[driveGamepad].getRightX()) * sScaleFactor);
+        } else if (leftY == 0 || Math.abs(leftY / leftX) < 1.0 / maxSlope) {
+            this.direction.turn(scaleStick(leftX) * sScaleFactor);
+        } else {
+            this.direction.turn(Math.signum(leftY) * leftX / 2.0);
+            this.direction.drive(0.0, leftY + Math.signum(leftY) * Math.abs(leftX) / 2.0);
+        }
 
         this.configuration.drive.calculatePowers(this.direction);
         this.configuration.drive.scaleMotorsDown(maxPower);
