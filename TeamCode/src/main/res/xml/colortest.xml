@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="Color Test"
+       tools:ignore="UnusedResources">
+    <DeviceInterfaceModule name="Device Interface Module 1" serialNumber="AI02RKCO">
+        <I2cDevice name="color" port="0" />
+        <Led name="led" port="0" />
+    </DeviceInterfaceModule>
+</Robot>

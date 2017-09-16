@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.autonomous.generic.component</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Autonomous component has output &quot;ports,&quot; each assigned a unique nonzero integer.</span>
+<span class="cm"> * Interface is as simple as possible to allow for easy conversion.</span>
+<span class="cm"> *</span>
+<span class="cm"> * AutonomousComponent can be used in regular switch-like state-machine, but also by an automated state-machine.</span>
+<span class="cm"> * See samples.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AutonomousComponent</span> <span class="o">{</span>
+  <span class="cm">/**</span>
+<span class="cm">   * To be called once at start of autonomous program, e.g. to initialize some sensors</span>
+<span class="cm">   */</span>
+  <span class="kt">void</span> <span class="nf">onMatchStart</span><span class="o">();</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Called each time the component state starts, can be multiple times in same autonomous program.</span>
+<span class="cm">   * Should contain all the code for resetting the state of the component.</span>
+<span class="cm">   */</span>
+  <span class="kt">void</span> <span class="nf">setup</span><span class="o">();</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * To be called in each loop cycle.</span>
+<span class="cm">   * Returns the &quot;transition&quot; or id of the &quot;outputPort&quot; through which this AutonomousComponent ends.</span>
+<span class="cm">   * This allows for choice between different transitions/routes to next AutonomousComponents.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @return null if not yet done; the transition value if done</span>
+<span class="cm">   */</span>
+  <span class="n">Transition</span> <span class="nf">run</span><span class="o">();</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Called each time the component ends</span>
+<span class="cm">   */</span>
+  <span class="kt">void</span> <span class="nf">tearDown</span><span class="o">();</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Returns a string identifier for this component</span>
+<span class="cm">   * @return a display name for this component</span>
+<span class="cm">   */</span>
+  <span class="n">String</span> <span class="nf">getId</span><span class="o">();</span>
+
+  <span class="kd">class</span> <span class="nc">Transition</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Transition</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">name</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

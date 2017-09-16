@@ -1,0 +1,115 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.autonomous.generic.statemachine</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A state machine with a number of component states that don&#39;t necessarily proceed in a linear fashion.</span>
+<span class="cm"> * This is useful for looping and conditionally branching state machines.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Each output port emitted by each component should be connected to the component to execute next.</span>
+<span class="cm"> * Output ports not connected to another component must cause the state machine to end.</span>
+<span class="cm"> * You can alternatively add a {@link Stopped} component and connect the terminal states to it.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Keep in mind that no state is aware of the prior states, specifically the state that transitioned to it.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NetworkedStateMachine</span> <span class="kd">extends</span> <span class="n">StateMachineBase</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">AutonomousComponent</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Transition</span><span class="o">,</span> <span class="n">AutonomousComponent</span><span class="o">&gt;&gt;</span> <span class="n">connections</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">AutonomousComponent</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Transition</span><span class="o">,</span> <span class="n">Transition</span><span class="o">&gt;&gt;</span> <span class="n">exitConnections</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">NetworkedStateMachine</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;());</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">connections</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">exitConnections</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nf">NetworkedStateMachine</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;(),</span> <span class="n">id</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">connections</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">exitConnections</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setInitialComponent</span><span class="o">(</span><span class="n">AutonomousComponent</span> <span class="n">initialComponent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">=</span> <span class="n">initialComponent</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">components</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">initialComponent</span><span class="o">);</span> <span class="c1">//in case this is the only state</span>
+  <span class="o">}</span>
+  <span class="cm">/**</span>
+<span class="cm">   * Indicates that an output port on one component should switch to a specified state</span>
+<span class="cm">   * @param originComponent the component being switched from</span>
+<span class="cm">   * @param originPort the output port on originComponent this applies to</span>
+<span class="cm">   * @param destinationComponent the component to switch to when the output port is triggered</span>
+<span class="cm">   */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addConnection</span><span class="o">(</span><span class="n">AutonomousComponent</span> <span class="n">originComponent</span><span class="o">,</span>
+      <span class="n">Transition</span> <span class="n">originPort</span><span class="o">,</span> <span class="n">AutonomousComponent</span> <span class="n">destinationComponent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">components</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">originComponent</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">components</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">destinationComponent</span><span class="o">);</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">Transition</span><span class="o">,</span> <span class="n">AutonomousComponent</span><span class="o">&gt;</span> <span class="n">componentConnections</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">connections</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">originComponent</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">componentConnections</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">componentConnections</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">connections</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">originComponent</span><span class="o">,</span> <span class="n">componentConnections</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">componentConnections</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">originPort</span><span class="o">,</span> <span class="n">destinationComponent</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="cm">/**</span>
+<span class="cm">   * Indicates that an output port on one component should terminate the state machine</span>
+<span class="cm">   * @param component the final component</span>
+<span class="cm">   * @param portNumber the output port for which component is the final component</span>
+<span class="cm">   * @param exitPort the output port of the state machine to trigger in this case</span>
+<span class="cm">   */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addExitConnection</span><span class="o">(</span><span class="n">AutonomousComponent</span> <span class="n">component</span><span class="o">,</span> <span class="n">Transition</span> <span class="n">portNumber</span><span class="o">,</span> <span class="n">Transition</span> <span class="n">exitPort</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">components</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">component</span><span class="o">);</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">Transition</span><span class="o">,</span> <span class="n">Transition</span><span class="o">&gt;</span> <span class="n">componentConnections</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">exitConnections</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">component</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">componentConnections</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">componentConnections</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">exitConnections</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">component</span><span class="o">,</span> <span class="n">componentConnections</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">componentConnections</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">portNumber</span><span class="o">,</span> <span class="n">exitPort</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="cm">/**</span>
+<span class="cm">   * Shorthand for addExitConnection(component, portNumber, NEXT_STATE).</span>
+<span class="cm">   * Use if you don&#39;t care what output port of the state machine is triggered upon exit.</span>
+<span class="cm">   * @param component the final component</span>
+<span class="cm">   * @param portNumber the output port for which component is the final component</span>
+<span class="cm">   */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addExitConnection</span><span class="o">(</span><span class="n">AutonomousComponent</span> <span class="n">component</span><span class="o">,</span> <span class="n">Transition</span> <span class="n">portNumber</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">addExitConnection</span><span class="o">(</span><span class="n">component</span><span class="o">,</span> <span class="n">portNumber</span><span class="o">,</span> <span class="n">NEXT_STATE</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">.</span><span class="na">setup</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">.</span><span class="na">setup</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">Transition</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">Transition</span> <span class="n">superTransition</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">superTransition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">superTransition</span><span class="o">;</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">NEXT_STATE</span><span class="o">;</span>
+
+    <span class="c1">//Delegate run() to current state</span>
+    <span class="kd">final</span> <span class="n">Transition</span> <span class="n">transition</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+    <span class="c1">//If no transition, we&#39;re done</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">transition</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">.</span><span class="na">tearDown</span><span class="o">();</span>
+
+    <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Transition</span><span class="o">,</span> <span class="n">Transition</span><span class="o">&gt;</span> <span class="n">exitPorts</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">exitConnections</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">exitPorts</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">final</span> <span class="n">Transition</span> <span class="n">exitPort</span> <span class="o">=</span> <span class="n">exitPorts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">transition</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">exitPort</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Exiting from \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">+</span> <span class="s">&quot;\&quot; on port \&quot;&quot;</span> <span class="o">+</span> <span class="n">transition</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">exitPort</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Transition</span><span class="o">,</span> <span class="n">AutonomousComponent</span><span class="o">&gt;</span> <span class="n">componentConnections</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">connections</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">);</span>
+    <span class="n">Utils</span><span class="o">.</span><span class="na">assertNotNull</span><span class="o">(</span><span class="n">componentConnections</span><span class="o">,</span> <span class="s">&quot;No transitions defined for \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">AutonomousComponent</span> <span class="n">nextState</span> <span class="o">=</span> <span class="n">componentConnections</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">transition</span><span class="o">);</span>
+    <span class="n">Utils</span><span class="o">.</span><span class="na">assertNotNull</span><span class="o">(</span><span class="n">nextState</span><span class="o">,</span> <span class="s">&quot;No transition defined for \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">+</span> <span class="s">&quot;\&quot; on port \&quot;&quot;</span> <span class="o">+</span> <span class="n">transition</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Transition from \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">+</span> <span class="s">&quot;\&quot; =&gt; \&quot;&quot;</span> <span class="o">+</span> <span class="n">nextState</span> <span class="o">+</span> <span class="s">&quot;\&quot; on port \&quot;&quot;</span> <span class="o">+</span> <span class="n">transition</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">=</span> <span class="n">nextState</span><span class="o">;</span>
+    <span class="n">nextState</span><span class="o">.</span><span class="na">setup</span><span class="o">();</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

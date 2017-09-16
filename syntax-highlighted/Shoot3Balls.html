@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.autonomous.velocity.components.velocity.composite</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shoot3Balls</span> <span class="kd">extends</span> <span class="n">LinearStateMachine</span> <span class="o">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * @param ballAlreadyIn - ball is already in intake</span>
+<span class="cm">     * @param opModeContext - the OpModeContext this is running in</span>
+<span class="cm">     * @param id - descriptive name for logging</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="nf">Shoot3Balls</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">ballAlreadyIn</span><span class="o">,</span> <span class="n">OpModeContext</span><span class="o">&lt;</span><span class="n">VelocityConfiguration</span><span class="o">&gt;</span> <span class="n">opModeContext</span><span class="o">,</span> <span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+
+        <span class="c1">//Shooting</span>
+        <span class="kd">final</span> <span class="n">LinearStateMachine</span> <span class="n">shoot</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinearStateMachine</span><span class="o">(</span><span class="s">&quot;Shoot&quot;</span><span class="o">);</span>
+        <span class="n">shoot</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ShootBall</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Shoot 1st ball&quot;</span><span class="o">));</span>
+        <span class="n">shoot</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ShooterDownAndLoadSnake</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Shooter and Snake&quot;</span><span class="o">));</span>
+        <span class="n">shoot</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ResetSnake</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Reset Snake&quot;</span><span class="o">));</span>
+
+        <span class="c1">//Shooting and intake</span>
+        <span class="kd">final</span> <span class="n">ParallelComponent</span> <span class="n">shootingAndIntaking</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ParallelComponent</span><span class="o">();</span>
+        <span class="n">shootingAndIntaking</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="n">shoot</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">ballAlreadyIn</span><span class="o">)</span> <span class="n">shootingAndIntaking</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">RunIntake</span><span class="o">(</span><span class="mf">2.0</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Pull in third ball&quot;</span><span class="o">));</span>
+
+        <span class="c1">//Shoot and reset</span>
+        <span class="kd">final</span> <span class="n">LinearStateMachine</span> <span class="n">shootAndReset</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinearStateMachine</span><span class="o">(</span><span class="s">&quot;Shoot and reset&quot;</span><span class="o">);</span>
+        <span class="n">shootAndReset</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ShootBall</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Shoot 2nd ball&quot;</span><span class="o">));</span>
+        <span class="n">shootAndReset</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">MoveShooterDown</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Reset for third shot&quot;</span><span class="o">));</span>
+
+        <span class="c1">//Load 3rd ball in snake</span>
+        <span class="kd">final</span> <span class="n">LinearStateMachine</span> <span class="n">thirdBallIntoSnake</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinearStateMachine</span><span class="o">(</span><span class="s">&quot;Third ball into snake&quot;</span><span class="o">);</span>
+        <span class="n">thirdBallIntoSnake</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">EngageClutch</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Engage clutch&quot;</span><span class="o">));</span>
+        <span class="n">thirdBallIntoSnake</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">IntakeUntilBadBoy</span><span class="o">(</span><span class="mf">2.0</span><span class="o">,</span> <span class="n">opModeContext</span><span class="o">));</span>
+        <span class="n">thirdBallIntoSnake</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">RunIntake</span><span class="o">(</span><span class="mf">0.5</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Intake through bad boys&quot;</span><span class="o">));</span>
+
+        <span class="c1">//Shoot and Load 3rd ball in snake</span>
+        <span class="kd">final</span> <span class="n">ParallelComponent</span> <span class="n">shootingAndLoading</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ParallelComponent</span><span class="o">();</span>
+        <span class="n">shootingAndLoading</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="n">shootAndReset</span><span class="o">);</span>
+        <span class="n">shootingAndLoading</span><span class="o">.</span><span class="na">addComponent</span><span class="o">(</span><span class="n">thirdBallIntoSnake</span><span class="o">);</span>
+
+        <span class="c1">//State machine</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">AutonomousComponentAbstractImpl</span><span class="o">(</span><span class="s">&quot;Stop reading IMU&quot;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="n">Transition</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kd">final</span> <span class="n">Transition</span> <span class="n">superTransition</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">superTransition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">superTransition</span><span class="o">;</span>
+
+                <span class="n">opModeContext</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">imu</span><span class="o">.</span><span class="na">eulerRequest</span><span class="o">.</span><span class="na">stopReading</span><span class="o">();</span>
+                <span class="k">return</span> <span class="n">NEXT_STATE</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="n">shootingAndIntaking</span><span class="o">);</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="n">shootingAndLoading</span><span class="o">);</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">LoadBall</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Load 3nd ball&quot;</span><span class="o">));</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ResetSnake</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Reset Snake&quot;</span><span class="o">));</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ShootBall</span><span class="o">(</span><span class="n">opModeContext</span><span class="o">,</span> <span class="s">&quot;Shoot 3nd ball&quot;</span><span class="o">));</span>
+        <span class="n">addComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">AutonomousComponentAbstractImpl</span><span class="o">(</span><span class="s">&quot;Start reading IMU&quot;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="n">Transition</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kd">final</span> <span class="n">Transition</span> <span class="n">superTransition</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">superTransition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">superTransition</span><span class="o">;</span>
+
+                <span class="n">opModeContext</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">imu</span><span class="o">.</span><span class="na">eulerRequest</span><span class="o">.</span><span class="na">startReading</span><span class="o">();</span>
+                <span class="k">return</span> <span class="n">NEXT_STATE</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

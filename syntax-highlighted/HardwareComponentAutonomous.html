@@ -1,0 +1,57 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.autonomous.generic.opmode</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * An OpMode that instantiates a configuration</span>
+<span class="cm"> * and executes a single component (possibly a state machine)</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">HardwareComponentAutonomous</span><span class="o">&lt;</span><span class="n">HARDWARE_TYPE</span> <span class="kd">extends</span> <span class="n">HardwareConfiguration</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">BaseOpMode</span> <span class="o">{</span>
+  <span class="kd">protected</span> <span class="n">HARDWARE_TYPE</span> <span class="n">configuration</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">AutonomousComponent</span> <span class="n">component</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">done</span><span class="o">;</span>
+
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Start OpMode initialize&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">newConfiguration</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">component</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">OpModeContext</span><span class="o">&lt;&gt;(</span><span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">gamepads</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">matchTime</span><span class="o">));</span>
+  <span class="o">}</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">matchStart</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Starting OpMode matchStart&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">onMatchStart</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">setup</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">done</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">loopAfterStart</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">done</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">final</span> <span class="n">Transition</span> <span class="n">transition</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">transition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Component finished&quot;</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">done</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">tearDown</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">telemetry</span><span class="o">.</span><span class="na">addData</span><span class="o">(</span><span class="s">&quot;Component&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">matchEnd</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Starting OpMode matchEnd&quot;</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">done</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">component</span><span class="o">.</span><span class="na">tearDown</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">teardown</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Specifies the component to execute.</span>
+<span class="cm">   * Will be called in initialize() after configuration is created.</span>
+<span class="cm">   * @return the component to run</span>
+<span class="cm">   */</span>
+  <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">AutonomousComponent</span> <span class="nf">getComponent</span><span class="o">(</span><span class="n">OpModeContext</span><span class="o">&lt;</span><span class="n">HARDWARE_TYPE</span><span class="o">&gt;</span> <span class="n">opModeContext</span><span class="o">);</span>
+  <span class="cm">/**</span>
+<span class="cm">   * Creates a configuration object of the specified type.</span>
+<span class="cm">   * The idea is to have a subclass of this class for each configuration type in use</span>
+<span class="cm">   * which will implement this method.</span>
+<span class="cm">   * Then every autonomous using that type of configuration can inherit from the subclass.</span>
+<span class="cm">   * @return an instance of HARDWARE_TYPE created from the hardware map</span>
+<span class="cm">   */</span>
+  <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">HARDWARE_TYPE</span> <span class="nf">newConfiguration</span><span class="o">();</span>
+<span class="o">}</span>
+</pre></div>

@@ -1,0 +1,85 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.autonomous.generic.statemachine</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Assumes all internal components form a linear/sequential chain.</span>
+<span class="cm"> * Simplifies initialization of a state-machine</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LinearStateMachine</span> <span class="kd">extends</span> <span class="n">StateMachineBase</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">AutonomousComponent</span><span class="o">&gt;</span> <span class="n">iterator</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">LinearStateMachine</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;());</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">LinearStateMachine</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">AutonomousComponent</span><span class="o">&gt;</span> <span class="n">components</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">components</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">LinearStateMachine</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(),</span> <span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">LinearStateMachine</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">AutonomousComponent</span><span class="o">&gt;</span> <span class="n">components</span><span class="o">,</span> <span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">components</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Adds a component to the end of the chain.</span>
+<span class="cm">     * Must be called before the state machine gets initialized.</span>
+<span class="cm">     * @param component the component to add</span>
+<span class="cm">    */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addComponent</span><span class="o">(</span><span class="n">AutonomousComponent</span> <span class="n">component</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">components</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">component</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">//Set currentState to first component</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">iterator</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">components</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Starting with \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">transitionToNextStage</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;LinearStateMachine has no components. Cannot start \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Transition</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">Transition</span> <span class="n">superTransition</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">superTransition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">superTransition</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//If there is no (more) current state, then end this state-machine</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;LinearStateMachine in run() has no currentState \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">NEXT_STATE</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">//Delegate run() to current state</span>
+        <span class="kd">final</span> <span class="n">Transition</span> <span class="n">transition</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="c1">//If no transition, we&#39;re done</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">transition</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="c1">//If the component is done, get the next component</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">transitionToNextStage</span><span class="o">();</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">.</span><span class="na">tearDown</span><span class="o">();</span>
+            <span class="c1">//No more components -&gt; end of this state-machine</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Exiting \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span> <span class="o">+</span> <span class="s">&quot;\&quot; with transition \&quot;&quot;</span> <span class="o">+</span> <span class="n">transition</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">return</span> <span class="n">transition</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">transitionToNextStage</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">AutonomousComponent</span> <span class="n">nextState</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">Utils</span><span class="o">.</span><span class="na">TAG</span><span class="o">,</span> <span class="s">&quot;Transition from \&quot;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">+</span> <span class="s">&quot;\&quot; =&gt; \&quot;&quot;</span> <span class="o">+</span> <span class="n">nextState</span> <span class="o">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">currentState</span><span class="o">.</span><span class="na">tearDown</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">currentState</span> <span class="o">=</span> <span class="n">nextState</span><span class="o">;</span>
+        <span class="n">nextState</span><span class="o">.</span><span class="na">setup</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

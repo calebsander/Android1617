@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot xmlns:tools="http://schemas.android.com/tools"
+       type="FirstInspires-FTC" name="ResQ2"
+       tools:ignore="UnusedResources">
+    <ServoController name="New Servos" serialNumber="AL00VDKY">
+        <Servo name="hook" port="1" />
+        <Servo name="zipLeft" port="2" />
+        <Servo name="liftBrake" port="3" />
+        <Servo name="bladeLeft" port="4" />
+        <Servo name="bladeRight" port="5" />
+        <ContinuousRotationServo name="allClear" port="6" />
+    </ServoController>
+    <MotorController name="Drive Back" serialNumber="AL00VV1S">
+        <Motor name="bl" port="1" />
+        <Motor name="br" port="2" />
+    </MotorController>
+    <MotorController name="Drive Front" serialNumber="AL00VCUO">
+        <Motor name="fl" port="1" />
+        <Motor name="fr" port="2" />
+    </MotorController>
+    <MotorController name="S&amp;D" serialNumber="AL00VESE">
+        <Motor name="squid" port="1" />
+        <Motor name="door" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="DIM" serialNumber="AL00VDDK">
+        <I2cDevice name="bno" port="0" />
+        <I2cDevice name="color" port="1" />
+        <AnalogInput name="in" port="0" />
+        <Led name="heartbeat" port="0" />
+        <Led name="led" port="1" />
+        <Led name="indicator2" port="5" />
+        <DigitalDevice name="front" port="2" />
+        <DigitalDevice name="liftSensor" port="3" />
+        <DigitalDevice name="screwSensor" port="4" />
+    </DeviceInterfaceModule>
+    <LegacyModuleController name="Legacy Module" serialNumber="AL00VBU7">
+        <ServoController name="Servos" port="3">
+            <Servo name="climbers" port="1" />
+            <Servo name="plow" port="2" />
+            <Servo name="zipRight" port="3" />
+            <ContinuousRotationServo name="bucketLift" port="4" />
+            <Servo name="churroHooks" port="5" />
+            <Servo name="bumper" port="6" />
+        </ServoController>
+    </LegacyModuleController>
+    <MotorController name="Accessories" serialNumber="AL00VX9N">
+        <Motor name="lift" port="1" />
+        <Motor name="screw" port="2" />
+    </MotorController>
+</Robot>

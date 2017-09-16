@@ -1,0 +1,451 @@
+<link rel="stylesheet" href="syntax.css" />
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.gearticks.hardware.configurations</span><span class="o">;</span>
+
+<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VelocityConfiguration</span> <span class="kd">implements</span> <span class="n">HardwareConfiguration</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">v2</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">MotorWrapper</span> <span class="n">intake</span><span class="o">,</span> <span class="n">shooter</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">MotorWrapper</span> <span class="n">capBall</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">shooterWasDown</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">shooterPassedEncoder</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">MotorWrapper</span> <span class="n">driveLeft</span><span class="o">,</span> <span class="n">driveRight</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">TankDrive</span> <span class="n">drive</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Servo</span> <span class="n">clutch</span><span class="o">,</span> <span class="n">snake</span><span class="o">,</span> <span class="n">frontBeaconPresser</span><span class="o">,</span> <span class="n">backBeaconPresser</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Servo</span> <span class="n">frontRoller</span><span class="o">,</span> <span class="n">rearRoller</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Servo</span> <span class="n">topLatch</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">CRServo</span> <span class="n">shooterStopper</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">CRServo</span> <span class="n">frontBumper</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">GearticksBNO055</span> <span class="n">imu</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">GearticksMRRangeSensor</span> <span class="n">rangeSensor</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">DigitalChannel</span> <span class="n">shooterDown</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">DigitalChannel</span> <span class="n">shooterNear</span><span class="o">,</span> <span class="n">shooterFar</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">DigitalChannel</span> <span class="n">badBoy1</span><span class="o">,</span> <span class="n">badBoy2</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">DigitalChannel</span> <span class="n">whiteLineSensor</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">DigitalChannel</span> <span class="n">capBallLimit</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">TCS34725</span> <span class="n">whiteLineColorSensor</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">LED</span> <span class="n">whiteLineColorLed</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">DeviceInterfaceModule</span> <span class="n">dim</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">VelocityConfiguration</span><span class="o">(</span><span class="n">HardwareMap</span> <span class="n">hardwareMap</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">hardwareMap</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nf">VelocityConfiguration</span><span class="o">(</span><span class="n">HardwareMap</span> <span class="n">hardwareMap</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">hardwareMap</span><span class="o">,</span> <span class="n">v2</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nf">VelocityConfiguration</span><span class="o">(</span><span class="n">HardwareMap</span> <span class="n">hardwareMap</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">v2</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">autonomous</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">v2</span> <span class="o">=</span> <span class="n">v2</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">intake</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MotorWrapper</span><span class="o">((</span><span class="n">DcMotor</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;intake&quot;</span><span class="o">),</span> <span class="n">MotorType</span><span class="o">.</span><span class="na">NEVEREST_20</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MotorWrapper</span><span class="o">((</span><span class="n">DcMotor</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;shooter&quot;</span><span class="o">),</span> <span class="n">MotorType</span><span class="o">.</span><span class="na">NEVEREST_40</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">resetAutoShooter</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">capBall</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MotorWrapper</span><span class="o">((</span><span class="n">DcMotor</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;capBall&quot;</span><span class="o">),</span> <span class="n">MotorType</span><span class="o">.</span><span class="na">NEVEREST_20</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">capBall</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">capBall</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">capBall</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MotorWrapper</span><span class="o">((</span><span class="n">DcMotor</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;left&quot;</span><span class="o">),</span> <span class="n">MotorType</span><span class="o">.</span><span class="na">NEVEREST_20</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MotorWrapper</span><span class="o">((</span><span class="n">DcMotor</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;right&quot;</span><span class="o">),</span> <span class="n">MotorType</span><span class="o">.</span><span class="na">NEVEREST_20</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TankDrive</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span><span class="o">.</span><span class="na">addLeftMotor</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span><span class="o">.</span><span class="na">addRightMotor</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">setStopMode</span><span class="o">(</span><span class="n">ZeroPowerBehavior</span><span class="o">.</span><span class="na">BRAKE</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">setStopMode</span><span class="o">(</span><span class="n">ZeroPowerBehavior</span><span class="o">.</span><span class="na">BRAKE</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">clutch</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;clutch&quot;</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">initialClutchPosition</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="n">initialClutchPosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CLUTCH_V2_ENGAGED</span><span class="o">;</span>
+    <span class="k">else</span> <span class="n">initialClutchPosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">CLUTCH_ENGAGED</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">clutch</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">initialClutchPosition</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;frontBeacon&quot;</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;backBeacon&quot;</span><span class="o">);</span>
+      <span class="kd">final</span> <span class="kt">double</span> <span class="n">frontInitialPresserPosition</span><span class="o">,</span> <span class="n">backInitialPresserPosition</span><span class="o">;</span>
+      <span class="n">frontInitialPresserPosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_FRONT_IN</span><span class="o">;</span>
+      <span class="n">backInitialPresserPosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_BACK_IN</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">frontInitialPresserPosition</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">backInitialPresserPosition</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">snake</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;snake&quot;</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">initialSnakePosition</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="n">initialSnakePosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_V2_HOLDING</span><span class="o">;</span>
+    <span class="k">else</span> <span class="n">initialSnakePosition</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SNAKE_HOLDING</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">snake</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">initialSnakePosition</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontRoller</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span><span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;frontRoller&quot;</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">rearRoller</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span><span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;rearRoller&quot;</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">rollersUp</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontRoller</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">rearRoller</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">topLatch</span> <span class="o">=</span> <span class="o">(</span><span class="n">Servo</span><span class="o">)</span><span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;topLatch&quot;</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">autonomous</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">engageTopLatch</span><span class="o">();</span>
+      <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">disengageTopLatch</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">topLatch</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterStopper</span> <span class="o">=</span> <span class="o">(</span><span class="n">CRServo</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;shooterStopper&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterStopper</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="mf">0.0</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontBumper</span> <span class="o">=</span> <span class="o">(</span><span class="n">CRServo</span><span class="o">)</span><span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;frontBumper&quot;</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">frontBumper</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="mf">0.0</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">frontBumper</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">imu</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GearticksBNO055</span><span class="o">((</span><span class="n">I2cDevice</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;bno&quot;</span><span class="o">));</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">rangeSensor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GearticksMRRangeSensor</span><span class="o">((</span><span class="n">I2cDevice</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;range&quot;</span><span class="o">));</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterDown</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;shooterDown&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterDown</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterNear</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;shooterNear&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterNear</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterFar</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;shooterFar&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterFar</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">badBoy1</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;badBoy1&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">badBoy1</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">badBoy2</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;badBoy2&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">badBoy2</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineSensor</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;whiteLine&quot;</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineSensor</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">v2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">capBallLimit</span> <span class="o">=</span> <span class="o">(</span><span class="n">DigitalChannel</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;capBallLimit&quot;</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">capBallLimit</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">INPUT</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">this</span><span class="o">.</span><span class="na">capBallLimit</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorSensor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TCS34725</span><span class="o">((</span><span class="n">I2cDevice</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;whiteLineColor&quot;</span><span class="o">));</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorLed</span> <span class="o">=</span> <span class="o">(</span><span class="n">LED</span><span class="o">)</span> <span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;whiteLineColorLed&quot;</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">dim</span> <span class="o">=</span> <span class="o">(</span><span class="n">DeviceInterfaceModule</span><span class="o">)</span><span class="n">hardwareMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;DIM&quot;</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">teardown</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">imu</span><span class="o">.</span><span class="na">terminate</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">rangeSensor</span><span class="o">.</span><span class="na">terminate</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stopMotion</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">move</span><span class="o">(</span><span class="n">DriveDirection</span> <span class="n">direction</span><span class="o">,</span> <span class="kt">double</span> <span class="n">accelLimit</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span><span class="o">.</span><span class="na">calculatePowers</span><span class="o">(</span><span class="n">direction</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span><span class="o">.</span><span class="na">scaleMotorsDown</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span><span class="o">.</span><span class="na">accelLimit</span><span class="o">(</span><span class="n">accelLimit</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">drive</span><span class="o">.</span><span class="na">commitPowers</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">shooterFarTriggered</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterFar</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">shooterNearTriggered</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterNear</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">safeShooterStopper</span><span class="o">(</span><span class="kt">double</span> <span class="n">power</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span>
+      <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">power</span><span class="o">)</span> <span class="o">==</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_STOPPER_UP</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">shooterFarTriggered</span><span class="o">())</span> <span class="o">||</span>
+      <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">power</span><span class="o">)</span> <span class="o">==</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_STOPPER_DOWN</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">shooterNearTriggered</span><span class="o">())</span>
+    <span class="o">)</span> <span class="o">{</span>
+      <span class="n">power</span> <span class="o">=</span> <span class="n">MotorWrapper</span><span class="o">.</span><span class="na">STOPPED</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterStopper</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">power</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">badBoy1Triggered</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">badBoy1</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">badBoy2Triggered</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">badBoy2</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">ballInSnake</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">badBoy1Triggered</span><span class="o">()</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="na">badBoy2Triggered</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">resetEncoder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">RunMode</span> <span class="n">leftLastMode</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">getRunMode</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">RunMode</span> <span class="n">rightLastMode</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">getRunMode</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">leftLastMode</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">rightLastMode</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="cm">/**</span>
+<span class="cm">   * Returns an encoder value from the drive motors.</span>
+<span class="cm">   * Sign flips depending on direction of motion</span>
+<span class="cm">   * @return a combination of the encoder values from the two drive motors</span>
+<span class="cm">   */</span>
+  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">signedEncoder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">driveLeft</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">()</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">driveRight</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">())</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">encoderPositive</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">signedEncoder</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isShooterAtSensor</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterDown</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">shootSlow</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">power</span><span class="o">;</span>
+    <span class="n">power</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK_SLOW</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">power</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">shootSlowAutonomous</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="kt">double</span> <span class="n">power</span><span class="o">;</span>
+    <span class="n">power</span> <span class="o">=</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK_SLOW_AUTONOMOUS</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">power</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">shootFast</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">advanceShooterToDownSlowly</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isShooterAtSensor</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">v2</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_WITHOUT_ENCODER</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_TO_POSITION</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setTarget</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_TO_DOWN</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_USING_ENCODER</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK_SUPER_SLOW</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">advanceShooterToDownWithEncoder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isShooterAtSensor</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">v2</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_WITHOUT_ENCODER</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_TO_POSITION</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setTarget</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_TO_DOWN</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">())</span> <span class="o">&gt;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span><span class="o">)</span> <span class="o">-</span> <span class="mi">110</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shootSlow</span><span class="o">();</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">())</span> <span class="o">&gt;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span><span class="o">)</span> <span class="o">-</span> <span class="mi">475</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shootFast</span><span class="o">();</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shootFast</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">advanceShooterToDownAutonomous</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isShooterAtSensor</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">STOP_AND_RESET_ENCODER</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">v2</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_WITHOUT_ENCODER</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setRunMode</span><span class="o">(</span><span class="n">RunMode</span><span class="o">.</span><span class="na">RUN_TO_POSITION</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setTarget</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_TO_DOWN</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">setPower</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_BACK</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">-</span> <span class="mi">250</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span><span class="o">)){</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shootFast</span><span class="o">();</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">shootSlowAutonomous</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">resetAutoShooter</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasShot</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">()</span> <span class="o">-</span> <span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_V2_TICKS_TO_SHOOTING</span><span class="o">)</span> <span class="o">==</span> <span class="n">Math</span><span class="o">.</span><span class="na">signum</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_V2_TICKS_TO_SHOOTING</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isShooterAtTarget</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">encoderValue</span><span class="o">()</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">shooter</span><span class="o">.</span><span class="na">getTarget</span><span class="o">())</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isShooterDown</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">v2</span><span class="o">)</span> <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span><span class="o">;</span>
+    <span class="k">else</span> <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">shooterWasDown</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">isShooterAtTarget</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isShooterPassedEncoder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">shooterPassedEncoder</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beaconPresserFrontOut</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_FRONT_OUT</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beaconPresserFrontOutPartial</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_FRONT_OUT_PARTIAL</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beaconPresserBackOut</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_BACK_OUT</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beaconPresserBackOutPartial</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_BACK_OUT_PARTIAL</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beaconPressersStrainIn</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_FRONT_IN_STRAIN</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_BACK_IN_STRAIN</span><span class="o">);</span> <span class="c1">// make back beacon presser</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beaconPressersIn</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">frontBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_FRONT_IN</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">backBeaconPresser</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">PRESSER_V2_BACK_IN</span><span class="o">);</span> <span class="c1">// make back beacon presser</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">activateWhiteLineColor</span><span class="o">(){</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorSensor</span><span class="o">.</span><span class="na">startReadingClear</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorLed</span><span class="o">.</span><span class="na">enable</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorSensor</span><span class="o">.</span><span class="na">setIntegrationTime</span><span class="o">(</span><span class="mi">50</span><span class="o">);</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">deactivateWhiteLineColor</span><span class="o">(){</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorSensor</span><span class="o">.</span><span class="na">stopReading</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">whiteLineColorLed</span><span class="o">.</span><span class="na">enable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   *</span>
+<span class="cm">   * @return true if white line detected</span>
+<span class="cm">   */</span>
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isWhiteLineIR</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">whiteLineSensor</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">rollersUp</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">frontRoller</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">FRONT_ROLLER_V2_UP</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">rearRoller</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">REAR_ROLLER_V2_UP</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">rollersDown</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">frontRoller</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">FRONT_ROLLER_V2_DOWN</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">rearRoller</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">REAR_ROLLER_V2_DOWN</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">engageTopLatch</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">topLatch</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">TOP_LATCH_ENGAGED</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">disengageTopLatch</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">topLatch</span><span class="o">.</span><span class="na">setPosition</span><span class="o">(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">TOP_LATCH_DISENGAGED</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isCapBallUp</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="n">capBallLimit</span><span class="o">.</span><span class="na">getState</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">MotorConstants</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">INTAKE_OUT</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">INTAKE_IN</span> <span class="o">=</span> <span class="o">-</span><span class="n">INTAKE_OUT</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_FORWARD</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK</span> <span class="o">=</span> <span class="o">-</span><span class="n">SHOOTER_FORWARD</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK_SLOW</span> <span class="o">=</span> <span class="n">SHOOTER_BACK</span> <span class="o">*</span> <span class="mf">0.2</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK_SLOW_AUTONOMOUS</span> <span class="o">=</span> <span class="n">SHOOTER_BACK</span> <span class="o">*</span> <span class="mf">0.2</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_BACK_SUPER_SLOW</span> <span class="o">=</span> <span class="n">SHOOTER_BACK</span> <span class="o">*</span> <span class="mf">0.15</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">=</span> <span class="o">-</span><span class="mi">700</span><span class="o">;</span>
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_TICKS_TO_DOWN</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">*</span> <span class="mf">0.1</span><span class="o">);</span>
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_TICKS_TO_SHOOTING</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">MotorConstants</span><span class="o">.</span><span class="na">SHOOTER_TICKS_PER_ROTATION</span> <span class="o">*</span> <span class="mf">0.2</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHOOTER_V2_TICKS_TO_SHOOTING</span> <span class="o">=</span> <span class="o">-</span><span class="mi">150</span><span class="o">;</span>
+
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SNAKE_HOLDING</span> <span class="o">=</span> <span class="mf">0.9</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SNAKE_V2_HOLDING</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SNAKE_DUMPING</span> <span class="o">=</span> <span class="mf">0.7</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SNAKE_V2_DUMPING</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SNAKE_V2_TIME_TO_MOVE</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">;</span> <span class="c1">//seconds for snake to switch positions</span>
+
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">BEACON_PRESSER_DISENGAGED</span> <span class="o">=</span> <span class="mf">0.81</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_NEUTRAL</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">;</span>
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">BEACON_PRESSER_RIGHT_ENGAGED</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_RIGHT</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">BEACON_PRESSER_LEFT_ENGAGED</span> <span class="o">=</span> <span class="mf">0.54</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_FRONT_IN</span> <span class="o">=</span> <span class="mf">0.74</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_FRONT_IN_STRAIN</span> <span class="o">=</span> <span class="mf">0.9</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_FRONT_OUT_PARTIAL</span> <span class="o">=</span> <span class="mf">0.7</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_FRONT_OUT</span> <span class="o">=</span> <span class="mf">0.2</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_BACK_IN</span> <span class="o">=</span> <span class="mf">0.30</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_BACK_IN_STRAIN</span> <span class="o">=</span> <span class="mf">0.1</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_BACK_OUT_PARTIAL</span> <span class="o">=</span> <span class="mf">0.4</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_BACK_OUT</span> <span class="o">=</span> <span class="mf">0.7</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">PRESSER_V2_TIME_TO_MOVE</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">;</span> <span class="c1">//seconds for beacon presser to switch positions</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">PRESSER_V2_TIMES_PULL_IN</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span> <span class="c1">//number of times the presser pulls to straining position until in place</span>
+
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CLUTCH_CLUTCHED</span> <span class="o">=</span> <span class="mf">0.7</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CLUTCH_V2_CLUTCHED</span> <span class="o">=</span> <span class="mf">0.94</span><span class="o">;</span>
+    <span class="nd">@Deprecated</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CLUTCH_ENGAGED</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CLUTCH_V2_ENGAGED</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">FRONT_ROLLER_V2_UP</span> <span class="o">=</span> <span class="mf">0.4</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">FRONT_ROLLER_V2_DOWN</span> <span class="o">=</span> <span class="mf">0.88</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">REAR_ROLLER_V2_UP</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">REAR_ROLLER_V2_DOWN</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_STOPPER_UP</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">SHOOTER_STOPPER_DOWN</span> <span class="o">=</span> <span class="o">-</span><span class="n">SHOOTER_STOPPER_UP</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CAP_BALL_UP</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CAP_BALL_DOWN</span> <span class="o">=</span> <span class="o">-</span><span class="n">CAP_BALL_UP</span> <span class="o">*</span> <span class="mf">0.1</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">CAP_BALL_SLOW_SCALE</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">,</span> <span class="n">CAP_BALL_SUPER_SLOW_UP</span> <span class="o">=</span> <span class="n">CAP_BALL_UP</span> <span class="o">*</span> <span class="mf">0.1</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">FRONT_BUMPER_UP</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">FRONT_BUMPER_DOWN</span> <span class="o">=</span> <span class="o">-</span><span class="n">FRONT_BUMPER_UP</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">TOP_LATCH_ENGAGED</span> <span class="o">=</span> <span class="mf">0.55</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">TOP_LATCH_DISENGAGED</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
