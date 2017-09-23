@@ -1,9 +1,10 @@
 //Provides several utility functions for calculating the result of a Gamepad and comparing values with the last measured ones
 package org.gearticks;
 
-import com.qualcomm.ftccommon.DbgLog;
+//import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.vuforia.ar.pl.DebugLog;
 
 public class GamepadWrapper {
 	//Desired deadzone size
@@ -149,7 +150,7 @@ public class GamepadWrapper {
 			this.last.copy(this.gamepad);
 		}
 		catch (RobotCoreException e) {
-			DbgLog.error("Unable to copy gamepad");
+			DebugLog.LOGE("Error","Unable to copy gamepad"); //changed for dbglog, look at library in the top
 		}
 	}
 	//Returns the native gamepad object being wrapped
