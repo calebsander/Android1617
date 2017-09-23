@@ -16,7 +16,10 @@ public abstract class DriveSystem {
 	//Can pass in a list of motors to start with
 	public DriveSystem(Collection<MotorWrapper> motors) {
 		this();
-		motors.forEach(this::addMotor);
+		//motors.forEach(this::addMotor);
+		for (MotorWrapper motor : motors) {
+			this.addMotor(motor);
+		}
 	}
 
 	//Add another motor to be tracked
